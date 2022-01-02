@@ -417,6 +417,13 @@ Autor:		Jesús López Requena
 Fecha de pub.:	2012
 Páginas:	354
 
+Título:		Distintas etapas de la telegrafía óptica en España
+Autor:		Olivé Roig, Sebastián
+Fecha de pub.:	2007
+Páginas: 	16
+Fuente:		Cuadernos de Historia Contemporánea Nº 29
+Url:		https://revistas.ucm.es/index.php/CHCO
+
 VV/AA:		https://forohistorico.coit.es/index.php/wiki-telegrafia-optica/category/bibliografia-y-referencias
 ```   
 
