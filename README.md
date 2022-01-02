@@ -422,5 +422,5 @@ VV/AA:		https://forohistorico.coit.es/index.php/wiki-telegrafia-optica/category/
 
 ### Versión web
 
-https://rfrail3.github.io/telop/telop.htm
+https://rfrail3.github.io/telop/
 
