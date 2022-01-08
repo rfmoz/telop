@@ -392,6 +392,7 @@ Autor:		José Maria Mathé
 Fecha de pub.:	1849
 Páginas:	310
 Fuente:		Biblioteca Virtual de Defensa
+Url:		http://bibliotecavirtualdefensa.es/BVMDefensa/es/consulta/registro.do?id=42216
 
 Título:		Diccionario de Telégrafos (diccionario frasológico)
 Autor:		Dirección General de Telégrafos
