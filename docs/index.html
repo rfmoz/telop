@@ -400,6 +400,14 @@
             msg['horadia'] = d.getHours().toString().padStart(2, '0') + d.getMinutes().toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0');
         }
 
+        if ((/^\[e[12]\]/).test(msg['mensaje'])) {
+            msg['estilo'] = (/^\[e(.)\]/g).exec(msg['mensaje'])[1];  // recoger número estilo
+            msg['mensaje'] = msg['mensaje'].slice(4).trim();  // eliminar bloque de estilo
+        } else {
+            msg['estilo'] = '0';
+        }
+
+
         switch (msg['tipo']) {
             case '0':
             case '2':  // Servicio general o interno
@@ -750,6 +758,9 @@
             salida += "<option value='5' selected>1 / 5 seg.</option>";
             salida += "<option value='1'>1 / 1 seg.</option></select></div></p>";
         }
+	if (msg['estilo']) {
+            salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
+        }
         salida += '<hr>';
 
         document.querySelector('pre#salida').innerHTML = salida;
@@ -770,6 +781,14 @@
         // Recoger texto mensaje
         var codtxt = document.getElementById("procmsg").innerHTML.toLowerCase();
 
+        // Recoger estilo
+        estilo = document.getElementById("estilo").innerHTML;
+	if (estilo != 1 && estilo != 2) {
+            estilo = ''
+        } else {
+            estilo = estilo + '/'
+	}
+
         // Validar, sustituir '/' por 'a' y error en 'e'
         codtxt = codtxt.replace(/\//g, 'a').replace(/[^0-9,x,m,a]/gi, 'e');
         if (codtxt.length == 0) { codtxt = 'e'; };
@@ -779,7 +798,8 @@
         var lista = [];
         for (let i = 0; i < codtxt.length; i++) {
             //lista.push('static/' + codtxt[i] + '.gif');
-            lista.push({src:"static/" + codtxt[i] + ".gif", text:(i + 1) + "/" + codtxt.length + " "});
+            lista.push({src:"static/" + estilo + codtxt[i] + ".gif", text:(i + 1) + "/" + codtxt.length + " "});
+	    console.log("static/" + estilo + codtxt[i] + ".gif");
         }
 
         gifshot.createGIF({
