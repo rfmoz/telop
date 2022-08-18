@@ -400,7 +400,7 @@
             msg['horadia'] = d.getHours().toString().padStart(2, '0') + d.getMinutes().toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0');
         }
 
-        if ((/^\[e[12]\]/).test(msg['mensaje'])) {
+        if ((/^\[e[123]\]/).test(msg['mensaje'])) {
             msg['estilo'] = (/^\[e(.)\]/g).exec(msg['mensaje'])[1];  // recoger número estilo
             msg['mensaje'] = msg['mensaje'].slice(4).trim();  // eliminar bloque de estilo
         } else {
@@ -783,7 +783,7 @@
 
         // Recoger estilo
         estilo = document.getElementById("estilo").innerHTML;
-	if (estilo != 1 && estilo != 2) {
+	if (estilo != 1 && estilo != 2 && estilo != 3) {
             estilo = ''
         } else {
             estilo = 'e' + estilo + '/'
