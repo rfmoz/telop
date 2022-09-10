@@ -328,9 +328,9 @@ A/B/___C__/___D____/E
 
 ### Documentos relevantes
 
-Revisión Código Telégrafo Óptico Mathé -> [revision_codigo_telegrafo.pdf](https://github.com/rfrail3/telop/blob/main/revision_codigo_telegrafo.pdf)
+Revisión Código Telégrafo Óptico Mathé -> [revision_codigo_telegrafo.pdf](https://github.com/rfmoz/telop/blob/main/revision_codigo_telegrafo.pdf)
 
-Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica -> [analisis_presencia_niebla.pdf](https://github.com/rfrail3/telop/blob/main/analisis_presencia_niebla.pdf)
+Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica -> [analisis_presencia_niebla.pdf](https://github.com/rfmoz/telop/blob/main/analisis_presencia_niebla.pdf)
 
 
 ### Más información
@@ -442,5 +442,5 @@ VV/AA:		https://forohistorico.coit.es/index.php/wiki-telegrafia-optica/category/
 
 ### Versión web
 
-https://rfrail3.github.io/telop/
+https://rfmoz.github.io/telop/
 

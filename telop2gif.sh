@@ -33,7 +33,7 @@ for (( i=0; i<${#var1}; i++ )); do
 
 	echo "$num/$total"
 	
-	wget https://rfrail3.github.io/telop/static/"$dgt".gif -qO "$D_TMP"/"$nform".gif
+	wget https://rfmoz.github.io/telop/static/"$dgt".gif -qO "$D_TMP"/"$nform".gif
 
 	convert "$D_TMP"/"$nform".gif -gravity NorthEast -fill darkgrey -pointsize 30 -annotate +10+10 "$num"/"$total" "$D_TMP"/"$nform".gif
 done
@@ -42,7 +42,7 @@ done
 convert -delay 150 -loop 0 "$D_TMP"/* "$F_TMP"
 
 # Añadir final
-wget https://rfrail3.github.io/telop/static/fin.gif -qO /tmp/fin.gif && convert -delay 150 -loop 0 "$F_TMP" /tmp/fin.gif "$F_TMP"
+wget https://rfmoz.github.io/telop/static/fin.gif -qO /tmp/fin.gif && convert -delay 150 -loop 0 "$F_TMP" /tmp/fin.gif "$F_TMP"
 
 # Optimizar
 mogrify -layers optimize "$F_TMP"
