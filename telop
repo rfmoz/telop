@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """telop - Codifica y descodifica mensajes telegráficos del sistema Mathé"""
-# Copyright (C) 2021 - Ricardo F.
+# Copyright (C) 2021-2022 - Ricardo F.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -76,6 +76,11 @@ def get_arguments(msg, lencript):
     if arg.tipo == '1' and not arg.rect:
         arg.rect = random.choice(['6', '9'])
 
+    # Comprobar asignación torre
+    if arg.origen <= 0 and arg.destino <= 0:
+        logging.error('Falta definir una torre de origen o de destino válida.')
+        sys.exit(1)
+
     # En codificacion, comprobar requisitos y eliminar new line siempre
     if arg.zcodif == 0:
         if arg.mensaje and len(arg.mensaje) > MAX_TXT:
@@ -97,7 +102,6 @@ def get_arguments(msg, lencript):
             fchora = fchora + 50
         elif fcmin >= 15:
             fchora = fchora + 25
-
         fchora = str(fchora).zfill(2)
         fcdia = str(time.strftime("%d")[-1])
 
@@ -112,6 +116,7 @@ def get_arguments(msg, lencript):
     else:
         msg['origen'] = msg['origen'][:3].zfill(3)
         msg['destino'] = msg['destino'][:3].zfill(3)
+
     msg['referencia'] = msg['referencia'][:2].zfill(2)
 
     logging.info('Argumentos txt:\t %s', str(msg))
@@ -146,16 +151,17 @@ def zcodif_codificar(arg, msg, lencript):
     '''codificar mensaje'''
 
     if msg['tipo'] in ('0', '2'):  # Servicio general o interno
-        #   0/0x10x5/232x040x/0x6/757575/0
-        # 2/0x10x5/232x040x/0x6/757575
+        # 0/0x10x5/232x040x/0x6/757575/0
+        # 2/0x10x5/232x040x/0x6/757575/2
 
         logging.info('Texto raw:\t\t %s', str(msg['mensaje']))
 
-        # Recorrer los digitos del mensaje para codificar cada uno
-        cipert = ''
+        # Recorrer los digitos del mensaje para codificar cada uno según la posición que ocupan en el diccionario
+        cipert = ''  # Mensaje codificado
         for _, elem in enumerate(msg['mensaje']):
-            if elem not in lencript:  # si el carácter no se encuentra en la lista
-                elem = re.sub(r'[^\w]', r'', unicodedata.normalize('NFKD', elem)) # pasar a unicode, quita acentos y similar
+
+            if elem not in lencript:  # si el carácter no se encuentra en el diccionario
+                elem = re.sub(r'[^\w]', r'', unicodedata.normalize('NFKD', elem)) # probar a normalizar: pasar a unicode, quita acentos y similar
                 if elem not in lencript:  #  finalmente sustituir por '#' si no existe
                     elem = '#'
 
@@ -201,14 +207,12 @@ def zcodif_codificar(arg, msg, lencript):
 
         elif msg['tipo'] == '5':  # Continuar transmisión
             # 5/4/0x1/0x
-            # 5/4/0x1/0x
             msg['horadia'] = ''
             msg['destino'] = '0'
             sufijo = ''
 
         elif msg['tipo'] == '1':  # Rectificación
-            # 1/8/0x1052/09/6
-            # 1/0/0x1052/09/9
+            # 1/0/0x1052/01/9
             msg['horadia'] = ''
             sufijo = '/' + msg['rect']
 
@@ -216,10 +220,10 @@ def zcodif_codificar(arg, msg, lencript):
             logging.error('Sin tipo de mensaje')
             sys.exit(1)
 
-    # Torre '0' sin valor. Indicación única de torre
-    if int(msg['origen']) == 0 and int(msg['destino']) != 0:
+    # Torre con valor '0' deshabilitada. Indicación única de torre
+    if int(msg['origen']) == 0:
         msg['origen'] = ''
-    if int(msg['destino']) == 0 and int(msg['origen']) >= 0:
+    if int(msg['destino']) == 0:
         msg['destino'] = ''
 
     # Mensaje formateado
@@ -245,40 +249,48 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje']).replace(" ", "")
 
     try:
-        # Extraer interrupciones finales si las hubiera - https://regex101.com/r/5LCWJm/1
-        msg['regfin'] = ''
-        while True:
-            # Comienza buscando el nº del tipo de cabecera más los grupos de '/' correspondientes
-            # y finaliza buscando el formato de la interrupción
-            if re.match(r'^(([0248](/\d*){5})|'
-                         '([1356](/\d*){3}))'
-                         '.+'
-                         '(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
-                regfin = re.search(r'(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm)
-            else:
-                break
+        # Extraer interrupciones finales si las hubiera - https://regex101.com/r/USGEwq/1
+        # Comienzar buscando el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde,
+        # cualquier caracter intermedio
+        # y finalizar con sufijo del formato de la interrupción
+        if re.match(r'^(([0248](/\d*){5})|([1356](/\d*){3}))'
+                    '.+'
+                    '(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
 
-            # Procesar interrupción
-            regint = re.search(r'/(\d{3})/(?:(\d{4,6})/)?([1-4])', regfin[1])
-            msg['regfin'] += '[T-' + regint.group(1) + ' '
-            if regint.group(2):
-                if len(regint.group(2)) == 6:
-                    msg['regfin'] += regint.group(2)[4:] + '_'
-                msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
-            intrc = regint.group(3)
-            if intrc == '1':
-                intrc = '1-Niebla'
-            if intrc == '2':
-                intrc = '2-Ausencia'
-            if intrc == '3':
-                intrc = '3-Vang.Ocupada'
-            if intrc == '4':
-                intrc = '4-Avería'
-            msg['regfin'] += intrc +']  '
+            # Recoger sufijo completo
+            regfin = re.search(r'(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm).group()
+            logging.info('Sufijo:\t %s', str(regfin))
 
-            # Eliminar interrupción del mensaje
-            logging.info('Intrr.:\t %s', str(regfin[1]))
-            ciperm = ciperm.replace(regfin[1], '')
+            # Eliminar sufijo del mensaje
+            ciperm = ciperm.replace(regfin, '')
+            logging.info('Mensaje:\t %s', str(ciperm))
+
+            # Procesar todas las interrupciones
+            while regfin:
+    
+                # Recoger la última interrupción
+                regint = re.search(r'/(\d{3})/(?:(\d{4,6})/)?([1-4])$', regfin)
+    
+                # Construir salida
+                msg['regfin'] += '[T-' + regint.group(1) + ' '
+                if regint.group(2):
+                    if len(regint.group(2)) == 6:
+                        msg['regfin'] += regint.group(2)[4:] + '_'
+                    msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
+                intrc = regint.group(3)
+                if intrc == '1':
+                    intrc = '1-Niebla'
+                if intrc == '2':
+                    intrc = '2-Ausencia'
+                if intrc == '3':
+                    intrc = '3-Vang.Ocupada'
+                if intrc == '4':
+                    intrc = '4-Avería'
+                msg['regfin'] += intrc +']  '
+    
+                # Eliminar interrupción del sufijo
+                logging.info('Intrr.:\t %s', str(regint.group()))
+                regfin = regfin.replace(regint.group(), '')
 
         # Regex para cabeceras de mensajes (manetener en cada caso los mismos 5 grupos) - https://regex101.com/r/uxJuGZ/22
 
@@ -356,8 +368,7 @@ def zcodif_descodificar(arg, msg, lencript):
             msg['origen'] = search.group(3)[:3]
             msg['destino'] = search.group(3)[3:]
         else:
-            msg['origen'] = ''
-            msg['destino'] = ''
+            msg['origen'] = msg['destino'] = ''
 
         # Según formato hora y referencia corto/largo
         if len(search.group(4)) == 2:  # referencia
@@ -390,6 +401,8 @@ def zcodif_descodificar(arg, msg, lencript):
 def imprimir(arg, msg):
     '''salida por pantalla'''
 
+    logging.info("Texto print:\t %s", msg)
+
     if arg.batch:
         print(msg['procmsg'])
 
@@ -421,26 +434,20 @@ def imprimir(arg, msg):
         if msg['prioridad']:
             print(f"Prioridad:\t {msg['prioridad']}")
 
-        # Comprobar una o dos torres
-        if msg['origen'] and msg['destino']:
+        if msg['origen'] and msg['destino']:  # Indicación normal de torres
             if len(msg['origen'] + msg['destino']) == 6:
                 print(f"T. Origen:\t {msg['origen']}")
                 print(f"T. Destino:\t {msg['destino']}")
             elif len(msg['origen'] + msg['destino']) == 4:
                 print(f"Com. Origen:\t {msg['origen']}")
                 print(f"Com. Destino:\t {msg['destino']}")
-        else:
-            if not msg['destino']:
-                tsimple = msg['origen']
-            if not msg['origen']:
-                tsimple = msg['destino']
-            if tsimple:
-                if len(tsimple) == 3:
-                    print(f"Torre:\t\t {tsimple}")
-                elif len(tsimple) == 2:
-                    print(f"Comandancia:\t {tsimple}")
+        elif not msg['destino']:  # Con indicación única, llega sólo origen
+            if len(msg['origen']) == 3:
+                print(f"Torre:\t\t {msg['origen']}")
+            elif len(msg['origen']) == 2:
+                print(f"Comandancia:\t {msg['origen']}")
 
-        if len(msg['horadia']) == 3:
+        if len(msg['horadia']) == 3:  # Reconstruir hora breve
             fchora = int(msg['horadia'][:2])
             if fchora >= 75:
                 hora = str(fchora - 75).zfill(2) + ':45'
@@ -451,7 +458,7 @@ def imprimir(arg, msg):
             elif fchora >= 0:
                 hora = str(fchora).zfill(2) + ':00'
             print(f"Hora y Día:\t {msg['horadia'][:2]} [{hora}] ?{msg['horadia'][2:]}")
-        elif len(msg['horadia']) == 6:
+        elif len(msg['horadia']) == 6:  # Hora normal
             print(f"Hora y Día:\t {msg['horadia'][:2]}:{msg['horadia'][2:4]} {msg['horadia'][4:6]}")
 
         if msg['referencia']:
