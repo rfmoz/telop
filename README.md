@@ -304,7 +304,7 @@ A/B/___C__/___D____/E
   Son dos dígitos los que representan la hora y los minutos, el resultado se obtiene teniendo en cuenta el cuarto de hora en que se encuentran los minutos. Se suma 0, 25, 50 o 75 a la hora (00 a 24) según si es el primer, segundo, tercer o último cuarto de hora. Como ejemplo las 12:05 sería un 12, las 12:20 sería 12+25 = 37, las 12:40 sería 12+50 = 62 y las 12:55 12+75 = 87.
   El día sólo mantiene el último dígito, es decir, se representa igual el día 1 que el 11 que el 21.
   Ésta fue la modificación más curiosa de las empleadas y conocidas, por eso su codificación, el resto básicamente conseguían reducir tamaño a base de omitir información fácilmente interpretable por la situación del emisor y receptor.
-  El grupo de cabecera podría tener cualquiera de los siguientes formatos. Aunque el programa no genera todas ellas, sí las puede interpretar:
+  El grupo de cabecera podría tener cualquiera de los siguientes formatos (aunque no todos se llegan a utilizar):
 ```
 /12150199/ -> hora(2) + minutos(2) + dia(2) + referencia(2)
 /121501/   -> hora(2) + minutos(2) + dia(2)

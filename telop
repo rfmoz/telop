@@ -249,54 +249,35 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje']).replace(" ", "")
 
     try:
-        # Extraer interrupciones finales si las hubiera - https://regex101.com/r/USGEwq/1
-        # Comienzar buscando el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde,
-        # cualquier caracter intermedio
-        # y finalizar con sufijo del formato de la interrupción
-        if re.match(r'^(([0248](/\d*){5})|([1356](/\d*){3}))'
-                    '.+'
-                    '(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
+        # Extraer interrupciones finales si las hubiera - https://regex101.com/r/5skkCE/1
+        #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
+        #  y finaliza con el sufijo del formato de la interrupción
+        while re.match(r'^(([0248](/\d*){5})|([16](/\d*){4})|(5(/\d*){3})|(3(/\d*){2})).+'
+                        '(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
 
-            # Recoger sufijo completo
-            regfin = re.search(r'(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm).group()
-            logging.info('Sufijo:\t %s', str(regfin))
+            # Procesar interrupción
+            regint = re.search(r'/(\d{3})/(?:(\d{4,6})/)?([1-4])$', ciperm)
+            msg['regfin'] += '[T-' + regint.group(1) + ' '
+            if regint.group(2):
+                if len(regint.group(2)) == 6:
+                    msg['regfin'] += regint.group(2)[4:] + '_'
+                msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
+            intrc = regint.group(3)
+            intrc = intrc.replace('1', '1-Niebla')
+            intrc = intrc.replace('2', '2-Ausencia')
+            intrc = intrc.replace('3', '3-Vang.Ocupada')
+            intrc = intrc.replace('4', '4-Avería')
+            msg['regfin'] += intrc +']  '
 
-            # Eliminar sufijo del mensaje
-            ciperm = ciperm.replace(regfin, '')
-            logging.info('Mensaje:\t %s', str(ciperm))
-
-            # Procesar todas las interrupciones
-            while regfin:
-    
-                # Recoger la última interrupción
-                regint = re.search(r'/(\d{3})/(?:(\d{4,6})/)?([1-4])$', regfin)
-    
-                # Construir salida
-                msg['regfin'] += '[T-' + regint.group(1) + ' '
-                if regint.group(2):
-                    if len(regint.group(2)) == 6:
-                        msg['regfin'] += regint.group(2)[4:] + '_'
-                    msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
-                intrc = regint.group(3)
-                if intrc == '1':
-                    intrc = '1-Niebla'
-                if intrc == '2':
-                    intrc = '2-Ausencia'
-                if intrc == '3':
-                    intrc = '3-Vang.Ocupada'
-                if intrc == '4':
-                    intrc = '4-Avería'
-                msg['regfin'] += intrc +']  '
-    
-                # Eliminar interrupción del sufijo
-                logging.info('Intrr.:\t %s', str(regint.group()))
-                regfin = regfin.replace(regint.group(), '')
+            # Eliminar interrupción del mensaje
+            logging.info('Intrr.:\t %s', str(regint.group()))
+            ciperm = ciperm.replace(regint.group(), '')
 
         # Regex para cabeceras de mensajes (manetener en cada caso los mismos 5 grupos) - https://regex101.com/r/uxJuGZ/22
 
         # Procesar tipo 0 o 2. Telegrama con mensaje
-        if re.match(r'^(?:(2)/|([048])/)(\d{2,6})/(\d{2,8})/(\d{0,3})\b', ciperm) is not None:
-            search = re.search(r'^(?:(2)/|([048])/)(\d{2,6})/(\d{2,8})/(\d{0,3})\b', ciperm)
+        if re.match(r'^(?:(2)/|([048])/)(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:
+            search = re.search(r'^(?:(2)/|([048])/)(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)
 
             msg['novenales'] = search.group(5)
 
