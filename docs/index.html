@@ -407,16 +407,17 @@
             msg['estilo'] = '0';
         }
 
+	console.log('Argumentos txt:', JSON.stringify(msg))
 
         switch (msg['tipo']) {
             case '0':
             case '2':  // Servicio general o interno
-                // Recorrer los digitos del mensaje para codificar cada uno
-                var cipert = '';
+                // Recorrer los digitos del mensaje para codificar cada uno según la posición que ocupan en el diccionario
+                var cipert = '';  // Mensaje codificado
                 for (let i = 0; i < msg['mensaje'].length; i++) {
                     let elem = msg['mensaje'][i];
-                    if (!lencript.includes(elem)) {  // si el carácter no se encuentra en la lista
-                        elem = elem.normalize('NFKD').replace(/[^\w]/g, '');  // pasar a unicode, quita acentos y similar
+                    if (!lencript.includes(elem)) {  // si el carácter no se encuentra en el diccionario
+                        elem = elem.normalize('NFKD').replace(/[^\w]/g, '');  // probar a normalizar: pasar a unicode, quita acentos y similar
                         if (!lencript.includes(elem)) {  // finalmente sustituir por '#' si no existe
                             elem = '#';
                         }
@@ -471,10 +472,11 @@
         }
 
         // Torre '0' sin valor. Indicación única de torre
-        if ((parseInt(msg['origen'], 10) == 0) && (parseInt(msg['destino'], 10) != 0)) {
+	if (parseInt(msg['origen'], 10) === 0 && parseInt(msg['destino'], 10) === 0) {
+            msg['destino'] = '';
+	} else if (parseInt(msg['origen'], 10) == 0) {
             msg['origen'] = ''; 
-        }
-        if ((parseInt(msg['destino'], 10) == 0) && (parseInt(msg['origen'], 10) >= 0)){
+        } else if (parseInt(msg['destino'], 10) == 0) {
             msg['destino'] = ''; 
         }
 
@@ -508,19 +510,14 @@
 
         // Extraer interrupciones finales si las hubiera
         msg['regfin'] = '';
-        while(true) {
-            if ((/^(([0248](\/\d*){5})|([1356](\/\d*){3})).+(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
-                regfin = (/(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).exec(ciperm);
-            } else {
-                break;
-            }
+        while((/^(([012468](\/\d*){4})|([35](\/\d*){2})).+(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
 
             // Procesar interrupción
-            regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])/g).exec(regfin[1]);
+	    regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])$/g).exec(ciperm);
             msg['regfin'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
                 if (regint[2].length == 6) {
-                    msg['regfin'] += regint[2].substring(4) + '_';
+                    msg['regfin'] += '(' + regint[2].substring(4) + ')';
                 }
                 msg['regfin'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
             }
@@ -534,15 +531,15 @@
             msg['regfin'] += intrc + ']  ';
 
             // Eliminar interrupción del mensaje
-            console.log("Intrr.: " + regfin[1]);
-            ciperm = ciperm.replace(regfin[1], "");
+            console.log("Intrr.: " + regint[0]);
+            ciperm = ciperm.replace(regint[0], "");
         }
 
         try {
 
             // Procesar tipo 0 o 2. Telegrama con mensaje
-            if ((/^(?:(2)\/|([048])\/)(\d{2,6})\/(\d{2,8})\/(\d{0,3})\b/g).test(ciperm)) {
-                search = (/^(?:(2)\/|([048])\/)(\d{2,6})\/(\d{2,8})\/(\d{0,3})\b/g).exec(ciperm);
+            if ((/^(?:(2)\/|([048])\/)(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).test(ciperm)) {
+                search = (/^(?:(2)\/|([048])\/)(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).exec(ciperm);
 
                 msg['novenales'] = search[5];
 
@@ -656,6 +653,8 @@
 
     function imprimir(msg) {
 
+        console.log('Texto print: ' + JSON.stringify(msg));
+
         var salida = '<hr>';
         if (msg['procmsg']) {
 	    salida += "<p id='procmsg'>" + msg['procmsg'] + '</p>';
@@ -718,7 +717,7 @@
             }
         }
 
-        if (msg['horadia'].length == 3) {
+        if (msg['horadia'].length == 3) {  // Reconstruir hora breve
             var d = new Date();
             fchora = parseInt(msg['horadia'].substring(0,2));
             salida += "<i>Hora y Día:</i>\t " + msg['horadia'].substring(0,2) + ' [';
@@ -733,7 +732,7 @@
                     salida += fchora.toString().padStart(2, '0') + ':00'; 
             }
             salida += "] ?" + msg['horadia'].substring(2,3) + "<br>";
-        } else if (msg['horadia'].length == 6) {
+        } else if (msg['horadia'].length == 6) {  // Hora normal
             salida += "<i>Hora y Día:</i>\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + ' ' + msg['horadia'].substring(4,6) + "<br>";
         }
 
