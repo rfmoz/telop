@@ -93,7 +93,7 @@ Confirmar la recepción de un mensaje, general o de servicio interno, junto con 
 - Recepción correcta de mensaje con referencia '12' desde la torre '040' a la torre '001':
     > telop -t 6 -o 40 -d 1 -r 12
 - Recepción por niebla de mensaje con referencia '17' desde la torre '030' a la torre '001':
-    > telop -t 6 -o 30 -d 1 -r 17 --incd 1
+    > telop -t 6 -o 30 -d 1 -r 17 --icd 1
 
 
 **1 - Rectificación**
@@ -101,9 +101,9 @@ Confirmar la recepción de un mensaje, general o de servicio interno, junto con 
 Solicitar la anulación o retransmisión de un mensaje por su referencia.
 
 - Repetir mensaje con referencia '23' desde la torre '021' a la '001':
-    > telop -t 1 -o 21 -d 1 --rect 6 -r 23
+    > telop -t 1 -o 21 -d 1 --rct 6 -r 23
 - Anular mensaje con referencia '12' desde la torre '021' a la '001' con prioridad '8':
-    > telop -t 1 -o 21 -d 1 --rect 9 -r 12 -p 8
+    > telop -t 1 -o 21 -d 1 --rct 9 -r 12 -p 8
 
 
 ### Modificaciones de formato
@@ -131,10 +131,9 @@ Es posible generar un mensaje con sólo un número de torre en vez del formato h
 
 ### Opciones del programa:
 ```
-usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [--incd {0,1,2,3,4}]
-             [-o origen] [-d destino] [-b] [--rect {6,9}] [-c] [--diccionario]
-             [--password PASSWORD] [-r referencia] [--batch] [-v] [--version]
-             [-z {0,1}]
+usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [--icd {0,1,2,3,4}]
+             [-o origen] [-d destino] [-b] [--rct {6,9}] [-c] [--diccionario]
+             [--pwd PWD] [-r referencia] [--solo] [-v] [--version] [-z {0,1}]
              [mensaje]
 
 positional arguments:
@@ -145,23 +144,23 @@ optional arguments:
   -p {0,4,8}, --prioridad {0,4,8}
                         prioridad -> 0-ordinario | 4-urgente | 8-urgentísimo
   -t {0,1,2,3,5,6}, --tipo {0,1,2,3,5,6}
-                        tipo de servicio -> 0-general | 2-interno |
-                        3-vigilancia | 5-continuación | 6-acuse recibo |
-                        9-rectificación
-  --incd {0,1,2,3,4}    incidencia en acuse -> 1-niebla | 2-ausencia |
+                        tipo de servicio -> 0-general | 1-rectificación |
+                        2-interno | 3-vigilancia | 5-continuación | 6-acuse
+                        recibo
+  --icd {0,1,2,3,4}     incidencia en acuse -> 1-niebla | 2-ausencia |
                         3-ocupada | 4-avería
   -o origen, --origen origen
                         torre de origen
   -d destino, --destino destino
                         torre de destino
   -b, --breve           formato fecha y hora reducido
-  --rect {6,9}          tipo de rectificación -> 6-repetir | 9-anular
+  --rct {6,9}           tipo de rectificación -> 6-repetir | 9-anular
   -c, --comandancia     emplear n. de comandancia en origen / destino
   --diccionario         mostrar diccionario codificación
-  --password PASSWORD   codificar mensaje con contraseña
+  --pwd PWD             codificar mensaje con contraseña
   -r referencia, --referencia referencia
                         nº referencia despacho
-  --batch               sólo imprime mensaje resultante
+  --solo                sólo imprime mensaje resultante
   -v, --verbose         debug
   --version             show program's version number and exit
   -z {0,1}              proceso a ejecutar -> (auto) | 0-codificar |
@@ -323,7 +322,7 @@ A/B/___C__/___D____/E
 /051/    -> torre(3)
 /09/     -> comandancia(2)
 ```
-- Opcionalmente, mediante el uso de una contraseña `telop --password '123'`, se permite encriptar/desencriptar el contenido del mensaje, manteniendo libre la cabecera. El método emplea Format-preserving, Feistel-based encryption (FFX), generando una cadena de números de apariencia aleatoria para quien intente descodificar el mensaje sin emplear la contraseña de encriptación.
+- Opcionalmente, mediante el uso de una contraseña `telop --pwd '123'`, se permite encriptar/desencriptar el contenido del mensaje, manteniendo libre la cabecera. El método emplea Format-preserving, Feistel-based encryption (FFX), generando una cadena de números de apariencia aleatoria para quien intente descodificar el mensaje sin emplear la contraseña de encriptación.
 
 
 ### Documentos relevantes
