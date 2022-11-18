@@ -275,7 +275,7 @@ def zcodif_descodificar(arg, msg, lencript):
             logging.info('Intrr.:\t %s', str(regint.group(0)))
             ciperm = ciperm.replace(regint.group(0), '')
 
-        # Regex para cabeceras de mensajes (manetener en cada caso los mismos 5 grupos) - https://regex101.com/r/j9v75J/1
+        # Regex para cabeceras de mensajes (manetener en cada caso los mismos 5 grupos) - https://regex101.com/r/j9v75J/2
 
         # Procesar tipo 0 o 2. Telegrama con mensaje
         if re.match(r'^(?:(2)/|([048])/)(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:

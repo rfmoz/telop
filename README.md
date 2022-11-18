@@ -46,9 +46,7 @@ Mensaje:	 Telegrama de prueba
 
 **0 - General**
 
-Mensaje habitual. Su contenido era cifrado y se enviaba entre comandancias, normalmente situadas en capital de provincia.
-
-Cuando es recibido por una torre, ya sea la de destino o alguna intermedia, se devuelve un mensaje de "Acuse de recibo" al emisor indicando el estado de la recepción. 
+Mensaje para remitir el texto consignado. Su origen/destino se encontraba entre alguna de las torres de comandancia (capitales de provincia) por las que pasaba la línea telegráfica.
 
 - Codificar texto de la manera más sencilla de la torre '001' (por defecto) a la '041':
     > telop -d 41 'Texto ejemplo' 
@@ -58,7 +56,7 @@ Cuando es recibido por una torre, ya sea la de destino o alguna intermedia, se d
 
 **2 - Servicio interno**
 
-Similar a un mensaje general, pero utilizado sólo para indicaciones de servicio entre cualquier operario de torre.
+Similar a un mensaje general, pero empleado sólo en las indicaciones de servicio entre los operarios de las torres.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con formato de fecha breve:
     > telop -t 2 -d 45 -b 'Texto ejemplo'
@@ -68,11 +66,11 @@ Similar a un mensaje general, pero utilizado sólo para indicaciones de servicio
 
 **3 - Vigilancia**
 
-Controlar y mantener la atención sobre la línea. En reposo se mandaban cada media hora desde la cabecera de línea con destino tanto al final de la línea como de cada ramal.
+Utilizado para controlar y mantener la atención sobre la línea. En reposo se mandaban cada media hora, desde la cabecera al final de la línea y los ramales.
 
-Para confirmar su recepción se devuelve otro mensaje de vigilancia indicando las torres oportunas.
+Su recepción se confirmaba mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
 
-- Mensaje de control, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen '0', formato fecha breve:
+- Mensaje de control, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
     > telop -t 3 -o 0 -d 99 -c -b
 - Confirmación al mensaje anterior. Comandancia de origen '07' y destino '01':
     > telop -t 3 -o 7 -d 1 -c
@@ -80,7 +78,7 @@ Para confirmar su recepción se devuelve otro mensaje de vigilancia indicando la
 
 **5 - Continuación**
 
-Aviso para indicar la reanudación de un mensaje detenido en cualquier torre intermedia, habitualmente por causas meteorológicas o cruce con otra comunicación en curso de mayor prioridad.
+Aviso para indicar la reanudación de un mensaje detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación en curso de mayor prioridad.
 
 - Retomar la transmisión del mensaje con torre de origen '009' y refrencia '43':
     > telop -t 5 -o 9 -r 43
@@ -100,13 +98,13 @@ Confirmar la recepción de un mensaje, general o de servicio interno, junto con 
 
 Solicitar la anulación o retransmisión de un mensaje por su referencia.
 
-- Repetir mensaje con referencia '23' desde la torre '021' a la '001':
+- Repetir '6' mensaje con referencia '23' desde la torre '021' a la '001':
     > telop -t 1 -o 21 -d 1 --rct 6 -r 23
-- Anular mensaje con referencia '12' desde la torre '021' a la '001' con prioridad '8':
+- Anular '9' mensaje con referencia '12' desde la torre '021' a la '001' con prioridad '8':
     > telop -t 1 -o 21 -d 1 --rct 9 -r 12 -p 8
 
 
-### Modificaciones de formato
+### Modificaciones del formato en cabecera
 
 **Fecha con formato corto**
 
@@ -204,7 +202,7 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 
 ### Notas
 
-- Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en un diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más polivalente y fácil de implementar.
+- Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en el diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más polivalente y fácil de implementar.
 
 - La interpretación del código de transmisión definido por Mathé, requiere de una necesaria normalización y adaptación para facilitar su tratamiento informático. En la cabecera, la posición de los valores de cada grupo se mantiene invariable, en cambio, el formato de cada uno sí se adapta a cada tipo de mensaje. El resultado es el siguiente:
 
