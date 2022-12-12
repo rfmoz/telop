@@ -757,7 +757,7 @@
         if (msg['novenales']) {
             salida += "<i>Novenales:</i>\t " + msg['novenales'].substring(0,2) + '.' + msg['novenales'].substring(2) + "<br>";
         }
-        if (!(/^ERROR/g).test(msg['procmsg']) && (/^\d\/(.+?)\/(.+?)/).test(msg['procmsg'])) {
+        if (!(/^ERROR/g).test(msg['procmsg'])) {
             salida += "<hr><p>";
             salida += "<button id='btn2' onclick='gengif()'>&nbsp;&nbsp;Generar GIF Transmisión&nbsp;&nbsp;</button>";
             salida += "<span id='destgif'><img id='transgif' src='data:,'></span>";
