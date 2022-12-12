@@ -364,7 +364,7 @@
         selectElement('rectf', (rectificar[Math.floor(Math.random() * rectificar.length)]));
 
         document.getElementById("codops").style.display = "flex";
-        document.querySelector('pre#salida').innerHTML = '';
+        document.getElementById("salida").innerHTML = '';
     }
 
     
@@ -761,6 +761,7 @@
             salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
         }
         salida += '<hr>';
+        document.getElementById("salida").innerHTML = salida;
 
         document.querySelector('pre#salida').innerHTML = salida;
     }
@@ -778,13 +779,14 @@
         velo = document.getElementById("velo").value;
 
         // Recoger texto mensaje
-        var codtxt = document.getElementById("procmsg").innerHTML.toLowerCase();
+	var codtxt = document.getElementById("codmsg").innerHTML.toLowerCase();
 
         // Recoger estilo
         estilo = document.getElementById("estilo").innerHTML;
 	if (estilo != 1 && estilo != 2 && estilo != 3) {
             estilo = ''
         } else {
+	    console.log('Estilo: e' + estilo);
             estilo = 'e' + estilo + '/'
 	}
 
@@ -833,7 +835,7 @@
         const version = 2.2;
 
         var msg = {}; // Diccionario de mensaje
-        msg['mensaje'] = document.querySelector('textarea#form1').value;  // Asignar entrada
+        msg['mensaje'] = document.getElementById('form1').value;  // Asignar entrada
         if (!msg['mensaje']){
              msg['mensaje'] = '...'
         }
@@ -849,7 +851,7 @@
             descodificar(msg, lencript);
         } else {
             if (msg['mensaje'].length > 250) {
-                document.querySelector('pre#salida').innerHTML = '<hr><p>ERROR - Mensaje mayor de 250 caracteres</p><hr>';
+                document.getElementById('salida').innerHTML = '<hr><p>ERROR - Mensaje mayor de 250 caracteres</p><hr>';
             } else {
                 if (document.getElementById("codops").style.display == 'flex') {
                     codificar(msg, lencript);
