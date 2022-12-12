@@ -128,7 +128,7 @@
 	div#desc li{
 	    margin-bottom: 0.4em;
 	}
-	#opincd, #oprectf, #refs { display: none; }
+	#opincd, #oprectf { display: none; }
 	.info a{ color: maroon; }
 	pre i { margin-left: 5px; }
 	textarea { margin-bottom: 5px; }
@@ -240,9 +240,6 @@
             <a target="_blank" title="Wikipedia Telégrafo Óptico" href="https://es.wikipedia.org/wiki/Tel%C3%A9grafo_%C3%B3ptico">wikipedia</a>
         </div>
     </details>
-    <div id="refs">
-        <pre id="estilo"></pre>
-    </div>
 </div>
 
     <script src="static/gifshot.js"></script>
@@ -760,13 +757,12 @@
             salida += "<option value='5' selected>1 / 5 seg.</option>";
             salida += "<option value='1'>1 / 1 seg.</option></select></div></p>";
         }
-        salida += '<hr>';
-        document.getElementById("salida").innerHTML = salida;
-
-        // Guardar estilo
 	if (msg['estilo']) {
-            document.getElementById('estilo').innerHTML = msg['estilo'];
+            salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
         }
+        salida += '<hr>';
+
+        document.getElementById("salida").innerHTML = salida;
     }
 
 
@@ -782,7 +778,7 @@
         velo = document.getElementById("velo").value;
 
         // Recoger texto mensaje
-	var codtxt = document.getElementById("codmsg").innerHTML.toLowerCase();
+        var codtxt = document.getElementById("procmsg").innerHTML.toLowerCase();
 
         // Recoger estilo
         estilo = document.getElementById("estilo").innerHTML;
