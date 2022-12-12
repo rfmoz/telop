@@ -242,7 +242,6 @@
     </details>
     <div id="refs">
         <pre id="estilo"></pre>
-        <pre id="codmsg"></pre>
     </div>
 </div>
 
@@ -497,9 +496,6 @@
         // Salida final. Sustituir caracteres reptidos por x
         msg['procmsg'] = msgfmt.replace(/(\w{1})\1/g, "$1x");
 
-        // Guardar mensaje codificado
-        document.getElementById('codmsg').innerHTML = msg['procmsg'];
-
         imprimir(msg);
     }
 
@@ -511,9 +507,6 @@
         document.getElementById("codops").style.display = "none";
         document.getElementById("form1").style.textDecoration = "none";
         document.getElementById("form1").style.color = "maroon";
-
-        // Guardar mensaje codificado
-        document.getElementById('codmsg').innerHTML = msg['mensaje'];
 
         // Reconstruir caracteres repetidos
         ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
@@ -757,7 +750,7 @@
         if (msg['novenales']) {
             salida += "<i>Novenales:</i>\t " + msg['novenales'].substring(0,2) + '.' + msg['novenales'].substring(2) + "<br>";
         }
-        if (!(/^ERROR/g).test(msg['procmsg'])) {
+        if (!(/^ERROR/g).test(msg['procmsg']) && (/^\d\/(.+?)\/(.+?)/).test(msg['procmsg'])) {
             salida += "<hr><p>";
             salida += "<button id='btn2' onclick='gengif()'>&nbsp;&nbsp;Generar GIF Transmisión&nbsp;&nbsp;</button>";
             salida += "<span id='destgif'><img id='transgif' src='data:,'></span>";
