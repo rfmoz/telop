@@ -128,7 +128,7 @@
 	div#desc li{
 	    margin-bottom: 0.4em;
 	}
-	#opincd, #oprectf { display: none; }
+	#opincd, #oprectf, #refs { display: none; }
 	.info a{ color: maroon; }
 	pre i { margin-left: 5px; }
 	textarea { margin-bottom: 5px; }
@@ -240,6 +240,10 @@
             <a target="_blank" title="Wikipedia Telégrafo Óptico" href="https://es.wikipedia.org/wiki/Tel%C3%A9grafo_%C3%B3ptico">wikipedia</a>
         </div>
     </details>
+    <div id="refs">
+        <pre id="estilo"></pre>
+        <pre id="codmsg"></pre>
+    </div>
 </div>
 
     <script src="static/gifshot.js"></script>
@@ -493,6 +497,9 @@
         // Salida final. Sustituir caracteres reptidos por x
         msg['procmsg'] = msgfmt.replace(/(\w{1})\1/g, "$1x");
 
+        // Guardar mensaje codificado
+        document.getElementById('codmsg').innerHTML = msg['procmsg'];
+
         imprimir(msg);
     }
 
@@ -504,6 +511,9 @@
         document.getElementById("codops").style.display = "none";
         document.getElementById("form1").style.textDecoration = "none";
         document.getElementById("form1").style.color = "maroon";
+
+        // Guardar mensaje codificado
+        document.getElementById('codmsg').innerHTML = msg['mensaje'];
 
         // Reconstruir caracteres repetidos
         ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
@@ -757,13 +767,13 @@
             salida += "<option value='5' selected>1 / 5 seg.</option>";
             salida += "<option value='1'>1 / 1 seg.</option></select></div></p>";
         }
-	if (msg['estilo']) {
-            salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
-        }
         salida += '<hr>';
         document.getElementById("salida").innerHTML = salida;
 
-        document.querySelector('pre#salida').innerHTML = salida;
+        // Guardar estilo
+	if (msg['estilo']) {
+            document.getElementById('estilo').innerHTML = msg['estilo'];
+        }
     }
 
 
