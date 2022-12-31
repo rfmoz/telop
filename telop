@@ -391,28 +391,28 @@ def imprimir(arg, msg):
 
     else:
         print('-' * 80)
-        if msg['tipo'] == '0': print(f"Tipo:\t\t 0 - General")
-        if msg['tipo'] == '2': print(f"Tipo:\t\t 2 - Servicio Interno")
-        if msg['tipo'] == '3': print(f"Tipo:\t\t 3 - Vigilancia")
-        if msg['tipo'] == '5': print(f"Tipo:\t\t 5 - Continuación")
+        if msg['tipo'] == '0': print("Tipo:\t\t 0 - General")
+        if msg['tipo'] == '2': print("Tipo:\t\t 2 - Servicio Interno")
+        if msg['tipo'] == '3': print("Tipo:\t\t 3 - Vigilancia")
+        if msg['tipo'] == '5': print("Tipo:\t\t 5 - Continuación")
         if msg['tipo'] == '6':
-            print(f"Tipo:\t\t 6 - Acuse de recibo")
+            print("Tipo:\t\t 6 - Acuse de recibo")
             if msg['icd'] == '00':
-                print(f"Estado:\t\t 0x - Correcto")
+                print("Estado:\t\t 0x - Correcto")
             if msg['icd'] == '1':
-                print(f"Estado:\t\t 1 - Incidencia niebla")
+                print("Estado:\t\t 1 - Incidencia niebla")
             if msg['icd'] == '2':
-                print(f"Estado:\t\t 2 - Incidencia ausencia")
+                print("Estado:\t\t 2 - Incidencia ausencia")
             if msg['icd'] == '3':
-                print(f"Estado:\t\t 3 - Incidencia vanguardia ocupada")
+                print("Estado:\t\t 3 - Incidencia vanguardia ocupada")
             if msg['icd'] == '4':
-                print(f"Estado:\t\t 4 - Incidencia avería")
+                print("Estado:\t\t 4 - Incidencia avería")
         if msg['tipo'] == '1':
-            print(f"Tipo:\t\t 1 - Rectificación")
+            print("Tipo:\t\t 1 - Rectificación")
             if msg['rct'] == '6':
-                print(f"Petición:\t 6 - Repetir referencia")
+                print("Petición:\t 6 - Repetir referencia")
             if msg['rct'] == '9':
-                print(f"Petición:\t 9 - Anular referencia")
+                print("Petición:\t 9 - Anular referencia")
 
         if msg['prioridad']:
             print(f"Prioridad:\t {msg['prioridad']}")
