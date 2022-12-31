@@ -46,7 +46,7 @@ Mensaje:	 Telegrama de prueba
 
 **0 - General**
 
-Mensaje para remitir el texto consignado. Su origen/destino se encontraba entre alguna de las torres de comandancia (capitales de provincia) por las que pasaba la línea telegráfica.
+Mensaje habitual para enviar el texto consignado. Su origen/destino se encontraba entre alguna de las torres situadas en capitales de provincia (comandancias militares) por las que pasaba la línea telegráfica.
 
 - Codificar texto de la manera más sencilla de la torre '001' (por defecto) a la '041':
     > telop -d 41 'Texto ejemplo' 
@@ -56,7 +56,7 @@ Mensaje para remitir el texto consignado. Su origen/destino se encontraba entre 
 
 **2 - Servicio interno**
 
-Similar a un mensaje general, pero empleado sólo en las indicaciones de servicio entre los operarios de las torres.
+Similar a un mensaje general, pero utilizado sólo entre los operarios de las torres para dar indicaciones de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con formato de fecha breve:
     > telop -t 2 -d 45 -b 'Texto ejemplo'
