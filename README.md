@@ -269,7 +269,7 @@ A/B/___C__/___D____/E
 ```
 
 - Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
-  El grupo que comprende la hora y día puede estar compuesto de los dos valores o sólo de la hora. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
+  El grupo que comprende la hora y día es opcional y puede estar compuesto de los dos valores o sólo de la hora. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
 
 ```
 /_X_/__Y__/Z -> Sufijo interrupción
@@ -288,6 +288,12 @@ A/B/___C__/___D____/E
   |    |    |
   |    |    -- Z causa(1)
   |    ------- Y hora(2) + minutos(2)
+  ------------ X torre(3)
+
+/011       /2 -> Sufijo interrupción
+  |         |
+  |         -- Z causa(1)
+  |
   ------------ X torre(3)
 ```
 
