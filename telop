@@ -272,7 +272,7 @@ def zcodif_descodificar(arg, msg, lencript):
 
             # Eliminar interrupción del mensaje
             logging.info('Intrr.:\t %s', str(regint.group(0)))
-            ciperm = ciperm.replace(regint.group(0), '')
+            ciperm = ciperm[:-len(regint.group(0))]
 
         # Regex para cabeceras de mensajes (manetener en cada caso los mismos 5 grupos) - https://regex101.com/r/j9v75J/2
 

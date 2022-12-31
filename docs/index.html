@@ -532,7 +532,7 @@
 
             // Eliminar interrupción del mensaje
             console.log("Intrr.: " + regint[0]);
-            ciperm = ciperm.replace(regint[0], "");
+	    ciperm = ciperm.slice(0, -regint[0].length);
         }
 
         try {
