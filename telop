@@ -228,17 +228,17 @@ def zcodif_codificar(arg, msg, lencript):
     elif int(msg['destino']) == 0:
         msg['destino'] = ''
 
-    # Datagrama formateado
-    dtgrama = str(prefijo + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['referencia'] + sufijo)
+    # Paquete formateado
+    paquet = str(prefijo + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['referencia'] + sufijo)
 
     # Eliminar duplicados // por campos vacíos y / al final
-    dtgrama = re.sub(r'\/\/+', r'/', dtgrama)
-    dtgrama = re.sub(r'\/$', r'', dtgrama)
+    paquet = re.sub(r'\/\/+', r'/', paquet)
+    paquet = re.sub(r'\/$', r'', paquet)
 
-    logging.info('Mensaje raw:\t %s', dtgrama)
+    logging.info('Mensaje raw:\t %s', paquet)
 
     # Salida final. Sustituir caracteres repetidos por x
-    msg['procmsg'] = re.sub(r'(\w{1})\1', r'\1x', dtgrama)
+    msg['procmsg'] = re.sub(r'(\w{1})\1', r'\1x', paquet)
 
     imprimir(arg, msg)
 
