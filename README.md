@@ -42,7 +42,7 @@ Mensaje:	 Telegrama de prueba
 --------------------------------------------------------------------------------
 ```
 
-### Ejemplos de  cada tipo de mensaje
+### Ejemplos de cada tipo de mensaje
 
 **0 - General**
 
@@ -204,12 +204,12 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 
 - Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en el diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más polivalente y fácil de implementar.
 
-- La interpretación del código de transmisión definido por Mathé, requiere de una necesaria normalización y adaptación para facilitar su tratamiento informático. En la cabecera, la posición de los valores de cada grupo se mantiene invariable, en cambio, el formato de cada uno sí se adapta a cada tipo de mensaje. El resultado es el siguiente:
+- La interpretación del código de transmisión definido por Mathé, requiere de una necesaria normalización y adaptación para facilitar su tratamiento informático. En la cabecera, la posición de los valores de cada grupo se mantiene invariable, en cambio, el formato de cada uno sí se adapta a cada tipo de datagrama. El resultado es el siguiente:
 
 ```
 A/B/___C__/___D____/E
 | |    |      |     |
-| |    |      |     - E sufijo particular a cada tipo de mensaje([1-3])
+| |    |      |     - E sufijo particular a cada tipo de datagrama([1-3])
 | |    |      ------- D hora(2) + minutos(2) + dia(2) + referencia(2)
 | |    -------------- C torre de origen(3) + torre de destino(3)
 | ------------------- B prioridad(1)
@@ -246,29 +246,29 @@ A/B/___C__/___D____/E
 6/0/0x10x5/2341040x/0x -> Acuse de recibo
 | |    |       |    |
 | |    |       |    -- E sufijo acuse de recibo([1-2])
-| |    |       ------- D hora(2) + minutos(2) + dia(2) + referencia mensaje recibido(2)
+| |    |       ------- D hora(2) + minutos(2) + dia(2) + referencia datagrama recibido(2)
 | |    --------------- C torre de origen(3) + torre de destino(3)
-| -------------------- B prioridad mensaje recibido(1)
+| -------------------- B prioridad datagrama recibido(1)
 ---------------------- A tipo de servicio(1)
 
 5/0/0x1   /03 -> Continuación
 | |    |   |
 | |    |   |
-| |    |   -- D referencia mensaje a continuar(2)
+| |    |   -- D referencia datagrama a continuar(2)
 | |    ------ C torre de origen(3)
-| ----------- B prioridad mensaje a continuar(1)
+| ----------- B prioridad datagrama a continuar(1)
 ------------- A tipo de servicio(1)
 
 1/0/0x10x5/04/6 -> Rectificación
 | |    |   |  |
 | |    |   |  - E sufijo tipo de petición(1)
-| |    |   ---- D referencia mensaje rectificado(2)
+| |    |   ---- D referencia datagrama rectificado(2)
 | |    -------- C torre de origen(3) + torre de destino(3)
-| ------------- B prioridad mensaje rectificado(1)
+| ------------- B prioridad datagrama rectificado(1)
 --------------- A tipo de servicio(1)
 ```
 
-- Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
+- Cada datagrama puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
   El grupo que comprende la hora y día es opcional y puede estar compuesto de los dos valores o sólo de la hora. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
 
 ```
@@ -312,7 +312,7 @@ A/B/___C__/___D____/E
 - En la cabecera se puede indicar un número de comandancia en sustitución de la torre con la opción `--comandancia`. Pasando de emplear tres dígitos por torre a dos.
   El grupo de cabecera pasaría del formato `torre de origen(3) + torre de destino(3)` a `comandancia de origen(2) + comandancia de destino(2)`.
 
-- Si se indica alguna torre con valor '0', se suprime la representación de la misma. El mensaje generado sólo lleva registro de una única torre o comandancia.
+- Si se indica alguna torre con valor '0', se suprime la representación de la misma. El datagrama generado sólo lleva registro de una única torre o comandancia.
   El grupo de torre/comandancia podría tener cualquiera de los siguientes formatos:
 ```
 /001051/ -> torre de origen(3) + torre de destino(3)
