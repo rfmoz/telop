@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '2.2'
+__version__ = '2.3'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
@@ -152,7 +152,7 @@ def zcodif_codificar(arg, msg, lencript):
 
     if msg['tipo'] in ('0', '2'):  # Servicio general o interno
         # 0/0x10x5/232x040x/0x6/757575/0
-        # 2/0x10x5/232x040x/0x6/757575/2
+        # 2/0x10x5/232x04/0x6/757575/2
 
         logging.info('Texto raw:\t\t %s', str(msg['mensaje']))
 
@@ -185,6 +185,7 @@ def zcodif_codificar(arg, msg, lencript):
         if msg['tipo'] == '2':
             prefijo = msg['tipo'] + '/'
             msg['prioridad'] = ''
+            msg['referencia'] = ''
             sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['tipo']
         else:
             prefijo = ''

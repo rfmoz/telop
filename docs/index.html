@@ -321,6 +321,7 @@
             // Opciones de servicio interno
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 2 ) {
                 document.getElementById("opprio").style.display = "none";
+                document.getElementById("opref").style.display = "none";
             }
             // Opciones de vigilancia
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 3 ) {
@@ -438,6 +439,7 @@
                 if (msg['tipo'] == '2') {
                     var prefijo = msg['tipo'] + '/';
                     msg['prioridad'] = '';
+                    msg['referencia'] = '';
                     var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['tipo'];
                 } else {
                     var prefijo = ''
