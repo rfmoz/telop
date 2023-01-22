@@ -33,15 +33,15 @@ def get_arguments(msg, lencript):
                         help='tipo de servicio -> 0-general | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
     parser.add_argument('--icd', default=msg['icd'], action='store', type=str, choices=['0', '1', '2', '3', '4'],
                         help='incidencia en acuse -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería')
-    parser.add_argument('-o', '--origen', default=msg['origen'], action='store', type=int, metavar='origen', help='torre de origen')
-    parser.add_argument('-d', '--destino', default=msg['destino'], action='store', type=int, metavar='destino', help='torre de destino')
+    parser.add_argument('-o', '--origen', default=msg['origen'], action='store', type=int, metavar='[nº]', help='torre de origen')
+    parser.add_argument('-d', '--destino', default=msg['destino'], action='store', type=int, metavar='[nº]', help='torre de destino')
     parser.add_argument('-b', '--breve', default=False, action='store_true', help='formato fecha y hora reducido')
     parser.add_argument('--rct', default=msg['rct'], action='store', type=str, choices=['6', '9'],
                         help='tipo de rectificación -> 6-repetir | 9-anular')
     parser.add_argument('-c', '--comandancia', default=False, action='store_true', help='emplear n. de comandancia en origen / destino')
     parser.add_argument('--diccionario', default=None, action='store_true', help='mostrar diccionario codificación')
     parser.add_argument('--pwd', default=None, action='store', help='codificar mensaje con contraseña')
-    parser.add_argument('-r', '--referencia', default=msg['referencia'], action='store', type=int, metavar='referencia', help='nº referencia despacho')
+    parser.add_argument('-r', '--referencia', default=msg['referencia'], action='store', type=int, metavar='[nº]', help='nº referencia despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
     parser.add_argument('--solo', default=False, action='store_true', help='sólo imprime mensaje resultante')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='debug')
