@@ -628,6 +628,9 @@
             } else if (search[4].length == 3) {
                 msg['horadia'] = search[4].substring(0,3);
                 msg['referencia'] = '';
+            } else if (search[4].length == 4) {
+                msg['horadia'] = search[4].substring(0,4);
+                msg['referencia'] = '';
             } else if (search[4].length == 5) {
                 msg['horadia'] = search[4].substring(0,3);
                 msg['referencia'] = search[4].substring(3);
@@ -735,6 +738,8 @@
                     salida += fchora.toString().padStart(2, '0') + ':00'; 
             }
             salida += "] ?" + msg['horadia'].substring(2,3) + "<br>";
+        } else if (msg['horadia'].length == 4) {  // Hora sin dia
+            salida += "<i>Hora:</i>\t\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + "<br>";
         } else if (msg['horadia'].length == 6) {  // Hora normal
             salida += "<i>Hora y Día:</i>\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + ' ' + msg['horadia'].substring(4,6) + "<br>";
         }

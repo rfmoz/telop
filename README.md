@@ -240,7 +240,6 @@ A/B/___C__/___D____/E
 |      |       |
 |      |       -- D hora(2) + minutos(2) + dia(2)
 |      ---------- C torre de origen(3) + torre de destino(3)
-|
 ----------------- A tipo de servicio(1)
 
 6/0/0x10x5/2341040x/0x -> Acuse de recibo
@@ -306,6 +305,7 @@ A/B/___C__/___D____/E
 /12150199/ -> hora(2) + minutos(2) + dia(2) + referencia(2)
 /121501/   -> hora(2) + minutos(2) + dia(2)
 /37199/    -> hora_breve(2) + dia_breve(1) + referencia(2)
+/1215/     -> hora(2) + minutos(2)
 /371/      -> hora_breve(2) + dia_breve(1)
 /99/       -> referencia(2)
 ```

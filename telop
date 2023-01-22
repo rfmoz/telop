@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """telop - Codifica y descodifica mensajes telegráficos del sistema Mathé"""
-# Copyright (C) 2021-2022 - Ricardo F.
+# Copyright (C) 2021-2023 - Ricardo F.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -364,6 +364,9 @@ def zcodif_descodificar(arg, msg, lencript):
         elif len(search.group(4)) == 3:  # horadia-breve
             msg['horadia'] = search.group(4)[:3]
             msg['referencia'] = ''
+        elif len(search.group(4)) == 4:  # horadia sin dia
+            msg['horadia'] = search.group(4)[:4]
+            msg['referencia'] = ''
         elif len(search.group(4)) == 5:  # horadia-breve + ref
             msg['horadia'] = search.group(4)[:3]
             msg['referencia'] = search.group(4)[3:]
@@ -451,6 +454,8 @@ def imprimir(arg, msg):
             elif fchora >= 0:
                 hora = str(fchora).zfill(2) + ':00'
             print(f"Hora y Día:\t {msg['horadia'][:2]} [{hora}] ?{msg['horadia'][2:]}")
+        elif len(msg['horadia']) == 4:  # Hora sin dia
+            print(f"Hora:\t\t {msg['horadia'][:2]}:{msg['horadia'][2:4]}")
         elif len(msg['horadia']) == 6:  # Hora normal
             print(f"Hora y Día:\t {msg['horadia'][:2]}:{msg['horadia'][2:4]} {msg['horadia'][4:6]}")
 
