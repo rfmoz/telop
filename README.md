@@ -232,7 +232,6 @@ A/B/___C__/___D____/E
 |      |       |     ------------------ E sufijo nº de novenales completos(2) y nº digitos resto(1)
 |      |       ------------------------ D hora(2) + minutos(2) + dia(2)
 |      -------------------------------- C torre de origen(3) + torre de destino(3)
-|
 --------------------------------------- A tipo de servicio(1)
 
 3  /0x10x5/234104 -> Vigilancia
@@ -292,7 +291,6 @@ A/B/___C__/___D____/E
 /011       /2 -> Sufijo interrupción
   |         |
   |         -- Z causa(1)
-  |
   ------------ X torre(3)
 ```
 

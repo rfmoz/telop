@@ -316,7 +316,7 @@
             if (['1','3','5','6','9'].indexOf(document.getElementById("mrecep").options[mrecep.selectedIndex].value) > -1) {
                 document.getElementById("form1").style.textDecoration = "line-through";
                 document.getElementById("form1").style.color = "darkgrey";
-	    }
+            }
 
             // Opciones de servicio interno
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 2 ) {
@@ -347,7 +347,7 @@
 
 
     function codificar_ops(msg, lencript) {
-        console.log('Codificar Opciones');
+        console.log('Codificar Opciones Iniciales');
 
         function selectElement(id, valueToSelect) {
             let element = document.getElementById(id);
@@ -408,7 +408,7 @@
             msg['estilo'] = '0';
         }
 
-	console.log('Argumentos txt:', JSON.stringify(msg))
+        console.log('Argumentos txt:', JSON.stringify(msg))
 
         switch (msg['tipo']) {
             case '0':
@@ -474,9 +474,9 @@
         }
 
         // Torre '0' sin valor. Indicación única de torre
-	if (parseInt(msg['origen'], 10) === 0 && parseInt(msg['destino'], 10) === 0) {
+        if (parseInt(msg['origen'], 10) === 0 && parseInt(msg['destino'], 10) === 0) {
             msg['destino'] = '';
-	} else if (parseInt(msg['origen'], 10) == 0) {
+        } else if (parseInt(msg['origen'], 10) == 0) {
             msg['origen'] = ''; 
         } else if (parseInt(msg['destino'], 10) == 0) {
             msg['destino'] = ''; 
@@ -516,7 +516,7 @@
 	                (/^([0248](\/\d*){4,})\/[0248]\/((\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
 
             // Procesar interrupción
-	    regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])$/g).exec(ciperm);
+            regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])$/g).exec(ciperm);
             msg['regfin'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
                 if (regint[2].length == 6) {
@@ -535,7 +535,7 @@
 
             // Eliminar interrupción del mensaje
             console.log("Intrr.: " + regint[0]);
-	    ciperm = ciperm.slice(0, -regint[0].length);
+            ciperm = ciperm.slice(0, -regint[0].length);
         }
 
         try {
@@ -568,9 +568,9 @@
 
                     // Fix - Solventar cambio en la posición de los valores '€' y ' ' del diccionario v2.0
                     if ((msg['procmsg'].match(/€/g) || []).length > (msg['procmsg'].match(/\ /g) || []).length) {
-	                console.log("Diccionario rev.");
+                        console.log("Diccionario rev.");
                         msg['procmsg'] = msg['procmsg'].replaceAll('€', ' ');
-	            }
+                    }
                 }
 
                 // Asignar tipo según indicación
@@ -663,8 +663,8 @@
 
         var salida = '<hr>';
         if (msg['procmsg']) {
-	    salida += "<p id='procmsg'>" + msg['procmsg'] + '</p>';
-	}
+            salida += "<p id='procmsg'>" + msg['procmsg'] + '</p>';
+        }
 
         switch (msg['tipo']) {
             case '0': salida += "<i>Tipo:</i>\t\t 0 - General<br>"; break;
@@ -765,7 +765,7 @@
             salida += "<option value='5' selected>1 / 5 seg.</option>";
             salida += "<option value='1'>1 / 1 seg.</option></select></div></p>";
         }
-	if (msg['estilo']) {
+        if (msg['estilo']) {
             salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
         }
         salida += '<hr>';
@@ -790,12 +790,12 @@
 
         // Recoger estilo
         estilo = document.getElementById("estilo").innerHTML;
-	if (estilo != 1 && estilo != 2 && estilo != 3) {
+        if (estilo != 1 && estilo != 2 && estilo != 3) {
             estilo = ''
         } else {
-	    console.log('Estilo: e' + estilo);
+            console.log('Estilo: e' + estilo);
             estilo = 'e' + estilo + '/'
-	}
+        }
 
         // Validar, sustituir '/' por 'a' y error en 'e'
         codtxt = codtxt.replace(/\//g, 'a').replace(/[^0-9,x,m,a]/gi, 'e');
@@ -807,7 +807,7 @@
         for (let i = 0; i < codtxt.length; i++) {
             //lista.push('static/' + codtxt[i] + '.gif');
             lista.push({src:"static/" + estilo + codtxt[i] + ".gif", text:(i + 1) + "/" + codtxt.length + " "});
-	    console.log("static/" + estilo + codtxt[i] + ".gif");
+            console.log("static/" + estilo + codtxt[i] + ".gif");
         }
 
         gifshot.createGIF({
