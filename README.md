@@ -56,17 +56,17 @@ Mensaje habitual para enviar el texto consignado. Su origen/destino se encontrab
 
 **2 - Servicio interno**
 
-Similar a un mensaje general, pero utilizado sólo entre los operarios de las torres para dar indicaciones de servicio.
+Utilizado sólo para dar indicaciones de servicio entre torres.
 
-- Mensaje interno de la torre '001' (por defecto) a la '045' con formato de fecha breve:
-    > telop -t 2 -d 45 -b 'Texto ejemplo'
-- Mensaje interno de la torre '045'a la '001' con formato de fecha breve:
-    > telop -t 2 -o 45 -d 1 -b 'Texto ejemplo'
+- Mensaje interno de la torre '001' (por defecto) a la '045' con código 10 y formato de fecha breve:
+    > telop -t 2 -d 45 --cod 10 -b 
+- Mensaje interno de la torre '045'a la '001' con código 11 y formato de fecha breve:
+    > telop -t 2 -o 45 -d 1 --cod 11 -b 
 
 
 **3 - Vigilancia**
 
-Utilizado para controlar y mantener la atención sobre la línea. En reposo se mandaban cada media hora, desde la cabecera al final de la línea y los ramales.
+Utilizado para controlar y mantener la atención sobre la línea. En reposo eran enviados cada media hora, desde la cabecera al final de la línea y los ramales.
 
 Su recepción se confirmaba mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
 
@@ -86,7 +86,7 @@ Aviso para indicar la reanudación de un mensaje detenido en cualquier torre, ha
 
 **6 - Acuse de recibo**
 
-Confirmar la recepción de un mensaje, general o de servicio interno, junto con el motivo que lo provoca.
+Confirmar la recepción de un mensaje general junto con el motivo que lo provoca.
 
 - Recepción correcta de mensaje con referencia '12' desde la torre '040' a la torre '001':
     > telop -t 6 -o 40 -d 1 -r 12
@@ -96,7 +96,7 @@ Confirmar la recepción de un mensaje, general o de servicio interno, junto con 
 
 **1 - Rectificación**
 
-Solicitar la anulación o retransmisión de un mensaje por su referencia.
+Solicitar la anulación o retransmisión de un mensaje general por su referencia.
 
 - Repetir '6' mensaje con referencia '23' desde la torre '021' a la '001':
     > telop -t 1 -o 21 -d 1 --rct 6 -r 23
@@ -130,8 +130,9 @@ Es posible generar un mensaje con sólo un número de torre en vez del formato h
 ### Opciones del programa:
 ```
 usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [--icd {0,1,2,3,4}]
-             [-o origen] [-d destino] [-b] [--rct {6,9}] [-c] [--diccionario]
-             [--pwd PWD] [-r referencia] [--solo] [-v] [--version] [-z {0,1}]
+             [-o [nº]] [-d [nº]] [-b] [--rct {6,9}] [--cod [nº]] [-c]
+             [--diccionario] [--pwd PWD] [-r [nº]] [--solo] [-v] [--version]
+             [-z {0,1}]
              [mensaje]
 
 positional arguments:
@@ -147,16 +148,17 @@ optional arguments:
                         recibo
   --icd {0,1,2,3,4}     incidencia en acuse -> 1-niebla | 2-ausencia |
                         3-ocupada | 4-avería
-  -o origen, --origen origen
+  -o [nº], --origen [nº]
                         torre de origen
-  -d destino, --destino destino
+  -d [nº], --destino [nº]
                         torre de destino
   -b, --breve           formato fecha y hora reducido
   --rct {6,9}           tipo de rectificación -> 6-repetir | 9-anular
+  --cod [nº]            código interno
   -c, --comandancia     emplear n. de comandancia en origen / destino
   --diccionario         mostrar diccionario codificación
   --pwd PWD             codificar mensaje con contraseña
-  -r referencia, --referencia referencia
+  -r [nº], --referencia [nº]
                         nº referencia despacho
   --solo                sólo imprime mensaje resultante
   -v, --verbose         debug
@@ -225,11 +227,10 @@ A/B/___C__/___D____/E
   |    -------------------------------- C torre de origen(3) + torre de destino(3)
   ------------------------------------- B prioridad(1)
 
-2  /0x10x5/234104  /013/252730141/1x0/2 -> Comunicación interna
-|      |       |     |   \         /  |
-|      |       |     |    \       /   - A tipo de servicio(1)
-|      |       |     |     ------------ - novenales de mensaje
-|      |       |     ------------------ E sufijo nº de novenales completos(2) y nº digitos resto(1)
+2  /0x10x5/234104  /01 -> Comunicación interna
+|      |       |     |
+|      |       |     |
+|      |       |     ------------------ E Sufijo código interno
 |      |       ------------------------ D hora(2) + minutos(2) + dia(2)
 |      -------------------------------- C torre de origen(3) + torre de destino(3)
 --------------------------------------- A tipo de servicio(1)
