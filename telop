@@ -456,7 +456,7 @@ def imprimir(arg, msg):
                 hora = str(fchora - 25).zfill(2) + ':15'
             elif fchora >= 0:
                 hora = str(fchora).zfill(2) + ':00'
-            print(f"Hora y Día:\t [{msg['horadia'][:2]}] {hora} ?{msg['horadia'][2:]}")
+            print(f"Hora y Día:\t [{msg['horadia']}] {hora} ?{msg['horadia'][2:]}")
         elif len(msg['horadia']) == 4:  # Hora sin dia
             print(f"Hora:\t\t {msg['horadia'][:2]}:{msg['horadia'][2:4]}")
         elif len(msg['horadia']) == 6:  # Hora normal

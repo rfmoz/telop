@@ -783,7 +783,7 @@
         if (msg['horadia'].length == 3) {  // Reconstruir hora breve
             var d = new Date();
             fchora = parseInt(msg['horadia'].substring(0,2));
-            salida += "<i>Hora y Día:</i>\t [" + msg['horadia'].substring(0,2) + '] ';
+            salida += "<i>Hora y Día:</i>\t [" + msg['horadia'] + '] ';
             switch (true) {
                 case fchora >= 75:
                     salida += (fchora - 75).toString().padStart(2, '0') + ':45'; break;
