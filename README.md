@@ -1,7 +1,7 @@
 telop
 =======
 
-Telop (TELégrafoÓPtico) - Utilidad para codificar y descodificar mensajes de texto empleando una interpretación del código telegráfico ideado por José María Mathé. Permite recrear el sistema utilizado por el servicio de transmisión en la red de telegrafía óptica de España a finales del s.XIX.
+Telop (TELégrafoÓPtico) - Utilidad para codificar y descodificar mensajes de texto empleando una interpretación del código telegráfico desarrollado por José María Mathé. Permite recrear el sistema utilizado en la red de telegrafía óptica de España a finales del s.XIX.
 
 
 ### Uso Básico
@@ -46,7 +46,7 @@ Mensaje:	 Telegrama de prueba
 
 **0 - General**
 
-Mensaje habitual para enviar el texto consignado. Su origen/destino se encontraba entre alguna de las torres situadas en capitales de provincia (comandancias militares) por las que pasaba la línea telegráfica.
+Mensaje habitual para enviar el texto consignado.
 
 - Codificar texto de la manera más sencilla de la torre '001' (por defecto) a la '041':
     > telop -d 41 'Texto ejemplo' 
@@ -56,7 +56,7 @@ Mensaje habitual para enviar el texto consignado. Su origen/destino se encontrab
 
 **2 - Servicio interno**
 
-Utilizado sólo para dar indicaciones de servicio entre torres.
+Utilizado sólo para dar indicaciones de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con código 10 y formato de fecha breve:
     > telop -t 2 -d 45 --cod 10 -b 
@@ -66,9 +66,9 @@ Utilizado sólo para dar indicaciones de servicio entre torres.
 
 **3 - Vigilancia**
 
-Utilizado para controlar y mantener la atención sobre la línea. En reposo eran enviados cada media hora, desde la cabecera al final de la línea y los ramales.
+Para controlar y mantener la atención sobre la línea. Se envían cada media hora, desde la cabecera al final de la línea y los ramales.
 
-Su recepción se confirmaba mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
+Su recepción confirma mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
 
 - Mensaje de control, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
     > telop -t 3 -o 0 -d 99 -c -b
@@ -78,7 +78,7 @@ Su recepción se confirmaba mediante la devolución de otro mensaje de vigilanci
 
 **5 - Continuación**
 
-Aviso para indicar la reanudación de un mensaje detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación en curso de mayor prioridad.
+Aviso para indicar la reanudación de un mensaje general detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación de mayor prioridad.
 
 - Retomar la transmisión del mensaje con torre de origen '009' y refrencia '43':
     > telop -t 5 -o 9 -r 43
@@ -116,7 +116,7 @@ En cualquier mensaje con fecha se puede pasar el argumento '-b' para utilizar el
 
 **Sustituir indicación de torre por comandancia**
 
-Empleando el argumento '-c', en cualquier mensaje se puede cambiar el formato de torre, representado por tres cifras, al de comandancia, formado por dos cifras.
+Empleando el argumento '-c', en cualquier mensaje se puede sustituir el formato de torre, de tres cifras, por el de comandancia, de dos cifras.
 
 - Mensaje con origen '01', destino '07' y opción de comandancia:
     > telop -o 1 -d 7 -c 'Texto'
@@ -204,7 +204,7 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 
 ### Notas
 
-- Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en el diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más polivalente y fácil de implementar.
+- Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en el diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más versátil y fácil de implementar.
 
 - La interpretación del código de transmisión definido por Mathé, requiere de una necesaria normalización y adaptación para facilitar su tratamiento informático. En la cabecera, la posición de los valores de cada grupo se mantiene invariable, en cambio, el formato de cada uno sí se adapta a cada tipo de mensaje. El resultado es el siguiente:
 
