@@ -211,59 +211,60 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 ```
 A/B/___C__/___D____/E
 | |    |      |     |
-| |    |      |     - E sufijo particular a cada tipo de mensaje([1-3])
-| |    |      ------- D hora(2) + minutos(2) + dia(2) + referencia(2)
-| |    -------------- C torre de origen(3) + torre de destino(3)
-| ------------------- B prioridad(1)
---------------------- A tipo de servicio(1)
+| |    |      |     -- E sufijo particular a cada tipo de mensaje([0-3])
+| |    |      -------- D hora(2) + minutos(2) + dia(2) + referencia(2)
+| |    --------------- C torre de origen(3) + torre de destino(3)
+| -------------------- B prioridad(1)
+---------------------- A tipo de servicio(1)
 
 
   0/0x10x5/2341040x/013/252730141/1x0/0 -> Mensaje general
   |    |       |     |   \         /  |
-  |    |       |     |    \       /   - B prioridad(1)
-  |    |       |     |     ------------ - novenales de mensaje
-  |    |       |     ------------------ E sufijo nº de novenales completos(2) y nº digitos resto(1)
-  |    |       ------------------------ D hora(2) + minutos(2) + dia(2) + referencia(2)
-  |    -------------------------------- C torre de origen(3) + torre de destino(3)
-  ------------------------------------- B prioridad(1)
+  |    |       |     |    \       /   -- B prioridad(1)
+  |    |       |     |     ------------- - novenales de mensaje
+  |    |       |     ------------------- E sufijo nº de novenales completos(2) y nº digitos resto(1)
+  |    |       ------------------------- D hora(2) + minutos(2) + dia(2) + referencia(2)
+  |    --------------------------------- C torre de origen(3) + torre de destino(3)
+  -------------------------------------- B prioridad(1)
+                                         A tipo de servicio(0)
 
 2  /0x10x5/234104  /01 -> Comunicación interna
 |      |       |     |
-|      |       |     |
-|      |       |     ------------------ E Sufijo código interno
-|      |       ------------------------ D hora(2) + minutos(2) + dia(2)
-|      -------------------------------- C torre de origen(3) + torre de destino(3)
---------------------------------------- A tipo de servicio(1)
+|      |       |     -- E Sufijo código interno
+|      |       -------- D hora(2) + minutos(2) + dia(2)
+|      ---------------- C torre de origen(3) + torre de destino(3)
+|                       B prioridad(0)
+----------------------- A tipo de servicio(1)
 
 3  /0x10x5/234104 -> Vigilancia
 |      |       |
-|      |       |
 |      |       -- D hora(2) + minutos(2) + dia(2)
 |      ---------- C torre de origen(3) + torre de destino(3)
+|                 B prioridad(0)
 ----------------- A tipo de servicio(1)
 
 6/0/0x10x5/2341040x/0x -> Acuse de recibo
+| |    |       |     |
+| |    |       |     -- E sufijo acuse de recibo([1-2])
+| |    |       -------- D hora(2) + minutos(2) + dia(2) + referencia mensaje recibido(2)
+| |    ---------------- C torre de origen(3) + torre de destino(3)
+| --------------------- B prioridad mensaje recibido(1)
+----------------------- A tipo de servicio(1)
+
+5    /0x1     /03 -> Continuación
+|      |       |
+|      |       -- D referencia mensaje a continuar(2)
+|      ---------- C torre de origen(3)
+|                 B prioridad(0)
+----------------- A tipo de servicio(1)
+
+1/0/0x10x5    /04  /6 -> Rectificación
 | |    |       |    |
-| |    |       |    -- E sufijo acuse de recibo([1-2])
-| |    |       ------- D hora(2) + minutos(2) + dia(2) + referencia mensaje recibido(2)
+| |    |       |    -- E sufijo tipo de petición(1)
+| |    |       ------- D referencia mensaje rectificado(2)
 | |    --------------- C torre de origen(3) + torre de destino(3)
-| -------------------- B prioridad mensaje recibido(1)
+| -------------------- B prioridad mensaje rectificado(1)
 ---------------------- A tipo de servicio(1)
-
-5  /0x1   /03 -> Continuación
-|    |     |
-|    |     |
-|    |     -- D referencia mensaje a continuar(2)
-|    -------- C torre de origen(3)
-------------- A tipo de servicio(1)
-
-1/0/0x10x5/04/6 -> Rectificación
-| |    |   |  |
-| |    |   |  - E sufijo tipo de petición(1)
-| |    |   ---- D referencia mensaje rectificado(2)
-| |    -------- C torre de origen(3) + torre de destino(3)
-| ------------- B prioridad mensaje rectificado(1)
---------------- A tipo de servicio(1)
 ```
 
 - Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
