@@ -348,7 +348,6 @@
             }
             // Opciones Continuación
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 5 ) {
-                document.getElementById("opprio").style.display = "none";
                 document.getElementById("optdst").style.display = "none";
                 document.getElementById("ophora").style.display = "none";
             }
@@ -517,7 +516,6 @@
 
             case '5':  // Continuación
                 var prefijo = msg['tipo'] + '/';
-                msg['prioridad'] = '';
                 msg['destino'] = '0';
                 msg['horadia'] = '';
                 sufijo = '';
@@ -643,8 +641,8 @@
                 msg['tipo'] = search[1];
 
             // Procesar tipo 5
-            } else if ((/^(5)()\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
-                search = (/^(5)()\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
+            } else if ((/^(5)\/([048])\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
+                search = (/^(5)\/([048])\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
                 msg['tipo'] = search[1]
 
             // Procesar tipo 6
@@ -898,7 +896,7 @@
 
     function procesar() {
 
-        const version = 2.3;
+        const version = 2.2;
 
         var msg = {}; // Diccionario de mensaje
         msg['mensaje'] = document.getElementById('form1').value;  // Asignar entrada

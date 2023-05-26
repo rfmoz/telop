@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '2.5'
+__version__ = '2.4'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
@@ -209,7 +209,6 @@ def zcodif_codificar(arg, msg, lencript):
 
         elif msg['tipo'] == '5':  # Continuar transmisión
             # 5/0x1/0x
-            msg['prioridad'] = ''
             msg['destino'] = '0'
             msg['horadia'] = ''
             sufijo = ''
@@ -326,8 +325,8 @@ def zcodif_descodificar(arg, msg, lencript):
             msg['tipo'] = search.group(1)
 
         # Procesar tipo 5
-        elif re.match(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
-            search = re.search(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm)
+        elif re.match(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
+            search = re.search(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm)
             msg['tipo'] = search.group(1)
 
         # Procesar tipo 6
