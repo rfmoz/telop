@@ -128,7 +128,6 @@
 	div#desc li{
 	    margin-bottom: 0.4em;
 	}
-	#opincd, #oprectf, #opcod { display: none; }
 	.info a{ color: maroon; }
 	pre i { margin-left: 5px; }
 	textarea { margin-bottom: 5px; }
@@ -166,7 +165,7 @@
             <table>
                 <tr>
                     <td>Tipo:</td>
-                    <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mrecep" onchange="txtformat()">
+                    <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mrecep" onchange="set_ops_view()">
                         <option value="0">0 - General</option>
                         <option value="1">1 - Rectificación</option>
                         <option value="2">2 - Serv. Interno</option>
@@ -312,7 +311,7 @@
 	document.getElementById('desc').innerHTML = txt;
     }
 
-    function txtformat() {
+    function set_ops_view() {
 
             // Resetear valores que se van a modificar
             document.getElementById("ophora").style.display = "table-row";
@@ -400,7 +399,7 @@
 
     }
 
-    function codificar_ops(msg, lencript) {
+    function iniciar_ops(msg, lencript) {
         console.log('Codificar Opciones Iniciales');
 
         function selectElement(id, valueToSelect) {
@@ -920,7 +919,8 @@
                 if (document.getElementById("codops").style.display == 'flex') {
                     codificar(msg, lencript);
                 } else {
-                    codificar_ops(msg, lencript);
+		    set_ops_view();
+                    iniciar_ops(msg, lencript);
                 }
             }
         }
