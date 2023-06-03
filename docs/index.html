@@ -432,10 +432,16 @@
         msg['origen'] = document.getElementById("morig").value.toString().substring(0,3).padStart(3, '0');
         msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
         msg['referencia'] = document.getElementById("mref").value.toString().substring(0,2).padStart(2, '0');
-        msg['incd'] = document.getElementById("incd").value;
-        msg['rectf'] = document.getElementById("rectf").value;
         msg['mfhora'] = document.getElementById("mfhora").value;
-        msg['codigo'] = document.getElementById("codg").value;
+	if (msg['tipo'] == 1) {
+	    msg['sufijo'] = document.getElementById("rectf").value;
+	}
+	if (msg['tipo'] == 2) {
+            msg['sufijo'] = document.getElementById("codg").value;
+	}
+	if (msg['tipo'] == 6) {
+	    msg['sufijo'] = document.getElementById("incd").value;
+	}
         if (msg['mfhora'] == 1) {
             fchora = parseInt(d.getHours());
             fcmin = parseInt(d.getMinutes());
@@ -498,7 +504,7 @@
                 var prefijo =  msg['tipo'] + '/';
                 msg['prioridad'] = '';
                 msg['referencia'] = '';
-                sufijo = '/' + msg['codigo'];
+                sufijo = '/' + msg['sufijo'];
                 break;
 
             case '3':  // Servicio de vigilancia
@@ -510,7 +516,7 @@
 
             case '6':  // Servicio de acuse de recibo
                 var prefijo = msg['tipo'] + '/';
-                sufijo = '/' + msg['incd'];
+                sufijo = '/' + msg['sufijo'];
                 break;
 
             case '5':  // Continuación
@@ -523,7 +529,7 @@
             case '1':  // Servicio de rectificación
                 var prefijo = msg['tipo'] + '/';
                 msg['horadia'] = '';
-                sufijo = '/' + msg['rectf'];
+                sufijo = '/' + msg['sufijo'];
                 break;
         }
 
@@ -631,8 +637,8 @@
             } else if ((/^(2)()\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/).test(ciperm)) {
                 search = (/^(2)()\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/g).exec(ciperm);
                 msg['tipo'] = search[1];
-                msg['codigo'] = search[5];
-                msg['procmsg'] = codinfo(msg['codigo']);
+                msg['sufijo'] = search[5];
+                msg['procmsg'] = codinfo(msg['sufijo']);
 
             // Procesar tipo 3
             } else if ((/^(3)()\/(\d{2,6})\/(\d{3,6})()\b/).test(ciperm)) {
@@ -648,13 +654,13 @@
             } else if ((/^(6)\/([048])\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/).test(ciperm)) {
                 search = (/^(6)\/([048])\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/g).exec(ciperm);
                 msg['tipo'] = search[1];
-                msg['incd'] = search[5];
+                msg['sufijo'] = search[5];
 
             // Procesar tipo 1
             } else if ((/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])\b/).test(ciperm)) {
                 search = (/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])\b/g).exec(ciperm);
                 msg['tipo'] = search[1]
-                msg['rectf'] = search[5]
+                msg['sufijo'] = search[5]
 
             } else {
                 throw "ERROR - Formato de mensaje inválido";
@@ -705,7 +711,7 @@
             msg['tipo'] = msg['prioridad'] = '0';
             msg['origen'] = msg['destino'] = msg['novenales'] = '000';
             msg['horadia'] = '000000';
-            msg['referencia'] = msg['incd'] = '00';
+            msg['referencia'] = msg['sufijo'] = '00';
         }
         imprimir(msg);
     }
@@ -724,11 +730,11 @@
             case '0': salida += "<i>Tipo:</i>\t\t 0 - General<br>"; break;
             case '2':
                 salida += "<i>Tipo:</i>\t\t 2 - Servicio Interno<br>";
-                salida += "<i>Código:</i>\t " + msg['codigo'] + "<br>"; break;
+                salida += "<i>Código:</i>\t " + msg['sufijo'] + "<br>"; break;
             case '3': salida += "<i>Tipo:</i>\t\t 3 - Vigilancia<br>"; break;
             case '5': salida += "<i>Tipo:</i>\t\t 5 - Continuación<br>"; break;
             case '6': salida += "<i>Tipo:</i>\t\t 6 - Acuse de recibo<br>";
-                switch (msg['incd']) {
+                switch (msg['sufijo']) {
                     case '00':
                         salida += "<i>Estado:</i>\t 0x - Correcto<br>"; break;
                     case '1':
@@ -741,7 +747,7 @@
                         salida += "<i>Estado:</i>\t 4 - Incidencia avería<br>"; 
                }; break;
             case '1': salida += "<i>Tipo:</i>\t\t 1 - Rectificación<br>";
-                switch (msg['rectf']) {
+                switch (msg['sufijo']) {
                     case '6':
                         salida += "<i>Petición:</i>\t 6 - Repetir referencia<br>"; break;
                     case '9':
@@ -750,7 +756,14 @@
          }
 
         if (msg['prioridad']) {
-            salida += "<i>Prioridad:</i>\t " + msg['prioridad'] + "<br>";
+            switch (msg['prioridad']) {
+                case '0':
+                    salida += "<i>Prioridad:</i>\t 0 - Ordinario<br>"; break;
+                case '4':
+                    salida += "<i>Prioridad:</i>\t 4 - Urgente<br>"; break;
+                case '8':
+                    salida += "<i>Prioridad:</i>\t 8 - Urgentísimo<br>"; break;
+	    }
         }
 
         // Comprobar una o dos torres

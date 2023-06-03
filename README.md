@@ -59,9 +59,9 @@ Mensaje habitual para enviar el texto consignado.
 Utilizado sólo para dar indicaciones de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con código 10 y formato de fecha breve:
-    > telop -t 2 -d 45 --cod 10 -b 
+    > telop -t 2 -d 45 -s 10 -b 
 - Mensaje interno de la torre '045'a la '001' con código 11 y formato de fecha breve:
-    > telop -t 2 -o 45 -d 1 --cod 11 -b 
+    > telop -t 2 -o 45 -d 1 -s 11 -b 
 
 
 **3 - Vigilancia**
@@ -91,7 +91,7 @@ Confirmar la recepción de un mensaje general junto con el motivo que lo provoca
 - Recepción correcta de mensaje con referencia '12' desde la torre '040' a la torre '001':
     > telop -t 6 -o 40 -d 1 -r 12
 - Recepción por niebla de mensaje con referencia '17' desde la torre '030' a la torre '001':
-    > telop -t 6 -o 30 -d 1 -r 17 --icd 1
+    > telop -t 6 -o 30 -d 1 -r 17 -s 1
 
 
 **1 - Rectificación**
@@ -99,9 +99,9 @@ Confirmar la recepción de un mensaje general junto con el motivo que lo provoca
 Solicitar la anulación o retransmisión de un mensaje general por su referencia.
 
 - Repetir '6' mensaje con referencia '23' desde la torre '021' a la '001':
-    > telop -t 1 -o 21 -d 1 --rct 6 -r 23
+    > telop -t 1 -o 21 -d 1 -s 6 -r 23
 - Anular '9' mensaje con referencia '12' desde la torre '021' a la '001' con prioridad '8':
-    > telop -t 1 -o 21 -d 1 --rct 9 -r 12 -p 8
+    > telop -t 1 -o 21 -d 1 -s 9 -r 12 -p 8
 
 
 ### Modificaciones del formato en cabecera
@@ -129,10 +129,9 @@ Es posible generar un mensaje con sólo un número de torre en vez del formato h
 
 ### Opciones del programa:
 ```
-usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [--icd {0,1,2,3,4}]
-             [-o [nº]] [-d [nº]] [-b] [--rct {6,9}] [--cod [nº]] [-c]
-             [--diccionario] [--pwd PWD] [-r [nº]] [--solo] [-v] [--version]
-             [-z {0,1}]
+usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [-o [nº]] [-d [nº]] [-b]
+             [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-s SUFIJO] [--solo]
+             [-v] [--version] [-z {0,1}]
              [mensaje]
 
 positional arguments:
@@ -146,20 +145,18 @@ optional arguments:
                         tipo de servicio -> 0-general | 1-rectificación |
                         2-interno | 3-vigilancia | 5-continuación | 6-acuse
                         recibo
-  --icd {0,1,2,3,4}     incidencia en acuse -> 1-niebla | 2-ausencia |
-                        3-ocupada | 4-avería
   -o [nº], --origen [nº]
                         torre de origen
   -d [nº], --destino [nº]
                         torre de destino
   -b, --breve           formato fecha y hora reducido
-  --rct {6,9}           tipo de rectificación -> 6-repetir | 9-anular
-  --cod [nº]            código interno
   -c, --comandancia     emplear n. de comandancia en origen / destino
   --diccionario         mostrar diccionario codificación
   --pwd PWD             codificar mensaje con contraseña
   -r [nº], --referencia [nº]
                         nº referencia despacho
+  -s SUFIJO, --sufijo SUFIJO
+                        sufijo aplicable a los mensajes tipo 1, 2 y 6
   --solo                sólo imprime mensaje resultante
   -v, --verbose         debug
   --version             show program's version number and exit
