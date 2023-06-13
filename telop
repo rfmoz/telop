@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '2.4'
+__version__ = '2.5'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
@@ -39,7 +39,7 @@ def get_arguments(msg, lencript):
     parser.add_argument('--pwd', default=None, action='store', help='codificar mensaje con contraseña')
     parser.add_argument('-r', '--referencia', default=msg['referencia'], action='store', type=int, metavar='[nº]', help='nº referencia despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
-    parser.add_argument('-s', '--sufijo', default=msg['sufijo'], action='store', type=int, help='sufijo aplicable a los mensajes tipo 1, 2 y 6')
+    parser.add_argument('-s', '--sufijo', default=msg['sufijo'], action='store', type=int, help='sufijo aplicable a los mensajes tipo 1, 2, 3 y 6')
     parser.add_argument('--solo', default=False, action='store_true', help='sólo imprime mensaje resultante')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='debug')
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
@@ -57,27 +57,29 @@ def get_arguments(msg, lencript):
         if arg.sufijo:
             if arg.sufijo not in [6, 9]:
                 parser.print_help()
-                print('\nSufijo con el nº de petición para la rectificación:')
+                print('\nSufijos disponibles para el nº de rectificación:')
                 print('\t\t\t-s 6   repetir referencia')
                 print('\t\t\t-s 9   anular referencia')
                 sys.exit(0)
         else:
-            arg.sufijonfo = random.choice(['6', '9'])
+            arg.sufijo = random.choice(['6', '9'])
             
     if arg.tipo is '2' and not arg.sufijo:
            arg.sufijo = 0
 
-    if arg.tipo is '6':
+    if arg.tipo in ['6', '3']:
         if arg.sufijo:
             if arg.sufijo not in [0, 1, 2, 3, 4]:
                 parser.print_help()
-                print('\nSufijo con el nº de incidencia para el acuse de recibo:')
-                print('\t\t\t-s 0   recepción correcta')
+                print('\nSufijos disponibles para el nº de incidencia:')
+                print('\t\t\t-s 0   correcto')
                 print('\t\t\t-s 1   corte por niebla')
                 print('\t\t\t-s 2   corte por ausencia')
                 print('\t\t\t-s 3   vanguardia ocupada')
                 print('\t\t\t-s 4   corte por avería')
                 sys.exit(0)
+        if arg.tipo == '3' and arg.sufijo is None:
+            arg.sufijo = ''
         if arg.sufijo == 0 or arg.sufijo is None:
             arg.sufijo = '00'
 
@@ -221,7 +223,7 @@ def zcodif_codificar(arg, msg, lencript):
             # 3/0x1052/191709
             msg['prioridad'] = ''
             msg['referencia'] = ''
-            sufijo = ''
+            sufijo = '/' + msg['sufijo']
 
         elif msg['tipo'] == '6':  # Servicio acuse de recibo
             # 6/0/0x1052/1917090x/0x
@@ -340,9 +342,10 @@ def zcodif_descodificar(arg, msg, lencript):
             #msg['procmsg'] = txt_valor_del_código
 
         # Procesar tipo 3
-        elif re.match(r'^(3)()/(\d{2,6})/(\d{3,6})()\b', ciperm) is not None:
-            search = re.search(r'^(3)()/(\d{2,6})/(\d{3,6})()\b', ciperm)
+        elif re.match(r'^(3)()/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm) is not None:
+            search = re.search(r'^(3)()/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)
             msg['tipo'] = search.group(1)
+            msg['sufijo'] = search.group(5)
 
         # Procesar tipo 5
         elif re.match(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
@@ -356,10 +359,11 @@ def zcodif_descodificar(arg, msg, lencript):
             msg['sufijo'] = search.group(5)
 
         # Procesar tipo 1
-        elif re.match(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])\b', ciperm) is not None:
-            search = re.search(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])\b', ciperm)
+        elif re.match(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm) is not None:
+            search = re.search(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)
             msg['tipo'] = search.group(1)
             msg['sufijo'] = search.group(5)
+            msg['nrepe'] = search.group(6)
 
         else:
             raise Exception('Formato de mensaje inválido')
@@ -423,10 +427,11 @@ def imprimir(arg, msg):
         if msg['tipo'] == '2':
             print("Tipo:\t\t 2 - Servicio Interno")
             print(f"Código:\t\t {msg['sufijo']}")
-        if msg['tipo'] == '3': print("Tipo:\t\t 3 - Vigilancia")
-        if msg['tipo'] == '5': print("Tipo:\t\t 5 - Continuación")
-        if msg['tipo'] == '6':
-            print("Tipo:\t\t 6 - Acuse de recibo")
+        if msg['tipo'] in ['3', '6']:
+            if msg['tipo'] == '3':
+                print("Tipo:\t\t 3 - Vigilancia")
+            if msg['tipo'] == '6':
+                print("Tipo:\t\t 6 - Acuse de recibo")
             if msg['sufijo'] == '00':
                 print("Estado:\t\t 0x - Correcto")
             if msg['sufijo'] == '1':
@@ -437,10 +442,13 @@ def imprimir(arg, msg):
                 print("Estado:\t\t 3 - Incidencia vanguardia ocupada")
             if msg['sufijo'] == '4':
                 print("Estado:\t\t 4 - Incidencia avería")
+        if msg['tipo'] == '5': print("Tipo:\t\t 5 - Continuación")
         if msg['tipo'] == '1':
             print("Tipo:\t\t 1 - Rectificación")
             if msg['sufijo'] == '6':
                 print("Petición:\t 6 - Repetir referencia")
+                if msg['nrepe']:
+                   print(f"Novenales rep.:\t {msg['nrepe']}")
             if msg['sufijo'] == '9':
                 print("Petición:\t 9 - Anular referencia")
 
@@ -511,7 +519,7 @@ def main():
     lencript = list(string.digits + string.ascii_letters + string.punctuation) + ['Ñ', 'ñ', '¿', '€', '', ' ']
 
     # Diccionario de mensaje. Valores por defecto
-    msg = {'prioridad': '0', 'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'referencia': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None}
+    msg = {'prioridad': '0', 'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'referencia': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'nrepe': None}
 
     arg, msg = get_arguments(msg, lencript)
 

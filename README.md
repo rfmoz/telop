@@ -70,10 +70,10 @@ Para controlar y mantener la atención sobre la línea. Se envían cada media ho
 
 Su recepción confirma mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
 
-- Mensaje de control, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
+- Mensaje inicial, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
     > telop -t 3 -o 0 -d 99 -c -b
-- Confirmación al mensaje anterior. Comandancia de origen '07' y destino '01':
-    > telop -t 3 -o 7 -d 1 -c
+- Mensaje de respuesta con recepción correcta '0'. Comandancia de origen '07' y destino '01':
+    > telop -t 3 -o 7 -d 1 -c -s 0
 
 
 **5 - Continuación**
@@ -156,7 +156,7 @@ optional arguments:
   -r [nº], --referencia [nº]
                         nº referencia despacho
   -s SUFIJO, --sufijo SUFIJO
-                        sufijo aplicable a los mensajes tipo 1, 2 y 6
+                        sufijo aplicable a los mensajes tipo 1, 2, 3 y 6
   --solo                sólo imprime mensaje resultante
   -v, --verbose         debug
   --version             show program's version number and exit
@@ -227,22 +227,23 @@ A/B/___C__/___D____/E
 
 2  /0x10x5/234104  /01 -> Comunicación interna
 |      |       |     |
-|      |       |     -- E Sufijo código interno
+|      |       |     -- E sufijo código interno
 |      |       -------- D hora(2) + minutos(2) + dia(2)
 |      ---------------- C torre de origen(3) + torre de destino(3)
 |                       B prioridad(0)
 ----------------------- A tipo de servicio(1)
 
-3  /0x10x5/234104 -> Vigilancia
-|      |       |
-|      |       -- D hora(2) + minutos(2) + dia(2)
-|      ---------- C torre de origen(3) + torre de destino(3)
-|                 B prioridad(0)
------------------ A tipo de servicio(1)
+3  /0x10x5/234104  /0x -> Vigilancia
+|      |       |     |
+|      |       |     -- E sufijo estado opcional, sólo en recepción([1-2])
+|      |       -------- D hora(2) + minutos(2) + dia(2)
+|      ---------------- C torre de origen(3) + torre de destino(3)
+|                       B prioridad(0)
+----------------------- A tipo de servicio(1)
 
 6/0/0x10x5/2341040x/0x -> Acuse de recibo
 | |    |       |     |
-| |    |       |     -- E sufijo acuse de recibo([1-2])
+| |    |       |     -- E sufijo estado acuse de recibo([1-2])
 | |    |       -------- D hora(2) + minutos(2) + dia(2) + referencia mensaje recibido(2)
 | |    ---------------- C torre de origen(3) + torre de destino(3)
 | --------------------- B prioridad mensaje recibido(1)
@@ -255,13 +256,14 @@ A/B/___C__/___D____/E
 | --------------- B prioridad mensaje a continuar(1)
 ----------------- A tipo de servicio(1)
 
-1/0/0x10x5/   04   /6 -> Rectificación
-| |    |       |    |
-| |    |       |    -- E sufijo tipo de petición(1)
-| |    |       ------- D referencia mensaje rectificado(2)
-| |    --------------- C torre de origen(3) + torre de destino(3)
-| -------------------- B prioridad mensaje rectificado(1)
----------------------- A tipo de servicio(1)
+1/0/0x10x5/   04   /6/2/3/4 -> Rectificación
+| |    |       |    | \   /
+| |    |       |    |  --- - novenales a repetir(opcional)
+| |    |       |    ------ E sufijo tipo de petición(1)
+| |    |       ----------- D referencia mensaje rectificado(2)
+| |    ------------------- C torre de origen(3) + torre de destino(3)
+| ------------------------ B prioridad mensaje rectificado(1)
+-------------------------- A tipo de servicio(1)
 ```
 
 - Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
