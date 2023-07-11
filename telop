@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '2.5'
+__version__ = '2.6'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
@@ -207,42 +207,39 @@ def zcodif_codificar(arg, msg, lencript):
         # Insertar arriadas en mensaje y borar la última si coincide
         ciperm = str(re.sub(r'(.{9})', r'\1/', cipert)).rstrip('/')
 
-        prefijo = ''
         sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
 
+    elif msg['tipo'] == '2':  # Servicio interno
+        # 2/0x1052/234104/0x/2
+        msg['prioridad'] = ''
+        msg['registro'] = ''
+        sufijo = '/' + msg['sufijo']
+
+    elif msg['tipo'] == '3':  # Servicio de vigilancia
+        # 3/0x1052/191709
+        msg['prioridad'] = ''
+        msg['registro'] = ''
+        sufijo = '/' + msg['sufijo']
+
+    elif msg['tipo'] == '6':  # Servicio acuse de recibo
+        # 6/0/0x1052/1917090x/0x
+        sufijo = '/' + msg['sufijo']
+
+    elif msg['tipo'] == '5':  # Continuar transmisión
+        # 5/0x1/0x
+        msg['prioridad'] = ''
+        msg['destino'] = '0'
+        msg['horadia'] = ''
+        sufijo = ''
+
+    elif msg['tipo'] == '1':  # Rectificación
+        # 1/0/0x1052/01/9
+        msg['horadia'] = ''
+        sufijo = '/' + msg['sufijo']
+
     else:
-        prefijo = msg['tipo'] + '/'
-
-        if msg['tipo'] == '2':  # Servicio interno
-            # 2/0x1052/234104/0x/2
-            msg['prioridad'] = ''
-            msg['registro'] = ''
-            sufijo = '/' + msg['sufijo']
-
-        elif msg['tipo'] == '3':  # Servicio de vigilancia
-            # 3/0x1052/191709
-            msg['prioridad'] = ''
-            msg['registro'] = ''
-            sufijo = '/' + msg['sufijo']
-
-        elif msg['tipo'] == '6':  # Servicio acuse de recibo
-            # 6/0/0x1052/1917090x/0x
-            sufijo = '/' + msg['sufijo']
-
-        elif msg['tipo'] == '5':  # Continuar transmisión
-            # 5/0x1/0x
-            msg['destino'] = '0'
-            msg['horadia'] = ''
-            sufijo = ''
-
-        elif msg['tipo'] == '1':  # Rectificación
-            # 1/0/0x1052/01/9
-            msg['horadia'] = ''
-            sufijo = '/' + msg['sufijo']
-
-        else:
-            logging.error('Sin tipo de mensaje')
-            sys.exit(1)
+        logging.error('Sin tipo de mensaje')
+        sys.exit(1)
 
     # Torre '0' sin valor. Indicación única de torre
     if int(msg['origen']) == int(msg['destino']) == 0:
@@ -253,11 +250,11 @@ def zcodif_codificar(arg, msg, lencript):
         msg['destino'] = ''
 
     # Paquete formateado
-    paquet = str(prefijo + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
+    paquet = str(msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
 
-    # Eliminar duplicados // por campos vacíos y / al final
-    paquet = re.sub(r'\/\/+', r'/', paquet)
-    paquet = re.sub(r'\/$', r'', paquet)
+    paquet = re.sub(r'\/\/+', r'/', paquet)  # Eliminar '//' por campos vacíos
+    paquet = re.sub(r'\/$', r'', paquet)  # Eliminar '/' al final
+    paquet = re.sub(r'^0\/', r'', paquet)  # Eliminar '0/' del tipo general
 
     logging.info('Mensaje raw:\t %s', paquet)
 
@@ -348,8 +345,8 @@ def zcodif_descodificar(arg, msg, lencript):
             msg['sufijo'] = search.group(5)
 
         # Procesar tipo 5
-        elif re.match(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
-            search = re.search(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm)
+        elif re.match(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
+            search = re.search(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm)
             msg['tipo'] = search.group(1)
 
         # Procesar tipo 6

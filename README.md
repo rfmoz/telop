@@ -80,8 +80,8 @@ Su recepción confirma mediante la devolución de otro mensaje de vigilancia ind
 
 Aviso para indicar la reanudación de un mensaje general detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación de mayor prioridad.
 
-- Retomar la transmisión del mensaje con torre de origen '009', prioridad '4' y refrencia '43':
-    > telop -t 5 -o 9 -r 43 -p 4
+- Retomar la transmisión del mensaje con torre de origen '009' y refrencia '43':
+    > telop -t 5 -o 9 -r 43
 
 
 **6 - Acuse de recibo**
@@ -249,11 +249,11 @@ A/B/___C__/___D____/E
 | --------------------- B prioridad mensaje recibido(1)
 ----------------------- A tipo de servicio(1)
 
-5/0/  0x1 /    03 -> Continuación
-| |    |       |
-| |    |       -- D registro mensaje a continuar(2)
-| |    ---------- C torre de origen(3)
-| --------------- B prioridad mensaje a continuar(1)
+5    /0x1     /03 -> Continuación
+|      |       |
+|      |       -- D registro mensaje a continuar(2)
+|      ---------- C torre de origen(3)
+|
 ----------------- A tipo de servicio(1)
 
 1/0/0x10x5/   04   /6/2/3/4 -> Rectificación

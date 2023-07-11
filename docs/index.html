@@ -267,7 +267,7 @@
 		txt = '\
 		 <ul>\
 		  <li><b>General:</b> &nbsp;&nbsp;Mensaje de comunicación habitual.</li>\
-		  <li><b>Rectificación:</b> &nbsp;&nbsp;Solicitar anulación o retransmisión de un mensaje.</li>\
+		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anulación o retransmisión de un mensaje.</li>\
 		  <li><b>Servicio interno:</b> &nbsp;&nbsp;Indicaciones de servicio entre torres.</li>\
 		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Controlar y mantener la atención sobre la línea.</li>\
 		  <li><b>Continuación:</b> &nbsp;&nbsp;Retomar la transmisión de un mensaje interrumpido en una torre.</li>\
@@ -278,9 +278,9 @@
 		txt = '\
 		 <ul>\
 		  <li><b>Correcto:</b> &nbsp;&nbsp;El mensaje ha sido recepcionado en destino.</li>\
-		  <li><b>Incidencia niebla:</b> &nbsp;&nbsp;Interrumpido por niebla a vanguardia.</li>\
+		  <li><b>Incidencia niebla:</b> &nbsp;&nbsp;Interrupción por niebla a vanguardia.</li>\
 		  <li><b>Incidencia ausencia:</b> &nbsp;&nbsp;La vanguardia no responde a los movimientos.</li>\
-		  <li><b>Incidencia vanguardia ocupada:</b> &nbsp;&nbsp;La vanguardia se encuentra en funcionamiento.</li>\
+		  <li><b>Incidencia vanguardia ocupada:</b> &nbsp;&nbsp;Vanguardia en funcionamiento.</li>\
 		  <li><b>Incidencia avería:</b> &nbsp;&nbsp;Problema técnico que impide la transmisión.</li>\
 		</ul>';
 	} else if ( x == 'peticion' ) {
@@ -295,8 +295,8 @@
 		txt = '\
 		 <ul>\
 		  <li><b>Ordinario:</b> &nbsp;&nbsp;Transmisión habitual.</li>\
-		  <li><b>Urgente:</b> &nbsp;&nbsp;Con preferencia de paso sobre ordinario.</li>\
-		  <li><b>Urgentísimo:</b> &nbsp;&nbsp;Tiene máxima preferencia sobre el resto.</li>\
+		  <li><b>Urgente:</b> &nbsp;&nbsp;Preferencia de paso intermedia.</li>\
+		  <li><b>Urgentísimo:</b> &nbsp;&nbsp;Máxima preferencia de paso.</li>\
 		</ul>';
 	} else if ( x == 'hora' ) {
 	    document.getElementById("desc").style.display = "inline-block";
@@ -357,6 +357,7 @@
             }
             // Opciones Continuación
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 5 ) {
+                document.getElementById("opprio").style.display = "none";
                 document.getElementById("optdst").style.display = "none";
                 document.getElementById("ophora").style.display = "none";
             }
@@ -506,38 +507,33 @@
                 // Insertar arriadas en mensaje y borar la última si coincide
                 ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
         
-                var prefijo = ''
                 var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
                 break;
 
             case '2':  // Servicio interno
-                var prefijo =  msg['tipo'] + '/';
                 msg['prioridad'] = '';
                 msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
             case '3':  // Servicio de vigilancia
-                var prefijo = msg['tipo'] + '/';
                 msg['prioridad'] = '';
                 msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
             case '6':  // Servicio de acuse de recibo
-                var prefijo = msg['tipo'] + '/';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
             case '5':  // Continuación
-                var prefijo = msg['tipo'] + '/';
+                msg['prioridad'] = '';
                 msg['destino'] = '0';
                 msg['horadia'] = '';
                 sufijo = '';
                 break;
 
             case '1':  // Servicio de rectificación
-                var prefijo = msg['tipo'] + '/';
                 msg['horadia'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
@@ -553,11 +549,11 @@
         }
 
         // Mensaje formateado
-        var msgfmt = prefijo + msg['prioridad'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
+        var msgfmt = msg['tipo'] + "/" + msg['prioridad'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
 
-        // Eliminar duplicados // por campos vacíos y / al final
-        msgfmt = msgfmt.replace(/\/\/+/g, "/");
-        msgfmt = msgfmt.replace(/\/$/g, "");
+        msgfmt = msgfmt.replace(/\/\/+/g, "/");  // Eliminar duplicados // por campos vacíos
+        msgfmt = msgfmt.replace(/\/$/g, "");  // Eliminar '/' al final
+        msgfmt = msgfmt.replace(/^0\//g, "");  // Eliminar '0/' del tipo general
 
         console.log('Mensaje raw: ' + msgfmt);
         console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
@@ -657,8 +653,8 @@
                 msg['sufijo'] = search[5];
 
             // Procesar tipo 5
-            } else if ((/^(5)\/([048])\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
-                search = (/^(5)\/([048])\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
+            } else if ((/^(5)()\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
+                search = (/^(5)()\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
                 msg['tipo'] = search[1]
 
             // Procesar tipo 6
@@ -930,7 +926,7 @@
 
     function procesar() {
 
-        const version = 2.5;
+        const version = 2.6;
 
         var msg = {}; // Diccionario de mensaje
         msg['mensaje'] = document.getElementById('form1').value;  // Asignar entrada
