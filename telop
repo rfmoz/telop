@@ -37,7 +37,7 @@ def get_arguments(msg, lencript):
     parser.add_argument('-c', '--comandancia', default=False, action='store_true', help='emplear n. de comandancia en origen / destino')
     parser.add_argument('--diccionario', default=None, action='store_true', help='mostrar diccionario codificación')
     parser.add_argument('--pwd', default=None, action='store', help='codificar mensaje con contraseña')
-    parser.add_argument('-r', '--referencia', default=msg['referencia'], action='store', type=int, metavar='[nº]', help='nº referencia despacho')
+    parser.add_argument('-r', '--registro', default=msg['registro'], action='store', type=int, metavar='[nº]', help='nº registro despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
     parser.add_argument('-s', '--sufijo', default=msg['sufijo'], action='store', type=int, help='sufijo aplicable a los mensajes tipo 1, 2, 3 y 6')
     parser.add_argument('--solo', default=False, action='store_true', help='sólo imprime mensaje resultante')
@@ -58,8 +58,8 @@ def get_arguments(msg, lencript):
             if arg.sufijo not in [6, 9]:
                 parser.print_help()
                 print('\nSufijos disponibles para el nº de rectificación:')
-                print('\t\t\t-s 6   repetir referencia')
-                print('\t\t\t-s 9   anular referencia')
+                print('\t\t\t-s 6   repetir registro')
+                print('\t\t\t-s 9   anular registro')
                 sys.exit(0)
         else:
             arg.sufijo = random.choice(['6', '9'])
@@ -133,7 +133,7 @@ def get_arguments(msg, lencript):
     else:
         msg['horadia'] = str(time.strftime("%H%M%d"))
 
-    # Unificar con ceros. 2 o 3 para origen y destino. 2 para referencia y codigo
+    # Unificar con ceros. 2 o 3 para origen y destino. 2 para registro y codigo
     if arg.comandancia:
         msg['origen'] = msg['origen'][:2].zfill(2)
         msg['destino'] = msg['destino'][:2].zfill(2)
@@ -141,7 +141,7 @@ def get_arguments(msg, lencript):
         msg['origen'] = msg['origen'][:3].zfill(3)
         msg['destino'] = msg['destino'][:3].zfill(3)
 
-    msg['referencia'] = msg['referencia'][:2].zfill(2)
+    msg['registro'] = msg['registro'][:2].zfill(2)
     if arg.tipo == '2':
         msg['sufijo'] = msg['sufijo'][:2].zfill(2)
 
@@ -216,13 +216,13 @@ def zcodif_codificar(arg, msg, lencript):
         if msg['tipo'] == '2':  # Servicio interno
             # 2/0x1052/234104/0x/2
             msg['prioridad'] = ''
-            msg['referencia'] = ''
+            msg['registro'] = ''
             sufijo = '/' + msg['sufijo']
 
         elif msg['tipo'] == '3':  # Servicio de vigilancia
             # 3/0x1052/191709
             msg['prioridad'] = ''
-            msg['referencia'] = ''
+            msg['registro'] = ''
             sufijo = '/' + msg['sufijo']
 
         elif msg['tipo'] == '6':  # Servicio acuse de recibo
@@ -253,7 +253,7 @@ def zcodif_codificar(arg, msg, lencript):
         msg['destino'] = ''
 
     # Paquete formateado
-    paquet = str(prefijo + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['referencia'] + sufijo)
+    paquet = str(prefijo + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
 
     # Eliminar duplicados // por campos vacíos y / al final
     paquet = re.sub(r'\/\/+', r'/', paquet)
@@ -382,28 +382,28 @@ def zcodif_descodificar(arg, msg, lencript):
             msg['origen'] = ''
             msg['destino'] = ''
 
-        # Según formato hora y referencia corto/largo
-        if len(search.group(4)) == 2:  # referencia
+        # Según formato hora y registro corto/largo
+        if len(search.group(4)) == 2:  # registro
             msg['horadia'] = ''
-            msg['referencia'] = search.group(4)
+            msg['registro'] = search.group(4)
         elif len(search.group(4)) == 3:  # horadia-breve
             msg['horadia'] = search.group(4)[:3]
-            msg['referencia'] = ''
+            msg['registro'] = ''
         elif len(search.group(4)) == 4:  # horadia sin dia
             msg['horadia'] = search.group(4)[:4]
-            msg['referencia'] = ''
+            msg['registro'] = ''
         elif len(search.group(4)) == 5:  # horadia-breve + ref
             msg['horadia'] = search.group(4)[:3]
-            msg['referencia'] = search.group(4)[3:]
+            msg['registro'] = search.group(4)[3:]
         elif len(search.group(4)) == 6:  # horadia-normal
             msg['horadia'] = search.group(4)[:6]
-            msg['referencia'] = ''
+            msg['registro'] = ''
         elif len(search.group(4)) == 8: # horadia-normal + ref
             msg['horadia'] = search.group(4)[:6]
-            msg['referencia'] = search.group(4)[6:]
+            msg['registro'] = search.group(4)[6:]
         else:
             msg['horadia'] = ''
-            msg['referencia'] = ''
+            msg['registro'] = ''
 
     except Exception as exp:
         logging.error('Imposible descodificar --> %s', str(exp))
@@ -446,11 +446,11 @@ def imprimir(arg, msg):
         if msg['tipo'] == '1':
             print("Tipo:\t\t 1 - Rectificación")
             if msg['sufijo'] == '6':
-                print("Petición:\t 6 - Repetir referencia")
+                print("Petición:\t 6 - Repetir registro")
                 if msg['nrepe']:
                     print(f"Novenales rep.:\t {msg['nrepe']}")
             if msg['sufijo'] == '9':
-                print("Petición:\t 9 - Anular referencia")
+                print("Petición:\t 9 - Anular registro")
 
         if msg['prioridad']:
             if msg['prioridad'] == '0':
@@ -495,8 +495,8 @@ def imprimir(arg, msg):
         elif len(msg['horadia']) == 6:  # Hora normal
             print(f"Hora y Día:\t {msg['horadia'][:2]}:{msg['horadia'][2:4]} {msg['horadia'][4:6]}")
 
-        if msg['referencia']:
-            print(f"Referencia:\t {msg['referencia']}")
+        if msg['registro']:
+            print(f"Registro:\t {msg['registro']}")
         if msg['regfin']:
             print(f"Interrupción:\t {msg['regfin']}")
         if msg['procmsg'] is not None:
@@ -519,7 +519,7 @@ def main():
     lencript = list(string.digits + string.ascii_letters + string.punctuation) + ['Ñ', 'ñ', '¿', '€', '', ' ']
 
     # Diccionario de mensaje. Valores por defecto
-    msg = {'prioridad': '0', 'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'referencia': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'nrepe': None}
+    msg = {'prioridad': '0', 'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'nrepe': None}
 
     arg, msg = get_arguments(msg, lencript)
 

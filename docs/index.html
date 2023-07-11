@@ -166,7 +166,7 @@
                 <tr>
                     <td>Tipo:</td>
                     <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mrecep" onchange="set_ops_view()">
-                        <option value="0">0 - General</option>
+                        <option value="0">0 - General urgentisimo</option>
                         <option value="1">1 - Rectificación</option>
                         <option value="2">2 - Serv. Interno</option>
                         <option value="3">3 - Vigilancia</option>
@@ -232,7 +232,7 @@
                     </td>
                 </tr>
                 <tr id="opref">
-                    <td onmouseover="desc(innerHTML)" onmouseout="desc()">Referencia:</td>
+                    <td onmouseover="desc(innerHTML)" onmouseout="desc()">Registro:</td>
                     <td><input type="number" id="mref" min="1" max="99" pattern="\d{2}" /></td>
                 </tr>
             </table>
@@ -287,8 +287,8 @@
 	    document.getElementById("desc").style.display = "inline-block";
 		txt = '\
 		 <ul>\
-		  <li><b>Repetir referencia:</b> &nbsp;&nbsp;Solicitar repetición del mensaje con referencia indicada.</li>\
-		  <li><b>Anular referencia:</b> &nbsp;&nbsp;Petición para anular mensaje con referencia indicada.</li>\
+		  <li><b>Repetir registro:</b> &nbsp;&nbsp;Solicitar repetición del mensaje con el registro indicado.</li>\
+		  <li><b>Anular registro:</b> &nbsp;&nbsp;Petición para anular mensaje con el registro indicado.</li>\
 		</ul>';
 	} else if ( x == 'prioridad' ) {
 	    document.getElementById("desc").style.display = "inline-block";
@@ -441,7 +441,7 @@
         msg['prioridad'] = document.getElementById("mprio").value;
         msg['origen'] = document.getElementById("morig").value.toString().substring(0,3).padStart(3, '0');
         msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
-        msg['referencia'] = document.getElementById("mref").value.toString().substring(0,2).padStart(2, '0');
+        msg['registro'] = document.getElementById("mref").value.toString().substring(0,2).padStart(2, '0');
         msg['mfhora'] = document.getElementById("mfhora").value;
 	if (msg['tipo'] == 1) {
 	    msg['sufijo'] = document.getElementById("rectf").value;
@@ -513,14 +513,14 @@
             case '2':  // Servicio interno
                 var prefijo =  msg['tipo'] + '/';
                 msg['prioridad'] = '';
-                msg['referencia'] = '';
+                msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
             case '3':  // Servicio de vigilancia
                 var prefijo = msg['tipo'] + '/';
                 msg['prioridad'] = '';
-                msg['referencia'] = '';
+                msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
@@ -553,7 +553,7 @@
         }
 
         // Mensaje formateado
-        var msgfmt = prefijo + msg['prioridad'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['referencia'] + sufijo;
+        var msgfmt = prefijo + msg['prioridad'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
 
         // Eliminar duplicados // por campos vacíos y / al final
         msgfmt = msgfmt.replace(/\/\/+/g, "/");
@@ -693,28 +693,28 @@
                 msg['destino'] = '';
             }
 
-            // Según formato y referencia hora corto/largo
+            // Según formato y registro hora corto/largo
             if (search[4].length == 2) {
                 msg['horadia'] = '';
-                msg['referencia'] = search[4];
+                msg['registro'] = search[4];
             } else if (search[4].length == 3) {
                 msg['horadia'] = search[4].substring(0,3);
-                msg['referencia'] = '';
+                msg['registro'] = '';
             } else if (search[4].length == 4) {
                 msg['horadia'] = search[4].substring(0,4);
-                msg['referencia'] = '';
+                msg['registro'] = '';
             } else if (search[4].length == 5) {
                 msg['horadia'] = search[4].substring(0,3);
-                msg['referencia'] = search[4].substring(3);
+                msg['registro'] = search[4].substring(3);
             } else if (search[4].length == 6) {
                 msg['horadia'] = search[4].substring(0,6);
-                msg['referencia'] = '';
+                msg['registro'] = '';
             } else if (search[4].length == 8) {
                 msg['horadia'] = search[4].substring(0,6);
-                msg['referencia'] = search[4].substring(6);
+                msg['registro'] = search[4].substring(6);
             } else {
                 msg['horadia'] = '';
-                msg['referencia'] = '';
+                msg['registro'] = '';
             }
 
         // Recoger error
@@ -723,7 +723,7 @@
             msg['tipo'] = msg['prioridad'] = '0';
             msg['origen'] = msg['destino'] = msg['novenales'] = '000';
             msg['horadia'] = '000000';
-            msg['referencia'] = msg['sufijo'] = '00';
+            msg['registro'] = msg['sufijo'] = '00';
         }
         imprimir(msg);
     }
@@ -767,13 +767,13 @@
             case '1': salida += "<i>Tipo:</i>\t\t 1 - Rectificación<br>";
                 switch (msg['sufijo']) {
                     case '6':
-                        salida += "<i>Petición:</i>\t 6 - Repetir referencia<br>";
+                        salida += "<i>Petición:</i>\t 6 - Repetir registro<br>";
 		        if (msg['nrepe']) {
                             salida += "<i>Novenales rep.:</i> " + msg['nrepe'] + "<br>";
 			}
 			break;
                     case '9':
-                        salida += "<i>Petición:</i>\t 9 - Anular referencia<br>"; break;
+                        salida += "<i>Petición:</i>\t 9 - Anular registro<br>"; break;
 		};
          }
 
@@ -835,8 +835,8 @@
             salida += "<i>Hora y Día:</i>\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + ' ' + msg['horadia'].substring(4,6) + "<br>";
         }
 
-        if (msg['referencia']) {
-            salida += "<i>Referencia:</i>\t " + msg['referencia'] + "<br>";
+        if (msg['registro']) {
+            salida += "<i>Registro:</i>\t " + msg['registro'] + "<br>";
         }
 
         if (msg['regfin']) {

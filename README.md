@@ -15,7 +15,7 @@ Prioridad:	 0
 T. Origen:	 001
 T. Destino:	 052
 Hora y Día:	 23:10 08
-Referencia:	 00
+Registro:	 00
 Novenales:	 04.2
 --------------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ Prioridad:	 0
 T. Origen:	 001
 T. Destino:	 052
 Hora y Día:	 23:10 08
-Referencia:	 00
+Registro:	 00
 Novenales:	 04.2
 --------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ Mensaje habitual para enviar el texto consignado.
 
 - Codificar texto de la manera más sencilla de la torre '001' (por defecto) a la '041':
     > telop -d 41 'Texto ejemplo' 
-- Prioridad '8' con referencia '12', origen '010' y destino '050' :
+- Prioridad '8' con registro '12', origen '010' y destino '050' :
     > telop -p 8 -r 12 -o 10 -d 50 'Texto'
 
 
@@ -88,19 +88,19 @@ Aviso para indicar la reanudación de un mensaje general detenido en cualquier t
 
 Confirmar la recepción de un mensaje general junto con el motivo que lo provoca.
 
-- Recepción correcta de mensaje con referencia '12' desde la torre '040' a la torre '001':
+- Recepción correcta de mensaje con registro '12' desde la torre '040' a la torre '001':
     > telop -t 6 -o 40 -d 1 -r 12
-- Recepción por niebla de mensaje con referencia '17' desde la torre '030' a la torre '001':
+- Recepción por niebla de mensaje con registro '17' desde la torre '030' a la torre '001':
     > telop -t 6 -o 30 -d 1 -r 17 -s 1
 
 
 **1 - Rectificación**
 
-Solicitar la anulación o retransmisión de un mensaje general por su referencia.
+Solicitar la anulación o retransmisión de un mensaje general por su registro.
 
-- Repetir '6' mensaje con referencia '23' desde la torre '021' a la '001':
+- Repetir '6' mensaje con registro '23' desde la torre '021' a la '001':
     > telop -t 1 -o 21 -d 1 -s 6 -r 23
-- Anular '9' mensaje con referencia '12' desde la torre '021' a la '001' con prioridad '8':
+- Anular '9' mensaje con registro '12' desde la torre '021' a la '001' con prioridad '8':
     > telop -t 1 -o 21 -d 1 -s 9 -r 12 -p 8
 
 
@@ -153,8 +153,8 @@ optional arguments:
   -c, --comandancia     emplear n. de comandancia en origen / destino
   --diccionario         mostrar diccionario codificación
   --pwd PWD             codificar mensaje con contraseña
-  -r [nº], --referencia [nº]
-                        nº referencia despacho
+  -r [nº], --registro [nº]
+                        nº registro despacho
   -s SUFIJO, --sufijo SUFIJO
                         sufijo aplicable a los mensajes tipo 1, 2, 3 y 6
   --solo                sólo imprime mensaje resultante
@@ -209,7 +209,7 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 A/B/___C__/___D____/E
 | |    |      |     |
 | |    |      |     -- E sufijo particular a cada tipo de mensaje([0-3])
-| |    |      -------- D hora(2) + minutos(2) + dia(2) + referencia(2)
+| |    |      -------- D hora(2) + minutos(2) + dia(2) + registro(2)
 | |    --------------- C torre de origen(3) + torre de destino(3)
 | -------------------- B prioridad(1)
 ---------------------- A tipo de servicio(1)
@@ -220,7 +220,7 @@ A/B/___C__/___D____/E
   |    |       |     |    \       /   -- B prioridad(1)
   |    |       |     |     ------------- - novenales de mensaje
   |    |       |     ------------------- E sufijo nº de novenales completos(2) y nº digitos resto(1)
-  |    |       ------------------------- D hora(2) + minutos(2) + dia(2) + referencia(2)
+  |    |       ------------------------- D hora(2) + minutos(2) + dia(2) + registro(2)
   |    --------------------------------- C torre de origen(3) + torre de destino(3)
   -------------------------------------- B prioridad(1)
                                          A tipo de servicio(0)
@@ -244,14 +244,14 @@ A/B/___C__/___D____/E
 6/0/0x10x5/2341040x/0x -> Acuse de recibo
 | |    |       |     |
 | |    |       |     -- E sufijo estado acuse de recibo([1-2])
-| |    |       -------- D hora(2) + minutos(2) + dia(2) + referencia mensaje recibido(2)
+| |    |       -------- D hora(2) + minutos(2) + dia(2) + registro mensaje recibido(2)
 | |    ---------------- C torre de origen(3) + torre de destino(3)
 | --------------------- B prioridad mensaje recibido(1)
 ----------------------- A tipo de servicio(1)
 
 5/0/  0x1 /    03 -> Continuación
 | |    |       |
-| |    |       -- D referencia mensaje a continuar(2)
+| |    |       -- D registro mensaje a continuar(2)
 | |    ---------- C torre de origen(3)
 | --------------- B prioridad mensaje a continuar(1)
 ----------------- A tipo de servicio(1)
@@ -260,7 +260,7 @@ A/B/___C__/___D____/E
 | |    |       |    | \   /
 | |    |       |    |  --- - novenales a repetir(opcional)
 | |    |       |    ------ E sufijo tipo de petición(1)
-| |    |       ----------- D referencia mensaje rectificado(2)
+| |    |       ----------- D registro mensaje rectificado(2)
 | |    ------------------- C torre de origen(3) + torre de destino(3)
 | ------------------------ B prioridad mensaje rectificado(1)
 -------------------------- A tipo de servicio(1)
@@ -300,12 +300,12 @@ A/B/___C__/___D____/E
   Ésta fue la modificación más curiosa de las empleadas y conocidas, por eso su codificación, el resto básicamente conseguían reducir tamaño a base de omitir información fácilmente interpretable por la situación del emisor y receptor.
   El grupo de cabecera podría tener cualquiera de los siguientes formatos (aunque no todos se llegan a utilizar):
 ```
-/12150199/ -> hora(2) + minutos(2) + dia(2) + referencia(2)
+/12150199/ -> hora(2) + minutos(2) + dia(2) + registro(2)
 /121501/   -> hora(2) + minutos(2) + dia(2)
-/37199/    -> hora_breve(2) + dia_breve(1) + referencia(2)
+/37199/    -> hora_breve(2) + dia_breve(1) + registro(2)
 /1215/     -> hora(2) + minutos(2)
 /371/      -> hora_breve(2) + dia_breve(1)
-/99/       -> referencia(2)
+/99/       -> registro(2)
 ```
 - En la cabecera se puede indicar un número de comandancia en sustitución de la torre con la opción `--comandancia`. Pasando de emplear tres dígitos por torre a dos.
   El grupo de cabecera pasaría del formato `torre de origen(3) + torre de destino(3)` a `comandancia de origen(2) + comandancia de destino(2)`.
