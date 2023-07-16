@@ -1,7 +1,7 @@
 telop
 =======
 
-Telop (TELégrafoÓPtico) - Utilidad para codificar y descodificar mensajes de texto empleando una interpretación del código telegráfico desarrollado por José María Mathé. Permite recrear el sistema utilizado en la red de telegrafía óptica de España a finales del s.XIX.
+Telop (TELégrafoÓPtico) - Utilidad para codificar y descodificar mensajes de texto empleando una interpretación del código telegráfico desarrollado por José María Mathé. Permite recrear el sistema utilizado en la red de telegrafía óptica de España a mediados del s.XIX.
 
 
 ### Uso Básico
@@ -11,7 +11,6 @@ Telop (TELégrafoÓPtico) - Utilidad para codificar y descodificar mensajes de t
 $ telop 'Telegrama de prueba'
 --------------------------------------------------------------------------------
 Tipo:		 0 - General
-Prioridad:	 0
 T. Origen:	 001
 T. Destino:	 052
 Hora y Día:	 23:10 08
@@ -29,7 +28,6 @@ Mensaje:	 0/0x1052/2310x80x/042/5x1421x41/627102x10/9x13149x2/52730141x/10/0
 $ telop '0/0x1052/2310x80x/042/5x1421x41/627102x10/9x13149x2/52730141x/10/0'
 --------------------------------------------------------------------------------
 Tipo:		 0 - General
-Prioridad:	 0
 T. Origen:	 001
 T. Destino:	 052
 Hora y Día:	 23:10 08
@@ -45,21 +43,23 @@ Mensaje:	 Telegrama de prueba
 ### Ejemplos de cada tipo de mensaje
 
 **0 - General**
+**4 - General urgente**
+**8 - General urgentísimo**
 
 Mensaje habitual para enviar el texto consignado.
 
 - Codificar texto de la manera más sencilla de la torre '001' (por defecto) a la '041':
     > telop -d 41 'Texto ejemplo' 
-- Prioridad '8' con registro '12', origen '010' y destino '050' :
-    > telop -p 8 -r 12 -o 10 -d 50 'Texto'
+- Mensaje urgentísimo '8' con registro '12', origen '010' y destino '050' :
+    > telop -t 8 -r 12 -o 10 -d 50 'Texto'
 
 
 **2 - Servicio interno**
 
 Utilizado sólo para dar indicaciones de servicio.
 
-- Mensaje interno de la torre '001' (por defecto) a la '045' con código 10 y formato de fecha breve:
-    > telop -t 2 -d 45 -s 10 -b 
+- Mensaje interno de la torre '001' (por defecto) a la '045' con código 10:
+    > telop -t 2 -d 45 -s 10 
 - Mensaje interno de la torre '045'a la '001' con código 11 y formato de fecha breve:
     > telop -t 2 -o 45 -d 1 -s 11 -b 
 
@@ -68,7 +68,7 @@ Utilizado sólo para dar indicaciones de servicio.
 
 Para controlar y mantener la atención sobre la línea. Se envían cada media hora, desde la cabecera al final de la línea y los ramales.
 
-Su recepción confirma mediante la devolución de otro mensaje de vigilancia indicando las torres oportunas.
+Su recepción se confirma mediante la devolución de otro mensaje de vigilancia, indicando las torres oportunas.
 
 - Mensaje inicial, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
     > telop -t 3 -o 0 -d 99 -c -b
@@ -90,18 +90,18 @@ Confirmar la recepción de un mensaje general junto con el motivo que lo provoca
 
 - Recepción correcta de mensaje con registro '12' desde la torre '040' a la torre '001':
     > telop -t 6 -o 40 -d 1 -r 12
-- Recepción por niebla de mensaje con registro '17' desde la torre '030' a la torre '001':
+- Recepción por niebla '1' de mensaje con registro '17' desde la torre '030' a la torre '001':
     > telop -t 6 -o 30 -d 1 -r 17 -s 1
 
 
 **1 - Rectificación**
 
-Solicitar la anulación o retransmisión de un mensaje general por su registro.
+Solicitar la anulación o retransmisión de un mensaje general, según su número de registro.
 
 - Repetir '6' mensaje con registro '23' desde la torre '021' a la '001':
     > telop -t 1 -o 21 -d 1 -s 6 -r 23
-- Anular '9' mensaje con registro '12' desde la torre '021' a la '001' con prioridad '8':
-    > telop -t 1 -o 21 -d 1 -s 9 -r 12 -p 8
+- Anular '9' mensaje con registro '12' desde la torre '021' a la '001':
+    > telop -t 1 -o 21 -d 1 -s 9 -r 12 
 
 
 ### Modificaciones del formato en cabecera
@@ -129,22 +129,15 @@ Es posible generar un mensaje con sólo un número de torre en vez del formato h
 
 ### Opciones del programa:
 ```
-usage: telop [-h] [-p {0,4,8}] [-t {0,1,2,3,5,6}] [-o [nº]] [-d [nº]] [-b]
-             [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-s SUFIJO] [--solo]
-             [-v] [--version] [-z {0,1}]
-             [mensaje]
+usage: telop [-h] [-t {0,1,2,3,4,5,6,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-s SUFIJO] [--solo] [-v] [--version] [-z {0,1}] [mensaje]
 
 positional arguments:
   mensaje               texto del mensaje entre ' '
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
-  -p {0,4,8}, --prioridad {0,4,8}
-                        prioridad -> 0-ordinario | 4-urgente | 8-urgentísimo
-  -t {0,1,2,3,5,6}, --tipo {0,1,2,3,5,6}
-                        tipo de servicio -> 0-general | 1-rectificación |
-                        2-interno | 3-vigilancia | 5-continuación | 6-acuse
-                        recibo
+  -t {0,1,2,3,4,5,6,8}, --tipo {0,1,2,3,4,5,6,8}
+                        tipo de servicio -> 0-general | 4-gral. urgente | 8-gral. urgentísimo | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo
   -o [nº], --origen [nº]
                         torre de origen
   -d [nº], --destino [nº]
@@ -160,8 +153,7 @@ optional arguments:
   --solo                sólo imprime mensaje resultante
   -v, --verbose         debug
   --version             show program's version number and exit
-  -z {0,1}              proceso a ejecutar -> (auto) | 0-codificar |
-                        1-descodificar
+  -z {0,1}              proceso a ejecutar -> (auto) | 0-codificar | 1-descodificar
 ```
 
 ### Diccionario codificación:
@@ -201,73 +193,67 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 
 ### Notas
 
-- Cada dígito del mensaje de texto se codifica empleando el número de la posición que ocupa en el diccionario definido en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más versátil y fácil de implementar.
+- Cada dígito del mensaje de texto se codifica según la posición que ocupa en el diccionario definido internamente en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más versátil y fácil de implementar.
 
-- La interpretación del código de transmisión definido por Mathé, requiere de una necesaria normalización y adaptación para facilitar su tratamiento informático. En la cabecera, la posición de los valores de cada grupo se mantiene invariable, en cambio, el formato de cada uno sí se adapta a cada tipo de mensaje. El resultado es el siguiente:
+- En el siguiente esquema se establece el orden de los valores en la cabecera:
 
 ```
-A/B/___C__/___D____/E
-| |    |      |     |
-| |    |      |     -- E sufijo particular a cada tipo de mensaje([0-3])
-| |    |      -------- D hora(2) + minutos(2) + dia(2) + registro(2)
-| |    --------------- C torre de origen(3) + torre de destino(3)
-| -------------------- B prioridad(1)
----------------------- A tipo de servicio(1)
+A/___B__/___C____/D
+|    |      |     |
+|    |      |     --- D sufijo particular a cada tipo de mensaje([0-3])
+|    |      --------- C hora(2) + minutos(2) + dia(2) + registro(2)
+|    ---------------- B torre de origen(3) + torre de destino(3)
+--------------------- A tipo de servicio y prioridad(1)
 
 
-  0/0x10x5/2341040x/013/252730141/1x0/0 -> Mensaje general
-  |    |       |     |   \         /  |
-  |    |       |     |    \       /   -- B prioridad(1)
-  |    |       |     |     ------------- - novenales de mensaje
-  |    |       |     ------------------- E sufijo nº de novenales completos(2) y nº digitos resto(1)
-  |    |       ------------------------- D hora(2) + minutos(2) + dia(2) + registro(2)
-  |    --------------------------------- C torre de origen(3) + torre de destino(3)
-  -------------------------------------- B prioridad(1)
-                                         A tipo de servicio(0)
+0/0x10x5/2341040x/013/252730141/1x0/0 -> Mensaje general
+|    |       |    |   \          /  |
+|    |       |    |    \        /   -- A tipo de servicio y prioridad(1)
+|    |       |    |     -------------- - novenales de mensaje
+|    |       |    -------------------- D sufijo nº de novenales completos(2) y nº digitos resto(1)
+|    |       ------------------------- C hora(2) + minutos(2) + dia(2) + registro(2)
+|    --------------------------------- B torre de origen(3) + torre de destino(3)
+-------------------------------------- A tipo de servicio y prioridad(1)
 
-2  /0x10x5/234104  /01 -> Comunicación interna
-|      |       |     |
-|      |       |     -- E sufijo código interno
-|      |       -------- D hora(2) + minutos(2) + dia(2)
-|      ---------------- C torre de origen(3) + torre de destino(3)
-|                       B prioridad(0)
------------------------ A tipo de servicio(1)
+2/0x10x5/ 234104 /01 -> Comunicación interna
+|    |       |    |
+|    |       |    --- D sufijo código interno
+|    |       -------- C hora(2) + minutos(2) + dia(2)
+|    ---------------- B torre de origen(3) + torre de destino(3)
+--------------------- A tipo de servicio y prioridad(1)
 
-3  /0x10x5/234104  /0x -> Vigilancia
-|      |       |     |
-|      |       |     -- E sufijo estado opcional, sólo en recepción([1-2])
-|      |       -------- D hora(2) + minutos(2) + dia(2)
-|      ---------------- C torre de origen(3) + torre de destino(3)
-|                       B prioridad(0)
------------------------ A tipo de servicio(1)
+3/0x10x5/ 234104 /0x -> Vigilancia
+|    |       |    |
+|    |       |    --- D sufijo estado opcional, sólo en recepción([0-2])
+|    |       -------- C hora(2) + minutos(2) + dia(2)
+|    ---------------- B torre de origen(3) + torre de destino(3)
+--------------------- A tipo de servicio y prioridad(1)
 
-6/0/0x10x5/2341040x/0x -> Acuse de recibo
-| |    |       |     |
-| |    |       |     -- E sufijo estado acuse de recibo([1-2])
-| |    |       -------- D hora(2) + minutos(2) + dia(2) + registro mensaje recibido(2)
-| |    ---------------- C torre de origen(3) + torre de destino(3)
-| --------------------- B prioridad mensaje recibido(1)
------------------------ A tipo de servicio(1)
+6/0x10x5/2341040x/0x -> Acuse de recibo
+|    |       |    |
+|    |       |    --- D sufijo estado acuse de recibo([1-2])
+|    |       -------- C hora(2) + minutos(2) + dia(2) + registro mensaje recibido(2)
+|    ---------------- B torre de origen(3) + torre de destino(3)
+--------------------- A tipo de servicio y prioridad(1)
 
-5    /0x1     /03 -> Continuación
-|      |       |
-|      |       -- D registro mensaje a continuar(2)
-|      ---------- C torre de origen(3)
-|
------------------ A tipo de servicio(1)
+5/  0x1 /   03  -> Continuación
+|    |       |
+|    |       |   D sufijo(0)
+|    |       --- C registro mensaje a continuar(2)
+|    ----------- B torre de origen(3)
+---------------- A tipo de servicio y prioridad(1)
 
-1/0/0x10x5/   04   /6/2/3/4 -> Rectificación
-| |    |       |    | \   /
-| |    |       |    |  --- - novenales a repetir(opcional)
-| |    |       |    ------ E sufijo tipo de petición(1)
-| |    |       ----------- D registro mensaje rectificado(2)
-| |    ------------------- C torre de origen(3) + torre de destino(3)
-| ------------------------ B prioridad mensaje rectificado(1)
--------------------------- A tipo de servicio(1)
+1/0x10x5/   04   /6/2/3/4 -> Rectificación
+|    |       |    | \   /
+|    |       |    |  ----- - novenales a repetir(opcional)
+|    |       |    -------- D sufijo tipo de petición(1)
+|    |       ------------- C registro mensaje rectificado(2)
+|    --------------------- B torre de origen(3) + torre de destino(3)
+-------------------------- A tipo de servicio y prioridad(1)
 ```
 
 - Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
-  El grupo que comprende la hora y día es opcional y puede estar compuesto de los dos valores o sólo de la hora. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
+  El grupo que comprende la hora, los minutos y día es opcional y puede estar compuesto por todos esos valores o sólo de la hora y los minutos. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
 
 ```
 /_X_/__Y__/Z -> Sufijo interrupción

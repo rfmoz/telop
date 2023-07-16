@@ -51,7 +51,7 @@
 	}
 	div#codops {
 	    display: none;
-	    margin: 10px auto 12px auto;
+	    margin: 10px auto 5px auto;
 	    align-items: flex-start;
 	    justify-content: flex-start;
 	    min-height: 11em;
@@ -130,7 +130,7 @@
 	}
 	.info a{ color: maroon; }
 	pre i { margin-left: 5px; }
-	textarea { margin-bottom: 5px; }
+	textarea { margin-bottom: 10px; }
 	pre, button, textarea, div#codops { width: 80%; }
 	span#destgif img{ box-shadow: 0px 10px 6px -6px #777; border: 1px solid #d6d6d6; }
 
@@ -166,7 +166,9 @@
                 <tr>
                     <td>Tipo:</td>
                     <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mrecep" onchange="set_ops_view()">
-                        <option value="0">0 - General urgentisimo</option>
+                        <option value="0">0 - General</option>
+                        <option value="4">4 - General urgente</option>
+                        <option value="8">8 - General urgentísimo</option>
                         <option value="1">1 - Rectificación</option>
                         <option value="2">2 - Serv. Interno</option>
                         <option value="3">3 - Vigilancia</option>
@@ -201,17 +203,8 @@
                 <tr id="oprectf">
                     <td>Petición:</td>
                     <td onmouseover="desc('peticion')" onmouseout="desc()"><select id="rectf">
-                        <option value="6">6 - Repetir ref.</option>
-                        <option value="9">9 - Anular ref.</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr id="opprio">
-                    <td>Prioridad:</td>
-                    <td onmouseover="desc('prioridad')" onmouseout="desc()"><select id="mprio">
-                        <option value="0">0 - Ordinario</option>
-                        <option value="4">4 - Urgente</option>
-                        <option value="8">8 - Urgent&iacute;simo</option>
+                        <option value="6">6 - Repetir reg.</option>
+                        <option value="9">9 - Anular reg.</option>
                         </select>
                     </td>
                 </tr>
@@ -267,7 +260,7 @@
 		txt = '\
 		 <ul>\
 		  <li><b>General:</b> &nbsp;&nbsp;Mensaje de comunicación habitual.</li>\
-		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anulación o retransmisión de un mensaje.</li>\
+		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anulación o repetición de un mensaje.</li>\
 		  <li><b>Servicio interno:</b> &nbsp;&nbsp;Indicaciones de servicio entre torres.</li>\
 		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Controlar y mantener la atención sobre la línea.</li>\
 		  <li><b>Continuación:</b> &nbsp;&nbsp;Retomar la transmisión de un mensaje interrumpido en una torre.</li>\
@@ -290,14 +283,6 @@
 		  <li><b>Repetir registro:</b> &nbsp;&nbsp;Solicitar repetición del mensaje con el registro indicado.</li>\
 		  <li><b>Anular registro:</b> &nbsp;&nbsp;Petición para anular mensaje con el registro indicado.</li>\
 		</ul>';
-	} else if ( x == 'prioridad' ) {
-	    document.getElementById("desc").style.display = "inline-block";
-		txt = '\
-		 <ul>\
-		  <li><b>Ordinario:</b> &nbsp;&nbsp;Transmisión habitual.</li>\
-		  <li><b>Urgente:</b> &nbsp;&nbsp;Preferencia de paso intermedia.</li>\
-		  <li><b>Urgentísimo:</b> &nbsp;&nbsp;Máxima preferencia de paso.</li>\
-		</ul>';
 	} else if ( x == 'hora' ) {
 	    document.getElementById("desc").style.display = "inline-block";
 		txt = '\
@@ -316,7 +301,6 @@
             // Resetear valores que se van a modificar
             document.getElementById("ophora").style.display = "table-row";
             document.getElementById("optdst").style.display = "table-row";
-            document.getElementById("opprio").style.display = "table-row";
             document.getElementById("opref").style.display = "table-row";
             document.getElementById("opincd").style.display = "none";
             document.getElementById("oprectf").style.display = "none";
@@ -336,7 +320,6 @@
 
             // Opciones de servicio interno
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 2 ) {
-                document.getElementById("opprio").style.display = "none";
                 document.getElementById("opref").style.display = "none";
                 document.getElementById("opcod").style.display = "table-row";
                 document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
@@ -344,7 +327,6 @@
             }
             // Opciones de vigilancia
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 3 ) {
-                document.getElementById("opprio").style.display = "none";
                 document.getElementById("opref").style.display = "none";
                 document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
                 document.getElementById("opincd").style.display = "table-row";
@@ -357,7 +339,6 @@
             }
             // Opciones Continuación
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 5 ) {
-                document.getElementById("opprio").style.display = "none";
                 document.getElementById("optdst").style.display = "none";
                 document.getElementById("ophora").style.display = "none";
             }
@@ -368,7 +349,6 @@
             // Opciones Rectificación
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 1 ) {
                 document.getElementById("oprectf").style.display = "table-row";
-                document.getElementById("opprio").style.display = "table-row";
                 document.getElementById("ophora").style.display = "none";
             }
     }
@@ -418,11 +398,9 @@
             element.value = valueToSelect;
         }
 
-        var prioridades = ['0','4','8'];
         var destinos = ['18','27','36','50','52'];
         var rectificar = ['6','9'];
 
-        selectElement('mprio', prioridades[Math.floor(Math.random() * prioridades.length)]);
         selectElement('morig', '1');
         selectElement('mdest', (destinos[Math.floor(Math.random() * destinos.length)]));
         selectElement('mref', (Math.floor(Math.random() * 99) + 1));
@@ -439,7 +417,6 @@
 
         var d = new Date();
         msg['tipo'] = document.getElementById("mrecep").options[mrecep.selectedIndex].value;
-        msg['prioridad'] = document.getElementById("mprio").value;
         msg['origen'] = document.getElementById("morig").value.toString().substring(0,3).padStart(3, '0');
         msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
         msg['registro'] = document.getElementById("mref").value.toString().substring(0,2).padStart(2, '0');
@@ -483,7 +460,9 @@
         console.log('Argumentos txt:', JSON.stringify(msg))
 
         switch (msg['tipo']) {
-            case '0':  // Servicio general
+            case '0':  // General
+            case '4':  // General urgente
+            case '8':  // General urgentísimo
                 // Recorrer los digitos del mensaje para codificar cada uno según la posición que ocupan en el diccionario
                 var cipert = '';  // Mensaje codificado
                 for (let i = 0; i < msg['mensaje'].length; i++) {
@@ -507,17 +486,15 @@
                 // Insertar arriadas en mensaje y borar la última si coincide
                 ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
         
-                var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
+                var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['tipo'];
                 break;
 
             case '2':  // Servicio interno
-                msg['prioridad'] = '';
                 msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
 
             case '3':  // Servicio de vigilancia
-                msg['prioridad'] = '';
                 msg['registro'] = '';
                 sufijo = '/' + msg['sufijo'];
                 break;
@@ -527,7 +504,6 @@
                 break;
 
             case '5':  // Continuación
-                msg['prioridad'] = '';
                 msg['destino'] = '0';
                 msg['horadia'] = '';
                 sufijo = '';
@@ -549,11 +525,10 @@
         }
 
         // Mensaje formateado
-        var msgfmt = msg['tipo'] + "/" + msg['prioridad'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
+        var msgfmt = msg['tipo'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
 
         msgfmt = msgfmt.replace(/\/\/+/g, "/");  // Eliminar duplicados // por campos vacíos
         msgfmt = msgfmt.replace(/\/$/g, "");  // Eliminar '/' al final
-        msgfmt = msgfmt.replace(/^0\//g, "");  // Eliminar '0/' del tipo general
 
         console.log('Mensaje raw: ' + msgfmt);
         console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
@@ -578,7 +553,7 @@
 
         // Extraer interrupciones finales si las hubiera
         msg['regfin'] = '';
-        while((/^(([01468](\/\d*){4})|([25](\/\d*){3})|(3(\/\d*){2})).+(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
+        while((/^(([012468](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
 
             // Procesar interrupción
             regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])$/g).exec(ciperm);
@@ -606,11 +581,10 @@
         try {
 
             // Procesar tipo 0
-            if ((/^()([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).test(ciperm)) {
-                search = (/^()([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).exec(ciperm);
+            if ((/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).test(ciperm)) {
+                search = (/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).exec(ciperm);
 
-                msg['tipo'] = '0'
-                msg['novenales'] = search[5];
+                msg['novenales'] = search[4];
 
                 // Calcular tamaño del texto en base a los novenales
                 let long_nov = (parseInt(msg['novenales'].substring(0,2)) * 9) + (parseInt(msg['novenales'].substring(2)));
@@ -632,82 +606,69 @@
                         msg['procmsg'] += lencript[parseInt(posicion)];
                     }
 
-                    // Fix - Solventar cambio en la posición de los valores '€' y ' ' del diccionario v2.0
-                    if ((msg['procmsg'].match(/€/g) || []).length > (msg['procmsg'].match(/\ /g) || []).length) {
-                        console.log("Diccionario rev.");
-                        msg['procmsg'] = msg['procmsg'].replaceAll('€', ' ');
-                    }
                 }
 
             // Procesar tipo 2
-            } else if ((/^(2)()\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/).test(ciperm)) {
-                search = (/^(2)()\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/g).exec(ciperm);
-                msg['tipo'] = search[1];
-                msg['sufijo'] = search[5];
-                msg['procmsg'] = codinfo(msg['sufijo']);
+            } else if ((/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/).test(ciperm)) {
+                search = (/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/g).exec(ciperm);
+                msg['procmsg'] = codinfo(search[4]);
 
             // Procesar tipo 3
-            } else if ((/^(3)()\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/).test(ciperm)) {
-                search = (/^(3)()\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/g).exec(ciperm);
-                msg['tipo'] = search[1];
-                msg['sufijo'] = search[5];
+            } else if ((/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/).test(ciperm)) {
+                search = (/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/g).exec(ciperm);
 
             // Procesar tipo 5
-            } else if ((/^(5)()\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
-                search = (/^(5)()\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
-                msg['tipo'] = search[1]
+            } else if ((/^(5)\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
+                search = (/^(5)\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
 
             // Procesar tipo 6
-            } else if ((/^(6)\/([048])\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/).test(ciperm)) {
-                search = (/^(6)\/([048])\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/g).exec(ciperm);
-                msg['tipo'] = search[1];
-                msg['sufijo'] = search[5];
+            } else if ((/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/).test(ciperm)) {
+                search = (/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/g).exec(ciperm);
 
             // Procesar tipo 1
-	    } else if ((/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/).test(ciperm)) {
-		    search = (/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/g).exec(ciperm);
-                msg['tipo'] = search[1]
-                msg['sufijo'] = search[5]
-                msg['nrepe'] = search[6]
+	    } else if ((/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/).test(ciperm)) {
+		    search = (/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/g).exec(ciperm);
+                msg['repetir'] = search[5]
 
             } else {
                 throw "ERROR - Formato de mensaje inválido";
             }
 
             // Asignar valores comunes
-            msg['prioridad'] = search[2];
+            msg['tipo'] = search[1];
+            msg['sufijo'] = search[4];
 
             // Según nº torre o comandancia
-            if ([2, 4].indexOf(search[3].length) > -1) {
-                msg['origen'] = search[3].substring(0,2);
-                msg['destino'] = search[3].substring(2);
-            } else if ([3, 6].indexOf(search[3].length) > -1) {
-                msg['origen'] = search[3].substring(0,3);
-                msg['destino'] = search[3].substring(3);
+            if ([2, 4].indexOf(search[2].length) > -1) {
+                msg['origen'] = search[2].substring(0,2);
+                msg['destino'] = search[2].substring(2);
+            } else if ([3, 6].indexOf(search[2].length) > -1) {
+                msg['origen'] = search[2].substring(0,3);
+                msg['destino'] = search[2].substring(3);
             } else {
                 msg['origen'] = '';
                 msg['destino'] = '';
             }
 
             // Según formato y registro hora corto/largo
-            if (search[4].length == 2) {
+            if (search[3].length == 2) {
                 msg['horadia'] = '';
-                msg['registro'] = search[4];
-            } else if (search[4].length == 3) {
-                msg['horadia'] = search[4].substring(0,3);
+                msg['registro'] = search[3];
+            } else if (search[3].length == 3) {
+                msg['horadia'] = search[3].substring(0,3);
                 msg['registro'] = '';
-            } else if (search[4].length == 4) {
-                msg['horadia'] = search[4].substring(0,4);
+            } else if (search[3].length == 4) {
+                msg['horadia'] = search[3].substring(0,4);
                 msg['registro'] = '';
-            } else if (search[4].length == 5) {
-                msg['horadia'] = search[4].substring(0,3);
-                msg['registro'] = search[4].substring(3);
-            } else if (search[4].length == 6) {
-                msg['horadia'] = search[4].substring(0,6);
+            } else if (search[3].length == 5) {
+                msg['horadia'] = search[3].substring(0,3);
+                msg['registro'] = search[3].substring(3);
+            } else if (search[3].length == 6) {
+                msg['horadia'] = search[3].substring(0,6);
                 msg['registro'] = '';
-            } else if (search[4].length == 8) {
-                msg['horadia'] = search[4].substring(0,6);
-                msg['registro'] = search[4].substring(6);
+            } else if (search[3].length == 8) {
+                msg['horadia'] = search[3].substring(0,6);
+                msg['registro'] = search[3].substring(6);
             } else {
                 msg['horadia'] = '';
                 msg['registro'] = '';
@@ -716,7 +677,6 @@
         // Recoger error
         } catch (excp) {
             msg['procmsg'] = excp;
-            msg['tipo'] = msg['prioridad'] = '0';
             msg['origen'] = msg['destino'] = msg['novenales'] = '000';
             msg['horadia'] = '000000';
             msg['registro'] = msg['sufijo'] = '00';
@@ -736,6 +696,8 @@
 
         switch (msg['tipo']) {
             case '0': salida += "<i>Tipo:</i>\t\t 0 - General<br>"; break;
+            case '4': salida += "<i>Tipo:</i>\t\t 4 - General urgente<br>"; break;
+            case '8': salida += "<i>Tipo:</i>\t\t 8 - General urgentísimo<br>"; break;
             case '2':
                 salida += "<i>Tipo:</i>\t\t 2 - Servicio Interno<br>";
                 salida += "<i>Código:</i>\t " + msg['sufijo'] + "<br>"; break;
@@ -764,25 +726,14 @@
                 switch (msg['sufijo']) {
                     case '6':
                         salida += "<i>Petición:</i>\t 6 - Repetir registro<br>";
-		        if (msg['nrepe']) {
-                            salida += "<i>Novenales rep.:</i> " + msg['nrepe'] + "<br>";
+		        if (msg['repetir']) {
+                            salida += "<i>Novenales rep.:</i> " + msg['repetir'] + "<br>";
 			}
 			break;
                     case '9':
                         salida += "<i>Petición:</i>\t 9 - Anular registro<br>"; break;
 		};
          }
-
-        if (msg['prioridad']) {
-            switch (msg['prioridad']) {
-                case '0':
-                    salida += "<i>Prioridad:</i>\t 0 - Ordinario<br>"; break;
-                case '4':
-                    salida += "<i>Prioridad:</i>\t 4 - Urgente<br>"; break;
-                case '8':
-                    salida += "<i>Prioridad:</i>\t 8 - Urgentísimo<br>"; break;
-	    }
-        }
 
         // Comprobar una o dos torres
         if (msg['origen'] && msg['destino']) {

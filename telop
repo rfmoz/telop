@@ -27,10 +27,8 @@ def get_arguments(msg, lencript):
     '''obtener argumentos'''
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--prioridad', default=msg['prioridad'], action='store', type=str, choices=['0', '4', '8'],
-                        help='prioridad -> 0-ordinario | 4-urgente | 8-urgentísimo')
-    parser.add_argument('-t', '--tipo', default=msg['tipo'], action='store', type=str, choices=['0', '1', '2', '3', '5', '6'],
-                        help='tipo de servicio -> 0-general | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
+    parser.add_argument('-t', '--tipo', default=msg['tipo'], action='store', type=str, choices=['0', '1', '2', '3', '4', '5', '6', '8'],
+                        help='tipo de servicio -> 0-general | 4-gral. urgente | 8-gral. urgentísimo | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
     parser.add_argument('-o', '--origen', default=msg['origen'], action='store', type=int, metavar='[nº]', help='torre de origen')
     parser.add_argument('-d', '--destino', default=msg['destino'], action='store', type=int, metavar='[nº]', help='torre de destino')
     parser.add_argument('-b', '--breve', default=False, action='store_true', help='formato fecha y hora reducido')
@@ -176,7 +174,7 @@ def encffx(arg, ciphert, tipo=False):
 def zcodif_codificar(arg, msg, lencript):
     '''codificar mensaje'''
 
-    if msg['tipo'] == '0':  # Servicio general
+    if msg['tipo'] in ['0','4','8']:  # Servicios generales
         # 0/0x10x5/232x040x/0x6/757575/0
 
         logging.info('Texto raw:\t\t %s', str(msg['mensaje']))
@@ -207,33 +205,30 @@ def zcodif_codificar(arg, msg, lencript):
         # Insertar arriadas en mensaje y borar la última si coincide
         ciperm = str(re.sub(r'(.{9})', r'\1/', cipert)).rstrip('/')
 
-        sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
+        sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['tipo']
 
     elif msg['tipo'] == '2':  # Servicio interno
-        # 2/0x1052/234104/0x/2
-        msg['prioridad'] = ''
+        # 2/0x1052/21261x/0x
         msg['registro'] = ''
         sufijo = '/' + msg['sufijo']
 
     elif msg['tipo'] == '3':  # Servicio de vigilancia
         # 3/0x1052/191709
-        msg['prioridad'] = ''
         msg['registro'] = ''
         sufijo = '/' + msg['sufijo']
 
     elif msg['tipo'] == '6':  # Servicio acuse de recibo
-        # 6/0/0x1052/1917090x/0x
+        # 6/0x1052/1917090x/0x
         sufijo = '/' + msg['sufijo']
 
     elif msg['tipo'] == '5':  # Continuar transmisión
         # 5/0x1/0x
-        msg['prioridad'] = ''
         msg['destino'] = '0'
         msg['horadia'] = ''
         sufijo = ''
 
     elif msg['tipo'] == '1':  # Rectificación
-        # 1/0/0x1052/01/9
+        # 1/0x1052/01/9
         msg['horadia'] = ''
         sufijo = '/' + msg['sufijo']
 
@@ -250,11 +245,10 @@ def zcodif_codificar(arg, msg, lencript):
         msg['destino'] = ''
 
     # Paquete formateado
-    paquet = str(msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
+    paquet = str(msg['tipo'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
 
     paquet = re.sub(r'\/\/+', r'/', paquet)  # Eliminar '//' por campos vacíos
     paquet = re.sub(r'\/$', r'', paquet)  # Eliminar '/' al final
-    paquet = re.sub(r'^0\/', r'', paquet)  # Eliminar '0/' del tipo general
 
     logging.info('Mensaje raw:\t %s', paquet)
 
@@ -275,7 +269,8 @@ def zcodif_descodificar(arg, msg, lencript):
         # Extraer interrupciones finales si las hubiera
         #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
         #  y finaliza con el sufijo del formato de la interrupción
-        while re.match(r'^(([01468](/\d*){4})|([25](/\d*){3})|(3(/\d*){2})).+'
+
+        while re.match(r'^(([012468](/\d*){3})|([35](/\d*){2})).+'
                        r'(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
 
             # Procesar interrupción
@@ -296,14 +291,13 @@ def zcodif_descodificar(arg, msg, lencript):
             logging.info('Intrr.:\t %s', str(regint.group(0)))
             ciperm = ciperm[:-len(regint.group(0))]
 
-        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 5 grupos) - https://regex101.com/r/xNc1lk/1
+        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 5 grupos) - https://regex101.com/r/xNc1lk/3
 
         # Procesar tipo 0
-        if re.match(r'^()([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:
-            search = re.search(r'^()([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)
+        if re.match(r'^([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:
+            search = re.search(r'^([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)
 
-            msg['tipo'] = '0'
-            msg['novenales'] = search.group(5)
+            msg['novenales'] = search.group(4)
 
             # Calcular tamaño del texto en base a los novenales
             long_nov = (int(msg['novenales'][:2]) * 9) + (int(msg['novenales'][2:]))
@@ -326,78 +320,65 @@ def zcodif_descodificar(arg, msg, lencript):
                 for i in range(0, long_nov - 1, 2):
                     msg['procmsg'] += lencript[int(cipert[i] + cipert[i+1])]
 
-                # Fix - Solventar cambio en la posición de los valores '€' y ' ' del diccionario v2.0
-                if msg['procmsg'].count('€') > msg['procmsg'].count(' '):
-                    logging.info('Diccionario rev.')
-                    msg['procmsg'] = msg['procmsg'].replace('€', ' ')
-
         # Procesar tipo 2
-        elif re.match(r'^(2)()/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm) is not None:
-            search = re.search(r'^(2)()/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm)
-            msg['tipo'] = search.group(1)
-            msg['sufijo'] = search.group(5)
+        elif re.match(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm) is not None:
+            search = re.search(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm)
             #msg['procmsg'] = txt_valor_del_código
 
         # Procesar tipo 3
-        elif re.match(r'^(3)()/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm) is not None:
-            search = re.search(r'^(3)()/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)
-            msg['tipo'] = search.group(1)
-            msg['sufijo'] = search.group(5)
+        elif re.match(r'^(3)/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm) is not None:
+            search = re.search(r'^(3)/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)
 
         # Procesar tipo 5
-        elif re.match(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
-            search = re.search(r'^(5)()/(\d{2,3})/(\d{2})()\b', ciperm)
-            msg['tipo'] = search.group(1)
+        elif re.match(r'^(5)/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
+            search = re.search(r'^(5)/(\d{2,3})/(\d{2})()\b', ciperm)
 
         # Procesar tipo 6
-        elif re.match(r'^(6)/([048])/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm) is not None:
-            search = re.search(r'^(6)/([048])/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm)
-            msg['tipo'] = search.group(1)
-            msg['sufijo'] = search.group(5)
+        elif re.match(r'^(6)/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm) is not None:
+            search = re.search(r'^(6)/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm)
 
         # Procesar tipo 1
-        elif re.match(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm) is not None:
-            search = re.search(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)
-            msg['tipo'] = search.group(1)
-            msg['sufijo'] = search.group(5)
-            msg['nrepe'] = search.group(6)
+        elif re.match(r'^(1)/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm) is not None:
+            search = re.search(r'^(1)/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)
+            msg['repetir'] = search.group(5)
 
         else:
             raise Exception('Formato de mensaje inválido')
 
         # Asignar valores comunes
-        msg['prioridad'] = search.group(2)
+        msg['tipo'] = search.group(1)
+        msg['sufijo'] = search.group(4)
 
         # Según nº torre o comandancia
-        if len(search.group(3)) in (2, 4):
-            msg['origen'] = search.group(3)[:2]
-            msg['destino'] = search.group(3)[2:]
-        elif len(search.group(3)) in (3, 6):
-            msg['origen'] = search.group(3)[:3]
-            msg['destino'] = search.group(3)[3:]
+        if len(search.group(2)) in (2, 4):
+            msg['origen'] = search.group(2)[:2]
+            msg['destino'] = search.group(2)[2:]
+        elif len(search.group(2)) in (3, 6):
+            msg['origen'] = search.group(2)[:3]
+            msg['destino'] = search.group(2)[3:]
         else:
             msg['origen'] = ''
             msg['destino'] = ''
 
         # Según formato hora y registro corto/largo
-        if len(search.group(4)) == 2:  # registro
+        if len(search.group(3)) == 2:  # registro
             msg['horadia'] = ''
-            msg['registro'] = search.group(4)
-        elif len(search.group(4)) == 3:  # horadia-breve
-            msg['horadia'] = search.group(4)[:3]
+            msg['registro'] = search.group(3)
+        elif len(search.group(3)) == 3:  # horadia-breve
+            msg['horadia'] = search.group(3)[:3]
             msg['registro'] = ''
-        elif len(search.group(4)) == 4:  # horadia sin dia
-            msg['horadia'] = search.group(4)[:4]
+        elif len(search.group(3)) == 4:  # horadia sin dia
+            msg['horadia'] = search.group(3)[:4]
             msg['registro'] = ''
-        elif len(search.group(4)) == 5:  # horadia-breve + ref
-            msg['horadia'] = search.group(4)[:3]
-            msg['registro'] = search.group(4)[3:]
-        elif len(search.group(4)) == 6:  # horadia-normal
-            msg['horadia'] = search.group(4)[:6]
+        elif len(search.group(3)) == 5:  # horadia-breve + ref
+            msg['horadia'] = search.group(3)[:3]
+            msg['registro'] = search.group(3)[3:]
+        elif len(search.group(3)) == 6:  # horadia-normal
+            msg['horadia'] = search.group(3)[:6]
             msg['registro'] = ''
-        elif len(search.group(4)) == 8: # horadia-normal + ref
-            msg['horadia'] = search.group(4)[:6]
-            msg['registro'] = search.group(4)[6:]
+        elif len(search.group(3)) == 8: # horadia-normal + ref
+            msg['horadia'] = search.group(3)[:6]
+            msg['registro'] = search.group(3)[6:]
         else:
             msg['horadia'] = ''
             msg['registro'] = ''
@@ -421,6 +402,8 @@ def imprimir(arg, msg):
     else:
         print('-' * 80)
         if msg['tipo'] == '0': print("Tipo:\t\t 0 - General")
+        if msg['tipo'] == '4': print("Tipo:\t\t 4 - General urgente")
+        if msg['tipo'] == '8': print("Tipo:\t\t 8 - General urgentísimo")
         if msg['tipo'] == '2':
             print("Tipo:\t\t 2 - Servicio Interno")
             print(f"Código:\t\t {msg['sufijo']}")
@@ -444,18 +427,10 @@ def imprimir(arg, msg):
             print("Tipo:\t\t 1 - Rectificación")
             if msg['sufijo'] == '6':
                 print("Petición:\t 6 - Repetir registro")
-                if msg['nrepe']:
-                    print(f"Novenales rep.:\t {msg['nrepe']}")
+                if msg['repetir']:
+                    print(f"Novenales rep.:\t {msg['repetir']}")
             if msg['sufijo'] == '9':
                 print("Petición:\t 9 - Anular registro")
-
-        if msg['prioridad']:
-            if msg['prioridad'] == '0':
-                print("Prioridad:\t 0 - Ordinario")
-            if msg['prioridad'] == '4':
-                print("Prioridad:\t 4 - Urgente")
-            if msg['prioridad'] == '8':
-                print("Prioridad:\t 8 - Urgentísimo")
 
         # Comprobar una o dos torres
         if msg['origen'] and msg['destino']:
@@ -516,7 +491,7 @@ def main():
     lencript = list(string.digits + string.ascii_letters + string.punctuation) + ['Ñ', 'ñ', '¿', '€', '', ' ']
 
     # Diccionario de mensaje. Valores por defecto
-    msg = {'prioridad': '0', 'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'nrepe': None}
+    msg = {'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'repetir': None}
 
     arg, msg = get_arguments(msg, lencript)
 
