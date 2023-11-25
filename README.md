@@ -309,12 +309,13 @@ A/___B__/___C____/D
 
 ### Documentos relevantes
 
-Revisión Código Telégrafo Óptico Mathé -> [revision_codigo_telegrafo.pdf](https://github.com/rfmoz/telop/blob/main/revision_codigo_telegrafo.pdf)
-
 Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica -> [analisis_presencia_niebla.pdf](https://github.com/rfmoz/telop/blob/main/analisis_presencia_niebla.pdf)
 
 
 ### Más información
+
+Revisión Código Telégrafo Óptico Mathé
+[Academia.edu](https://independent.academia.edu/rfmoz)
 
 ```   
 Título:		Historia de la telegrafía óptica en España
