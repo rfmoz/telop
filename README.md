@@ -413,10 +413,7 @@ Autor:		F. Navarro Villoslada
 Fecha de pub.:	1841
 Url:		Google Books - https://books.google.es/books?id=pVJfAAAAcAAJ
 
-
 VV/AA:		https://forohistorico.coit.es/index.php/wiki-telegrafia-optica/category/bibliografia-y-referencias
-
-
 ```   
 
 ### Versión web
