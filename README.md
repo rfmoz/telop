@@ -310,7 +310,9 @@ A/___B__/___C____/D
 ### Más información
 
 Revisión Código Telégrafo Óptico Mathé
+
 Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica
+
 [Academia.edu](https://independent.academia.edu/rfmoz)
 
 ```   
