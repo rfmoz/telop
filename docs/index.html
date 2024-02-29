@@ -15,9 +15,9 @@
 	}
 	div#content {
 	    border-style: none;
-	    border-left: dashed #e6e6e6 5px;
-	    border-right: dashed #e6e6e6 5px;
-	    background: linen;
+	    border-left: double white 7px;
+	    border-right: double white 7px;
+	    background: antiquewhite;
 	    width: 50em;
 	    min-height: 100vh;
 	    margin: 0px auto 0px auto;
@@ -82,7 +82,7 @@
 	    text-align: center;
 	}
 	pre p#procmsg {
-	    background-color: rgba(255, 255, 255, 0.1);
+	    background-color: rgba(255, 255, 255, 0.2);
 	    border: 1px solid grey;
 	    border-radius: 15px;
 	    padding: 1em;
@@ -119,6 +119,7 @@
 	    font-size: 77%;
 	    color: grey;
 	    float: right;
+            align-self: center;
 	}
 	div#desc ul{
 	    margin-top: 0px;
@@ -224,9 +225,11 @@
                         </select>
                     </td>
                 </tr>
-                <tr id="opref">
-                    <td onmouseover="desc(innerHTML)" onmouseout="desc()">Registro:</td>
-                    <td><input type="number" id="mref" min="1" max="99" pattern="\d{2}" /></td>
+                <tr id="opreg">
+                    <td>Registro:</td>
+                    <td onmouseover="desc('registro')" onmouseout="desc()">
+                        <input type="number" id="mreg" min="1" max="99" pattern="\d{2}" />
+                    </td>
                 </tr>
             </table>
             <div id="desc"></div>
@@ -290,6 +293,12 @@
 		  <li><b>Normal:</b> &nbsp;&nbsp;Indicación habitual con hora, minutos y día.</li>\
 		  <li><b>Reducido:</b> &nbsp;&nbsp;Fórmula para acortar redondeando los minutos al cuarto de hora.</li>\
 		</ul>';
+	} else if ( x == 'registro' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>Registro:</b> &nbsp;&nbsp;Número de referencia del mensaje.</li>\
+		</ul>';
 	} else {
 	    document.getElementById("desc").style.display = "none";
 	}
@@ -301,7 +310,7 @@
             // Resetear valores que se van a modificar
             document.getElementById("ophora").style.display = "table-row";
             document.getElementById("optdst").style.display = "table-row";
-            document.getElementById("opref").style.display = "table-row";
+            document.getElementById("opreg").style.display = "table-row";
             document.getElementById("opincd").style.display = "none";
             document.getElementById("oprectf").style.display = "none";
             document.getElementById("form1").style.textDecoration = "none";
@@ -320,14 +329,14 @@
 
             // Opciones de servicio interno
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 2 ) {
-                document.getElementById("opref").style.display = "none";
+                document.getElementById("opreg").style.display = "none";
                 document.getElementById("opcod").style.display = "table-row";
                 document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
                 codinfo();
             }
             // Opciones de vigilancia
             if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 3 ) {
-                document.getElementById("opref").style.display = "none";
+                document.getElementById("opreg").style.display = "none";
                 document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
                 document.getElementById("opincd").style.display = "table-row";
                 var option = document.createElement("option");  // Añadir opcion vacía para vigilancia
@@ -403,7 +412,7 @@
 
         selectElement('morig', '1');
         selectElement('mdest', (destinos[Math.floor(Math.random() * destinos.length)]));
-        selectElement('mref', (Math.floor(Math.random() * 99) + 1));
+        selectElement('mreg', (Math.floor(Math.random() * 99) + 1));
         selectElement('rectf', (rectificar[Math.floor(Math.random() * rectificar.length)]));
 
         document.getElementById("codops").style.display = "flex";
@@ -419,7 +428,7 @@
         msg['tipo'] = document.getElementById("mrecep").options[mrecep.selectedIndex].value;
         msg['origen'] = document.getElementById("morig").value.toString().substring(0,3).padStart(3, '0');
         msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
-        msg['registro'] = document.getElementById("mref").value.toString().substring(0,2).padStart(2, '0');
+        msg['registro'] = document.getElementById("mreg").value.toString().substring(0,2).padStart(2, '0');
         msg['mfhora'] = document.getElementById("mfhora").value;
 	if (msg['tipo'] == 1) {
 	    msg['sufijo'] = document.getElementById("rectf").value;
