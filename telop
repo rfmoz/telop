@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """telop - Codifica y descodifica mensajes telegráficos del sistema Mathé"""
-# Copyright (C) 2021-2023 - Ricardo F.
+# Copyright (C) 2021-2024 - Ricardo F.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ def get_arguments(msg, lencript):
                 sys.exit(0)
         if arg.tipo == '3' and arg.sufijo is None:
             arg.sufijo = ''
-        if arg.sufijo == 0 or arg.sufijo is None:
+        if arg.tipo == '6' and arg.sufijo is None:
             arg.sufijo = '00'
 
     if arg.diccionario:
