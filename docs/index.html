@@ -499,7 +499,7 @@
 
             case '2':  // Servicio interno
                 msg['registro'] = '';
-                sufijo = '/' + msg['sufijo'];
+                sufijo = '/' + msg['sufijo'] + "/" + msg['tipo'];
                 break;
 
             case '3':  // Servicio de vigilancia
@@ -617,8 +617,8 @@
                 }
 
             // Procesar tipo 2
-            } else if ((/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/).test(ciperm)) {
-                search = (/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2})\b/g).exec(ciperm);
+            } else if ((/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/).test(ciperm)) {
+                search = (/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/g).exec(ciperm);
                 msg['procmsg'] = codinfo(search[4]);
 
             // Procesar tipo 3

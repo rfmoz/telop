@@ -215,12 +215,13 @@ A/___B__/___C____/D
 |    --------------------------------- B torre de origen(3) + torre de destino(3)
 -------------------------------------- A tipo de servicio y prioridad(1)
 
-2/0x10x5/ 234104 /01 -> Comunicación interna
-|    |       |    |
-|    |       |    --- D sufijo código interno
-|    |       -------- C hora(2) + minutos(2) + dia(2)
-|    ---------------- B torre de origen(3) + torre de destino(3)
---------------------- A tipo de servicio y prioridad(1)
+2/0x10x5/ 234104 /0x1/2 -> Comunicación interna
+|    |       |     |  |
+|    |       |     |  -- A tipo de servicio y prioridad(1)
+|    |       |     ----- D sufijo código interno
+|    |       ----------- C hora(2) + minutos(2) + dia(2)
+|    ------------------- B torre de origen(3) + torre de destino(3)
+------------------------ A tipo de servicio y prioridad(1)
 
 3/0x10x5/ 234104 /0x -> Vigilancia
 |    |       |    |

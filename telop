@@ -141,7 +141,7 @@ def get_arguments(msg, lencript):
 
     msg['registro'] = msg['registro'][:2].zfill(2)
     if arg.tipo == '2':
-        msg['sufijo'] = msg['sufijo'][:2].zfill(2)
+        msg['sufijo'] = msg['sufijo'][:3].zfill(3)
 
     logging.info('Argumentos txt:\t %s', str(msg))
 
@@ -208,9 +208,9 @@ def zcodif_codificar(arg, msg, lencript):
         sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['tipo']
 
     elif msg['tipo'] == '2':  # Servicio interno
-        # 2/0x1052/21261x/0x
+        # 2/0x1052/21261x/0x0/2
         msg['registro'] = ''
-        sufijo = '/' + msg['sufijo']
+        sufijo = '/' + msg['sufijo'] + '/' + msg['tipo']
 
     elif msg['tipo'] == '3':  # Servicio de vigilancia
         # 3/0x1052/191709
@@ -291,7 +291,7 @@ def zcodif_descodificar(arg, msg, lencript):
             logging.info('Intrr.:\t %s', str(regint.group(0)))
             ciperm = ciperm[:-len(regint.group(0))]
 
-        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 5 grupos) - https://regex101.com/r/xNc1lk/3
+        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 5 grupos) - https://regex101.com/r/zVgaDT/1
 
         # Procesar tipo 0
         if re.match(r'^([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:
@@ -321,8 +321,8 @@ def zcodif_descodificar(arg, msg, lencript):
                     msg['procmsg'] += lencript[int(cipert[i] + cipert[i+1])]
 
         # Procesar tipo 2
-        elif re.match(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm) is not None:
-            search = re.search(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2})\b', ciperm)
+        elif re.match(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm) is not None:
+            search = re.search(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm)
             #msg['procmsg'] = txt_valor_del_código
 
         # Procesar tipo 3
