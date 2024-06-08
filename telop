@@ -50,7 +50,7 @@ def get_arguments(msg, lencript):
 
     logging.info('Argumentos raw:\t %s', str(vars(arg)))
 
-    # Según el tipo de mesnaje, comprobar asignaciones de sufijo
+    # Según el tipo de mensaje, comprobar asignaciones de sufijo
     if arg.tipo == '1':
         if arg.sufijo:
             if arg.sufijo not in [6, 9]:
