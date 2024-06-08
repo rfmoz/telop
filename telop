@@ -271,14 +271,14 @@ def zcodif_descodificar(arg, msg, lencript):
         #  y finaliza con el sufijo del formato de la interrupción
 
         while re.match(r'^(([012468](/\d*){3})|([35](/\d*){2})).+'
-                       r'(/(\d{3})/(?:(\d{4,6})/)?([1-4]))+$', ciperm) is not None:
+                       r'(/(\d{3})/(\d{4,6}/)?([1-4]))+$', ciperm) is not None:
 
             # Procesar interrupción
-            regint = re.search(r'/(\d{3})/(?:(\d{4,6})/)?([1-4])$', ciperm)
+            regint = re.search(r'/(\d{3})/(\d{4,6}/)?([1-4])$', ciperm)
             msg['regfin'] += '[T-' + regint.group(1) + ' '
             if regint.group(2):
-                if len(regint.group(2)) == 6:
-                    msg['regfin'] += '(' + regint.group(2)[4:] + ')'
+                if len(regint.group(2)) == 7:
+                    msg['regfin'] += '(' + regint.group(2)[4:6] + ')'
                 msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
             intrc = regint.group(3)
             intrc = intrc.replace('1', '1-Niebla')

@@ -561,14 +561,14 @@
 
         // Extraer interrupciones finales si las hubiera
         msg['regfin'] = '';
-        while((/^(([012468](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(?:(\d{4,6})\/)?([1-4]))+$/g).test(ciperm)) {
+        while((/^(([012468](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/g).test(ciperm)) {
 
             // Procesar interrupción
-            regint = (/\/(\d{3})\/(?:(\d{4,6})\/)?([1-4])$/g).exec(ciperm);
+            regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/g).exec(ciperm);
             msg['regfin'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
-                if (regint[2].length == 6) {
-                    msg['regfin'] += '(' + regint[2].substring(4) + ')';
+                if (regint[2].length == 7) {
+                    msg['regfin'] += '(' + regint[2].substring(4,6) + ')';
                 }
                 msg['regfin'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
             }
