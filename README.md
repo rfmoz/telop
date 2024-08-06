@@ -310,9 +310,11 @@ A/___B__/___C____/D
 
 ### Más información
 
-Revisión Código Telégrafo Óptico Mathé - [Academia.edu](https://independent.academia.edu/rfmoz)
+Revisión Código Telégrafo Óptico Mathé - [Academia.edu](https://www.academia.edu/109790572/Revisi%C3%B3n_C%C3%B3digo_Tel%C3%A9grafo_%C3%93ptico_Math%C3%A9)
 
-Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica - [Academia.edu](https://independent.academia.edu/rfmoz)
+Análisis sobre la presencia de niebla en las líneas civiles de telegrafía óptica - [Academia.edu](https://www.academia.edu/110399137/An%C3%A1lisis_sobre_la_presencia_de_niebla_en_las_l%C3%ADneas_civiles_de_telegraf%C3%ADa_%C3%B3ptica)
+
+Instrucción General para el Servicio de Transmisión - [Academia.edu](https://www.academia.edu/122482646/Instrucci%C3%B3n_General_para_el_Servicio_de_Transmisi%C3%B3n)
 
 
 ```   
