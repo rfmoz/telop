@@ -34,7 +34,7 @@ def get_arguments(msg, lencript):
     parser.add_argument('-b', '--breve', default=False, action='store_true', help='formato fecha y hora reducido')
     parser.add_argument('-c', '--comandancia', default=False, action='store_true', help='emplear n. de comandancia en origen / destino')
     parser.add_argument('--diccionario', default=None, action='store_true', help='mostrar diccionario codificación')
-    parser.add_argument('--pwd', default=None, action='store', help='codificar mensaje con contraseña')
+    parser.add_argument('--pwd', default=None, action='store', help='cifra / descifra el mensaje con contraseña')
     parser.add_argument('-r', '--registro', default=msg['registro'], action='store', type=int, metavar='[nº]', help='nº registro despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
     parser.add_argument('-s', '--sufijo', default=msg['sufijo'], action='store', type=int, help='sufijo aplicable a los mensajes tipo 1, 2, 3 y 6')
@@ -163,9 +163,9 @@ def encffx(arg, ciphert, tipo=False):
 
     effx = pyffx.Integer(arg.pwd.encode('utf_8'), length=len(ciphert))
 
-    if tipo == 'cod':
+    if tipo == 'cifra':
         return str(effx.encrypt(ciphert))
-    elif tipo == 'descod':
+    elif tipo == 'descifra':
         return str(effx.decrypt(ciphert))
     else:
         return ciphert
@@ -194,7 +194,7 @@ def zcodif_codificar(arg, msg, lencript):
         logging.info('Texto cod:\t\t %s', str(cipert))
 
         if arg.pwd:
-            cipert = encffx(arg, cipert, 'cod')
+            cipert = encffx(arg, cipert, 'cifra')
             logging.info('Texto ffx:\t\t %s', str(cipert))
 
         # Calcular novenales en base al tamaño del mensaje
@@ -308,7 +308,7 @@ def zcodif_descodificar(arg, msg, lencript):
             logging.info("Texto raw:\t\t %s", cipert)
 
             if arg.pwd:
-                cipert = encffx(arg, cipert, 'descod')
+                cipert = encffx(arg, cipert, 'descifra')
                 logging.info('Texto ffx:\t\t %s', str(cipert))
 
             # Comprobar integridad
