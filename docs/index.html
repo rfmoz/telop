@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="keywords" content="telégrafo, óptico, Mathé, código, mensaje, sistema, transmisión, telecomunicación" />
+    <meta name="description" content="Conversor Telégrafo Óptico sistema Mathé" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+    <title>Conversor Telégrafo Óptico</title>
+    <style>
+	body {
+	    font-family: "courier new", courier, monospace;
+	    margin: 0px;
+	    padding: 0px;
+	    height: 100%;
+	}
+	div#content {
+	    border-style: none;
+	    border-left: double white 7px;
+	    border-right: double white 7px;
+	    background: #f8eed6;
+	    width: 50em;
+	    min-height: 100vh;
+	    margin: 0px auto 0px auto;
+	    text-align: center;
+	    font-size: 110%;
+	}
+	div#title {
+	    padding-top: 1.5em;
+	    margin-bottom: 1.1em;
+	    font-size: 2em;
+	}
+	div#title a {
+	    text-decoration: none;
+	}
+	div#title img {
+	    border: 1px lightgrey solid;
+	    width: 90px;
+	    margin-right: 0.7em;
+	    border-radius: 50%;
+	    display: inline-block;
+	    vertical-align: middle;
+	}
+	textarea {
+	    color: maroon;
+	    height: 6em;
+	    padding: 7px;
+	    text-align: center;
+	    line-height: 1.5;
+	    letter-spacing: 1px;
+	    box-sizing: border-box;
+	}
+	div#codops {
+	    display: none;
+	    margin: 10px auto 5px auto;
+	    align-items: flex-start;
+	    justify-content: flex-start;
+	    min-height: 11em;
+	}
+	div#codops table {
+	    border: none;
+	    text-align: left;
+	    float: left;
+	    white-space: nowrap;
+	}
+	div#codops select, div#codops input {
+	    padding: 2px;
+	    margin: 2px;
+	}
+	div#codops input[type="number"] {
+	    width: 5em;
+	}
+	pre {
+	    text-align: left;
+	    margin: 1.5em auto 1.5em auto;
+	    word-break: normal;
+	    overflow-wrap: break-word;
+	    white-space: pre-wrap;
+	    line-height: 2;
+	}
+	pre p {
+	    font-weight: bold;
+	    text-align: center;
+	}
+	pre p#procmsg {
+	    background-color: rgba(255, 255, 255, 0.2);
+	    border: 1px solid grey;
+	    border-radius: 15px;
+	    padding: 1em;
+	    margin-bottom: 0.5em;
+	}
+	img#transgif{
+	    width: 310px;
+	    height: 300px;
+	    display: none;
+	}
+	.info {
+	    display: inline-block;
+	    opacity: 0.7;
+	    font-size: small;
+	    padding: 1em 0px 1em 0px;
+	}
+	.info summary  {
+	    outline: 0;
+	    user-select: none;
+	    padding-bottom: 0.5em;
+	}
+	button {
+	    padding: 5px;
+	    letter-spacing: 1px;
+	    color: #303030;
+	}
+	div#velocidad {
+	    text-align: center;
+	    display: none;
+	}
+	div#desc {
+	    text-align: left;
+	    font-family: "arial";
+	    font-size: 77%;
+	    color: grey;
+	    float: right;
+            align-self: center;
+	}
+	div#desc ul{
+	    margin-top: 0px;
+	    margin-bottom: 0px;
+	    padding-inline-start: 35px;
+	}
+	div#desc li{
+	    margin-bottom: 0.4em;
+	}
+	.info a{ color: maroon; }
+	pre i { margin-left: 5px; }
+	textarea { margin-bottom: 10px; }
+	pre, button, textarea, div#codops { width: 80%; }
+	span#destgif img{ box-shadow: 0px 10px 6px -6px #777; border: 1px solid #d6d6d6; }
+
+	@media only screen and (max-width: 888px) {
+		div#title img {
+		    display: block;
+		    margin-left: auto;
+		    margin-right: auto;
+		    margin-bottom: 0.2em;
+		}
+		div#title {
+		    padding-top: 0.5em;
+		    margin-bottom: 0.7em;
+		    font-size: 1.6em;
+		}
+		div#content { width: calc(98% - 5px); }
+		pre, button, textarea, div#codops { width: 95%; }
+		div#codops { min-height: auto; }
+		textarea { font-size: 0.9em; }
+		div#desc { display: none !important; }
+	}
+    </style>
+</head>
+
+<body>
+<div id="content"> 
+    <div id="title"><a href="https://rfmoz.github.io/telop/"><img src="static/torre.jpg" alt="Telégrafo"></a>Conversor Telégrafo Óptico</div>
+    <div id="formulario">
+        <textarea id="form1" maxlength="600"></textarea>
+
+        <div id="codops">
+            <table>
+                <tr>
+                    <td>Tipo:</td>
+                    <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mrecep" onchange="set_ops_view()">
+                        <option value="0">0 - General</option>
+                        <option value="4">4 - General urgente</option>
+                        <option value="8">8 - General urgentísimo</option>
+                        <option value="1">1 - Rectificación</option>
+                        <option value="2">2 - Serv. Interno</option>
+                        <option value="3">3 - Vigilancia</option>
+                        <option value="5">5 - Continuación</option>
+                        <option value="6">6 - Acuse de Recibo</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="opcod">
+                    <td>Código:</td>
+                    <td onchange="codinfo()"><select id="codg">
+                        <option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option>
+                        <option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option>
+                        <option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option>
+                        <option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option>
+                        <option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option>
+                        <option value="25">25</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="opincd">
+                    <td>Estado:</td>
+                    <td onmouseover="desc('estado')" onmouseout="desc()"><select id="incd">
+                        <option value="00">0x - Correcto</option>
+                        <option value="1">1 - Incd. niebla</option>
+                        <option value="2">2 - Incd. ausencia</option>
+                        <option value="3">3 - Incd. vang. ocupada</option>
+                        <option value="4">4 - Incd. avería</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="oprectf">
+                    <td>Petición:</td>
+                    <td onmouseover="desc('peticion')" onmouseout="desc()"><select id="rectf">
+                        <option value="6">6 - Repetir reg.</option>
+                        <option value="9">9 - Anular reg.</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="optorg">
+                    <td>Torre origen:</td>
+                    <td><input type="number" id="morig" min="0" max="999" pattern="\d{3}" /></td>
+                </tr>
+                <tr id="optdst">
+                    <td>Torre destino:</td>
+                    <td><input type="number" id="mdest" min="0" max="999" pattern="\d{3}" /></td>
+                </tr>
+                <tr id="ophora">
+                    <td>Formato hora:</td>
+                    <td onmouseover="desc('hora')" onmouseout="desc()"><select id="mfhora">
+                        <option value="0">Normal</option>
+                        <option value="1">Reducido</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="opreg">
+                    <td>Registro:</td>
+                    <td onmouseover="desc('registro')" onmouseout="desc()">
+                        <input type="number" id="mreg" min="1" max="99" pattern="\d{2}" />
+                    </td>
+                </tr>
+            </table>
+            <div id="desc"></div>
+        </div>
+    <button id="btn1" onclick="procesar()">CONVERTIR</button>
+    </div>
+    <pre id="salida"></pre>
+    <details class="info">
+        <summary> más información </summary>
+        <div>
+            <a target="_blank" title="GitHub telop" href="https://github.com/rfmoz/telop">github</a> -
+            <a target="_blank" title="Twitter telegrafoptico" href="https://twitter.com/telegrafoptico">twitter</a> -
+            <a target="_blank" title="Foro Histórico de las Comunicaciones C.O.I.T." href="https://forohistorico.coit.es/index.php/wiki-telegrafia-optica">fht</a> -
+            <a target="_blank" title="Facebook Telegrafía Óptica" href="https://www.facebook.com/TelegrafiaOptica">facebook</a> -
+            <a target="_blank" title="Wikipedia Telégrafo Óptico" href="https://es.wikipedia.org/wiki/Tel%C3%A9grafo_%C3%B3ptico">wikipedia</a>
+        </div>
+    </details>
+</div>
+
+    <script src="static/gifshot.js"></script>
+    <script>
+
+    // Eliminar salto de línea en textarea
+    document.querySelector('textarea').addEventListener('input', function(){
+        this.value = this.value.replace(/(\r\n|\n|\r)/gm, "");
+    })
+
+    function desc(x) {
+	if ( x == 'tipo' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>General:</b> &nbsp;&nbsp;Mensaje de comunicación habitual.</li>\
+		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anulación o repetición de un mensaje.</li>\
+		  <li><b>Servicio interno:</b> &nbsp;&nbsp;Indicaciones de servicio entre torres.</li>\
+		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Controlar y mantener la atención sobre la línea.</li>\
+		  <li><b>Continuación:</b> &nbsp;&nbsp;Retomar la transmisión de un mensaje interrumpido en una torre.</li>\
+		  <li><b>Acuse de recibo:</b> &nbsp;&nbsp;Confirmar la recepción de un mensaje junto con el motivo que lo provoca.</li>\
+		</ul>';
+	} else if ( x == 'estado' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>Correcto:</b> &nbsp;&nbsp;El mensaje ha sido recepcionado en destino.</li>\
+		  <li><b>Incidencia niebla:</b> &nbsp;&nbsp;Interrupción por niebla a vanguardia.</li>\
+		  <li><b>Incidencia ausencia:</b> &nbsp;&nbsp;La vanguardia no responde a los movimientos.</li>\
+		  <li><b>Incidencia vanguardia ocupada:</b> &nbsp;&nbsp;Torre receptora en funcionamiento.</li>\
+		  <li><b>Incidencia avería:</b> &nbsp;&nbsp;Problema técnico que impide la transmisión.</li>\
+		</ul>';
+	} else if ( x == 'peticion' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>Repetir registro:</b> &nbsp;&nbsp;Solicitar repetición del mensaje con el registro indicado.</li>\
+		  <li><b>Anular registro:</b> &nbsp;&nbsp;Petición para anular mensaje con el registro indicado.</li>\
+		</ul>';
+	} else if ( x == 'hora' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>Normal:</b> &nbsp;&nbsp;Indicación habitual con hora, minutos y día.</li>\
+		  <li><b>Reducido:</b> &nbsp;&nbsp;Fórmula para acortar redondeando los minutos al cuarto de hora.</li>\
+		</ul>';
+	} else if ( x == 'registro' ) {
+	    document.getElementById("desc").style.display = "inline-block";
+		txt = '\
+		 <ul>\
+		  <li><b>Registro:</b> &nbsp;&nbsp;Número de referencia del mensaje.</li>\
+		</ul>';
+	} else {
+	    document.getElementById("desc").style.display = "none";
+	}
+	document.getElementById('desc').innerHTML = txt;
+    }
+
+    function set_ops_view() {
+
+            // Resetear valores que se van a modificar
+            document.getElementById("ophora").style.display = "table-row";
+            document.getElementById("optdst").style.display = "table-row";
+            document.getElementById("opreg").style.display = "table-row";
+            document.getElementById("opincd").style.display = "none";
+            document.getElementById("oprectf").style.display = "none";
+            document.getElementById("form1").style.textDecoration = "none";
+            document.getElementById("form1").style.color = "maroon";
+            document.getElementById("opcod").style.display = "none";
+            document.getElementById("mfhora").options[0].selected = true;  // Hora normal
+	    if (document.getElementById("incd").firstChild.value === "") {
+	       document.getElementById("incd").removeChild(document.getElementById("incd").firstChild);
+	    }
+
+            // Tachar texto
+            if (['1','3','5','6','9'].indexOf(document.getElementById("mrecep").options[mrecep.selectedIndex].value) > -1) {
+                document.getElementById("form1").style.textDecoration = "line-through";
+                document.getElementById("form1").style.color = "darkgrey";
+            }
+
+            // Opciones de servicio interno
+            if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 2 ) {
+                document.getElementById("opreg").style.display = "none";
+                document.getElementById("opcod").style.display = "table-row";
+                document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
+                codinfo();
+            }
+            // Opciones de vigilancia
+            if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 3 ) {
+                document.getElementById("opreg").style.display = "none";
+                document.getElementById("mfhora").options[1].selected = true;  // Hora reducida
+                document.getElementById("opincd").style.display = "table-row";
+                var option = document.createElement("option");  // Añadir opcion vacía para vigilancia
+                option.value = "";
+                option.text = " ";
+                option.selected = true;
+                document.getElementById("incd").insertBefore(option, document.getElementById("incd").firstChild);
+            }
+            // Opciones Continuación
+            if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 5 ) {
+                document.getElementById("optdst").style.display = "none";
+                document.getElementById("ophora").style.display = "none";
+            }
+            // Opciones Acuse Recibo
+            if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 6 ) {
+                document.getElementById("opincd").style.display = "table-row";
+            }
+            // Opciones Rectificación
+            if ( document.getElementById("mrecep").options[mrecep.selectedIndex].value == 1 ) {
+                document.getElementById("oprectf").style.display = "table-row";
+                document.getElementById("ophora").style.display = "none";
+            }
+    }
+
+    function codinfo(lst_num) {
+
+	var listado = ['Comunicación de prueba',
+			'Más rapidez en los movimientos',
+			'Afinar bien los signos',
+			'Rectificar la máquina',
+			'Descanso por una hora',
+			'Descanso por dos horas',
+			'Descanso hasta el día siguiente',
+			'Inicio de ejercicio de escuela',
+			'Fin de ejercicio de escuela',
+			'En esta torre hay una avería de poca consideración',
+			'En esta torre hay una avería grave',
+			'La avería queda remediada',
+			'La torre de vanguardia tiene una avería muy grave',
+			'La torre de retaguardia tiene una avería muy grave',
+			'Se pide auxilio para arreglar la avería',
+			'Han llegado los auxilios que se han pedido',
+			'El torrero de servicio causa baja',
+			'El torrero de servicio pide relevo con urgencia',
+			'Esta torre vuelve al servicio',
+			'Ha llegado el oficial de sección',
+			'Esta torre está amenazada',
+			'La torre de vanguardia está amenazada',
+			'La torre de retaguardia está amenazada',
+			'Esta torre pide auxilio de fuerza armada',
+			'Se ha alterado la tranquilidad pública en la comarca',
+			'Se ha restablecido la tranquildad pública en la comarca'];
+
+	// Devolver el texto sólo o rellenar la caja de texto
+	if ( lst_num ) {
+	    return listado[parseInt(lst_num)];
+	}
+	document.getElementById('form1').value = listado[parseInt(document.getElementById('codg').value)];
+
+    }
+
+    function iniciar_ops(msg, lencript) {
+        console.log('Codificar Opciones Iniciales');
+
+        function selectElement(id, valueToSelect) {
+            let element = document.getElementById(id);
+            element.value = valueToSelect;
+        }
+
+        var destinos = ['18','27','36','50','52'];
+        var rectificar = ['6','9'];
+
+        selectElement('morig', '1');
+        selectElement('mdest', (destinos[Math.floor(Math.random() * destinos.length)]));
+        selectElement('mreg', (Math.floor(Math.random() * 99) + 1));
+        selectElement('rectf', (rectificar[Math.floor(Math.random() * rectificar.length)]));
+
+        document.getElementById("codops").style.display = "flex";
+        document.getElementById("salida").innerHTML = '';
+        document.getElementById("codg").options[Math.floor(Math.random() * document.getElementById("codg").options.length)].selected = true;
+    }
+
+    
+    function codificar(msg, lencript) {
+        console.log('Codificar');
+
+        var d = new Date();
+        msg['tipo'] = document.getElementById("mrecep").options[mrecep.selectedIndex].value;
+        msg['origen'] = document.getElementById("morig").value.toString().substring(0,3).padStart(3, '0');
+        msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
+        msg['registro'] = document.getElementById("mreg").value.toString().substring(0,2).padStart(2, '0');
+        msg['mfhora'] = document.getElementById("mfhora").value;
+	if (msg['tipo'] == 1) {
+	    msg['sufijo'] = document.getElementById("rectf").value;
+	}
+	if (msg['tipo'] == 2) {
+            msg['sufijo'] = document.getElementById("codg").value;
+	}
+	if (msg['tipo'] == 6 || msg['tipo'] == 3) {
+	    msg['sufijo'] = document.getElementById("incd").value;
+	}
+        if (msg['mfhora'] == 1) {
+            fchora = parseInt(d.getHours());
+            fcmin = parseInt(d.getMinutes());
+            switch (true) {
+                case fcmin >= 45:
+                    fchora =+ fchora + 75; break;
+                case fcmin >= 30:
+                    fchora =+ fchora + 50; break;
+                case fcmin >= 15:
+                    fchora =+ fchora + 25;
+            }
+
+            fchora = fchora.toString().padStart(2, '0');
+            fcdia = d.getDate().toString().slice(-1);
+
+            msg['horadia'] = fchora + fcdia;
+        } else {
+            msg['horadia'] = d.getHours().toString().padStart(2, '0') + d.getMinutes().toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0');
+        }
+
+        if ((/^\[e[123]\]/).test(msg['mensaje'])) {
+            msg['estilo'] = (/^\[e(.)\]/g).exec(msg['mensaje'])[1];  // recoger número estilo
+            msg['mensaje'] = msg['mensaje'].slice(4).trim();  // eliminar bloque de estilo
+        } else {
+            msg['estilo'] = '0';
+        }
+
+        console.log('Argumentos txt:', JSON.stringify(msg))
+
+        switch (msg['tipo']) {
+            case '0':  // General
+            case '4':  // General urgente
+            case '8':  // General urgentísimo
+                // Recorrer los digitos del mensaje para codificar cada uno según la posición que ocupan en el diccionario
+                var cipert = '';  // Mensaje codificado
+                for (let i = 0; i < msg['mensaje'].length; i++) {
+                    let elem = msg['mensaje'][i];
+                    if (!lencript.includes(elem)) {  // si el carácter no se encuentra en el diccionario
+                        elem = elem.normalize('NFKD').replace(/[^\w]/g, '');  // probar a normalizar: pasar a unicode, quita acentos y similar
+                        if (!lencript.includes(elem)) {  // finalmente sustituir por '#' si no existe
+                            elem = '#';
+                        }
+                    }
+                    // Asignar valor de la posicion del carácter, siempre con dos digitos '00'
+                    cipert += lencript.indexOf(elem).toString().padStart(2, '0');
+                }
+                console.log('Texto cod: ' + cipert);
+        
+                // Calcular novenales en base al tamaño del mensaje
+                var cociente = Math.floor(cipert.length / 9);
+                var resto = Math.floor(cipert.length % 9);
+                msg['novenales'] = cociente.toString().padStart(2, '0') + resto.toString();
+        
+                // Insertar arriadas en mensaje y borar la última si coincide
+                ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
+        
+                var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['tipo'];
+                break;
+
+            case '2':  // Servicio interno
+                msg['registro'] = '';
+                sufijo = '/' + msg['sufijo'] + "/" + msg['tipo'];
+                break;
+
+            case '3':  // Servicio de vigilancia
+                msg['registro'] = '';
+                sufijo = '/' + msg['sufijo'];
+                break;
+
+            case '6':  // Servicio de acuse de recibo
+                sufijo = '/' + msg['sufijo'];
+                break;
+
+            case '5':  // Continuación
+                msg['destino'] = '0';
+                msg['horadia'] = '';
+                sufijo = '';
+                break;
+
+            case '1':  // Servicio de rectificación
+                msg['horadia'] = '';
+                sufijo = '/' + msg['sufijo'];
+                break;
+        }
+
+        // Torre '0' sin valor. Indicación única de torre
+        if (parseInt(msg['origen'], 10) === 0 && parseInt(msg['destino'], 10) === 0) {
+            msg['destino'] = '';
+        } else if (parseInt(msg['origen'], 10) == 0) {
+            msg['origen'] = ''; 
+        } else if (parseInt(msg['destino'], 10) == 0) {
+            msg['destino'] = ''; 
+        }
+
+        // Mensaje formateado
+        var msgfmt = msg['tipo'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
+
+        msgfmt = msgfmt.replace(/\/\/+/g, "/");  // Eliminar duplicados // por campos vacíos
+        msgfmt = msgfmt.replace(/\/$/g, "");  // Eliminar '/' al final
+
+        console.log('Mensaje raw: ' + msgfmt);
+        console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
+
+        // Salida final. Sustituir caracteres reptidos por x
+        msg['procmsg'] = msgfmt.replace(/(\w{1})\1/g, "$1x");
+
+        imprimir(msg);
+    }
+
+
+    function descodificar(msg, lencript) {
+        console.log('Descodificar');
+
+        // Ocultar opciones parámetros y limpiar formato caja texto
+        document.getElementById("codops").style.display = "none";
+        document.getElementById("form1").style.textDecoration = "none";
+        document.getElementById("form1").style.color = "maroon";
+
+        // Reconstruir caracteres repetidos
+        ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
+
+        // Extraer interrupciones finales si las hubiera
+        msg['regfin'] = '';
+        while((/^(([012468](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/g).test(ciperm)) {
+
+            // Procesar interrupción
+            regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/g).exec(ciperm);
+            msg['regfin'] += '[T-' + regint[1] + ' ';
+            if (regint[2]) {
+                if (regint[2].length == 7) {
+                    msg['regfin'] += '(' + regint[2].substring(4,6) + ')';
+                }
+                msg['regfin'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
+            }
+            intrc = regint[3]
+            switch (intrc) {
+                case '1': intrc = '1-Niebla'; break;
+                case '2': intrc = '2-Ausencia'; break;
+                case '3': intrc = '3-Vang.Ocupada'; break;
+                case '4': intrc = '4-Avería';
+            }
+            msg['regfin'] += intrc + ']  ';
+
+            // Eliminar interrupción del mensaje
+            console.log("Intrr.: " + regint[0]);
+            ciperm = ciperm.slice(0, -regint[0].length);
+        }
+
+        try {
+
+            // Procesar tipo 0
+            if ((/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).test(ciperm)) {
+                search = (/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).exec(ciperm);
+
+                msg['novenales'] = search[4];
+
+                // Calcular tamaño del texto en base a los novenales
+                let long_nov = (parseInt(msg['novenales'].substring(0,2)) * 9) + (parseInt(msg['novenales'].substring(2)));
+
+                // Eliminar la cabecera del preámbulo del telegrama y extraer longitud del texto
+                cipert = ciperm.replace(search[0], '').replace(/\//g, '').substring(0, long_nov);
+
+                console.log("Mensaje raw: " + cipert);
+
+                // Comprobar integridad
+                if (long_nov != cipert.length) {
+                    msg['procmsg'] = 'ERROR - Extensión mensaje incorrecta'
+
+                } else {
+                    // Recorrer a pares el texto y extraer la posición del carácter en la lista de códigos
+                    msg['procmsg'] = '';
+                    for (let i=0; i < long_nov - 1; i+=2) {
+                        let posicion = (cipert[i] + cipert[(i + 1)]);
+                        msg['procmsg'] += lencript[parseInt(posicion)];
+                    }
+
+                }
+
+            // Procesar tipo 2
+            } else if ((/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/).test(ciperm)) {
+                search = (/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/g).exec(ciperm);
+                msg['procmsg'] = codinfo(search[4]);
+
+            // Procesar tipo 3
+            } else if ((/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/).test(ciperm)) {
+                search = (/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/g).exec(ciperm);
+
+            // Procesar tipo 5
+            } else if ((/^(5)\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
+                search = (/^(5)\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
+
+            // Procesar tipo 6
+            } else if ((/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/).test(ciperm)) {
+                search = (/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/g).exec(ciperm);
+
+            // Procesar tipo 1
+	    } else if ((/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/).test(ciperm)) {
+		    search = (/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/g).exec(ciperm);
+                msg['repetir'] = search[5].replace(/^\/+/, '');
+
+            } else {
+                throw "ERROR - Formato de mensaje inválido";
+            }
+
+            // Asignar valores comunes
+            msg['tipo'] = search[1];
+            msg['sufijo'] = search[4];
+
+            // Según nº torre o comandancia
+            if ([2, 4].indexOf(search[2].length) > -1) {
+                msg['origen'] = search[2].substring(0,2);
+                msg['destino'] = search[2].substring(2);
+            } else if ([3, 6].indexOf(search[2].length) > -1) {
+                msg['origen'] = search[2].substring(0,3);
+                msg['destino'] = search[2].substring(3);
+            } else {
+                msg['origen'] = '';
+                msg['destino'] = '';
+            }
+
+            // Según formato y registro hora corto/largo
+            if (search[3].length == 2) {
+                msg['horadia'] = '';
+                msg['registro'] = search[3];
+            } else if (search[3].length == 3) {
+                msg['horadia'] = search[3].substring(0,3);
+                msg['registro'] = '';
+            } else if (search[3].length == 4) {
+                msg['horadia'] = search[3].substring(0,4);
+                msg['registro'] = '';
+            } else if (search[3].length == 5) {
+                msg['horadia'] = search[3].substring(0,3);
+                msg['registro'] = search[3].substring(3);
+            } else if (search[3].length == 6) {
+                msg['horadia'] = search[3].substring(0,6);
+                msg['registro'] = '';
+            } else if (search[3].length == 8) {
+                msg['horadia'] = search[3].substring(0,6);
+                msg['registro'] = search[3].substring(6);
+            } else {
+                msg['horadia'] = '';
+                msg['registro'] = '';
+            }
+
+        // Recoger error
+        } catch (excp) {
+            msg['procmsg'] = excp;
+            msg['origen'] = msg['destino'] = msg['novenales'] = '000';
+            msg['horadia'] = '000000';
+            msg['registro'] = msg['sufijo'] = '00';
+        }
+        imprimir(msg);
+    }
+
+
+    function imprimir(msg) {
+
+        console.log('Texto print: ' + JSON.stringify(msg));
+
+        var salida = '<hr>';
+        if (msg['procmsg']) {
+            salida += "<p id='procmsg'>" + msg['procmsg'] + '</p>';
+        }
+
+        switch (msg['tipo']) {
+            case '0': salida += "<i>Tipo:</i>\t\t 0 - General<br>"; break;
+            case '4': salida += "<i>Tipo:</i>\t\t 4 - General urgente<br>"; break;
+            case '8': salida += "<i>Tipo:</i>\t\t 8 - General urgentísimo<br>"; break;
+            case '2':
+                salida += "<i>Tipo:</i>\t\t 2 - Servicio Interno<br>";
+                salida += "<i>Código:</i>\t " + msg['sufijo'] + "<br>"; break;
+            case '3':
+            case '6':
+                switch (msg['tipo']) {
+                    case '3':
+                        salida += "<i>Tipo:</i>\t\t 3 - Vigilancia<br>"; break;
+                    case '6':
+                        salida += "<i>Tipo:</i>\t\t 6 - Acuse de recibo<br>"; break;
+		}
+                switch (msg['sufijo']) {
+                    case '00':
+                        salida += "<i>Estado:</i>\t 0x - Correcto<br>"; break;
+                    case '1':
+                        salida += "<i>Estado:</i>\t 1 - Incidencia niebla<br>"; break;
+                    case '2':
+                        salida += "<i>Estado:</i>\t 2 - Incidencia ausencia<br>"; break;
+                    case '3':
+                        salida += "<i>Estado:</i>\t 3 - Incidencia vanguardia ocupada<br>"; break;
+                    case '4':
+                        salida += "<i>Estado:</i>\t 4 - Incidencia avería<br>"; 
+               }; break;
+            case '5': salida += "<i>Tipo:</i>\t\t 5 - Continuación<br>"; break;
+            case '1': salida += "<i>Tipo:</i>\t\t 1 - Rectificación<br>";
+                switch (msg['sufijo']) {
+                    case '6':
+                        salida += "<i>Petición:</i>\t 6 - Repetir registro<br>";
+		        if (msg['repetir']) {
+                            salida += "<i>Novenales rep.:</i> " + msg['repetir'] + "<br>";
+			}
+			break;
+                    case '9':
+                        salida += "<i>Petición:</i>\t 9 - Anular registro<br>"; break;
+		};
+         }
+
+        // Comprobar una o dos torres
+        if (msg['origen'] && msg['destino']) {
+            if ((msg['origen'] + msg['destino']).length == 6) {
+                salida += "<i>Torre origen:</i>\t " + msg['origen'] + "<br>";
+                salida += "<i>Torre destino:</i>\t " + msg['destino'] + "<br>";
+            } else if ((msg['origen'] + msg['destino']).length == 4) {
+                salida += "<i>Com. origen:</i>\t " + msg['origen'] + "<br>";
+                salida += "<i>Com. destino:</i>\t " + msg['destino'] + "<br>";
+            }
+        } else {
+            if (!msg['destino']) {
+                tsimple =  msg['origen'];
+            }
+            if (!msg['origen']) {
+                tsimple =  msg['destino'];
+            }
+
+            if (tsimple) {
+                if (tsimple.length == 3) {
+                    salida += "<i>Torre:</i>\t\t " + tsimple + "<br>";
+                } else if (tsimple.length == 2) {
+                    salida += "<i>Comandancia:</i>\t " + tsimple + "<br>";
+                }
+            }
+        }
+
+        if (msg['horadia'].length == 3) {  // Reconstruir hora breve
+            var d = new Date();
+            fchora = parseInt(msg['horadia'].substring(0,2));
+            salida += "<i>Hora y Día:</i>\t [" + msg['horadia'] + '] ';
+            switch (true) {
+                case fchora >= 75:
+                    salida += (fchora - 75).toString().padStart(2, '0') + ':45'; break;
+                case fchora >= 50:
+                    salida += (fchora - 50).toString().padStart(2, '0') + ':30'; break;
+                case fchora >= 25:
+                    salida += (fchora - 25).toString().padStart(2, '0') + ':15'; break;
+                case fchora >= 0:
+                    salida += fchora.toString().padStart(2, '0') + ':00'; 
+            }
+            salida += " ?" + msg['horadia'].substring(2,3) + "<br>";
+        } else if (msg['horadia'].length == 4) {  // Hora sin dia
+            salida += "<i>Hora:</i>\t\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + "<br>";
+        } else if (msg['horadia'].length == 6) {  // Hora normal
+            salida += "<i>Hora y Día:</i>\t " + msg['horadia'].substring(0,2) + ':' + msg['horadia'].substring(2,4) + ' ' + msg['horadia'].substring(4,6) + "<br>";
+        }
+
+        if (msg['registro']) {
+            salida += "<i>Registro:</i>\t " + msg['registro'] + "<br>";
+        }
+
+        if (msg['regfin']) {
+            salida += "<i>Interrupción:</i>\t " + msg['regfin'] + "<br>";
+        }
+
+        if (msg['novenales']) {
+            salida += "<i>Novenales:</i>\t " + msg['novenales'].substring(0,2) + '.' + msg['novenales'].substring(2) + "<br>";
+        }
+        if (!(/^ERROR/g).test(msg['procmsg']) && (/^\d\/(.+?)\/(.+?)/).test(msg['procmsg'])) {
+            salida += "<hr><p>";
+            salida += "<button id='btn2' onclick='gengif()'>&nbsp;&nbsp;Generar GIF Transmisión&nbsp;&nbsp;</button>";
+            salida += "<span id='destgif'><img id='transgif' src='data:,'></span>";
+            salida += "<div id='velocidad'>velocidad: <select id='velo' onchange='gengif()'>";
+            salida += "<option value='15'>1 / 15 seg. (real)</option>";
+            salida += "<option value='10'>1 / 10 seg.</option>";
+            salida += "<option value='5' selected>1 / 5 seg.</option>";
+            salida += "<option value='1'>1 / 1 seg.</option></select></div></p>";
+        }
+        if (msg['estilo']) {
+            salida += "<div id='estilo' style='display: none;'>" + msg['estilo'] + "</div>";
+        }
+        salida += '<hr>';
+
+        document.getElementById("salida").innerHTML = salida;
+    }
+
+
+    function gengif() {
+
+        // Ocultar botón y mostrar loading
+        document.getElementById("btn2").style.display = "none";
+        document.getElementById("transgif").setAttribute("src", "static/loading.gif");
+        document.getElementById("transgif").style.display = "inline-block";
+        document.getElementById("transgif").scrollIntoView();
+
+        // Recoger velocidad
+        velo = document.getElementById("velo").value;
+
+        // Recoger texto mensaje
+        var codtxt = document.getElementById("procmsg").innerHTML.toLowerCase();
+
+        // Recoger estilo
+        estilo = document.getElementById("estilo").innerHTML;
+        if (estilo != 1 && estilo != 2 && estilo != 3) {
+            estilo = ''
+        } else {
+            console.log('Estilo: e' + estilo);
+            estilo = 'e' + estilo + '/'
+        }
+
+        // Validar, sustituir '/' por 'a' y error en 'e'
+        codtxt = codtxt.replace(/\//g, 'a').replace(/[^0-9,x,m,a]/gi, 'e');
+        if (codtxt.length == 0) { codtxt = 'e'; };
+
+        console.log('A gif: ' + codtxt);
+
+        var lista = [];
+        for (let i = 0; i < codtxt.length; i++) {
+            //lista.push('static/' + codtxt[i] + '.gif');
+            lista.push({src:"static/" + estilo + codtxt[i] + ".gif", text:(i + 1) + "/" + codtxt.length + " "});
+            console.log("static/" + estilo + codtxt[i] + ".gif");
+        }
+
+        gifshot.createGIF({
+            gifWidth: 310,
+            gifHeight: 300,
+            images: lista,
+            interval: velo,
+            numFrames: 1,
+            frameDuration: 1,
+            sampleInterval: 10,
+            fontColor: 'grey',
+            textAlign: 'right',
+            textBaseline: 'top',
+            fontSize: '14px',
+            fontFamily: 'monospace',
+            numWorkers: 2
+        }, function (obj) {
+            if (!obj.error) {
+                // Sustituir loading por gif final
+                document.getElementById("transgif").setAttribute("src", obj.image);
+                document.getElementById("velocidad").style.display = "block";
+                //var image = obj.image, animatedImage = document.createElement('img');
+                //animatedImage.src = image;
+                //document.getElementById("destgif").appendChild(animatedImage);
+            }
+        });
+    }
+
+
+    function procesar() {
+
+        const version = 2.6;
+
+        var msg = {}; // Diccionario de mensaje
+        msg['mensaje'] = document.getElementById('form1').value;  // Asignar entrada
+        if (!msg['mensaje']){
+             msg['mensaje'] = '...'
+        }
+        msg['mensaje'] = msg['mensaje'].replace(/(\r\n|\n|\r)/gm, " ").replace(/[\&\<\>\`]/gm, '#').trim();  // Limpiar /n, html tags y espacios
+        var lencript = ['0','1','2','3','4','5','6','7','8','9',
+                'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+                '!','"','#','$','%','&',"'",'(',')','*','+',',','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','_','`','{','|','}','~',
+                'Ñ','ñ','¿','€','',' '];  // Los caracteres del mensaje se sustituyen por la posición que ocupan en la lista (completa del 00 al 99)
+
+        // Asignar descodificación / codificación automaticamente. Si comienza por ~ */*/* -> descodificar
+        if ((/^\d\/(.+?)\/(.+?)/).test(msg['mensaje'])) {
+            descodificar(msg, lencript);
+        } else {
+            if (msg['mensaje'].length > 250) {
+                document.getElementById('salida').innerHTML = '<hr><p>ERROR - Mensaje mayor de 250 caracteres</p><hr>';
+            } else {
+                if (document.getElementById("codops").style.display == 'flex') {
+                    codificar(msg, lencript);
+                } else {
+		    set_ops_view();
+                    iniciar_ops(msg, lencript);
+                }
+            }
+        }
+    }
+
+    </script>
+</body>
+</html>
