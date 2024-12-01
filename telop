@@ -270,9 +270,8 @@ def zcodif_descodificar(arg, msg, lencript):
         #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
         #  y finaliza con el sufijo del formato de la interrupción
 
-        while re.match(r'^(([012468](/\d*){3})|([35](/\d*){2})).+'
+        while re.match(r'^(([0248](/\d*){4})|([16](/\d*){3})|([35](/\d*){2})).+'
                        r'(/(\d{3})/(\d{4,6}/)?([1-4]))+$', ciperm) is not None:
-
             # Procesar sufijo interrupción según valores
             #  - Torre, díahora o hora, tipo incidencia
             #  - Torre, tipo incidencia
