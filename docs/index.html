@@ -559,18 +559,18 @@
         // Reconstruir caracteres repetidos
         ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
 
-        // Extraer interrupciones finales si las hubiera
-        msg['regfin'] = '';
+        // Extraer interrupciones finales si las hubiera en el suplemento final
+        msg['suplemento'] = '';
         while((/^(([048](\/\d*){5})|([2](\/\d*){4})|([16](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/g).test(ciperm)) {
 
-            // Procesar interrupción
+            // Procesar suplemento interrupciones según valores
             regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/g).exec(ciperm);
-            msg['regfin'] += '[T-' + regint[1] + ' ';
+            msg['suplemento'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
                 if (regint[2].length == 7) {
-                    msg['regfin'] += '(' + regint[2].substring(4,6) + ')';
+                    msg['suplemento'] += '(' + regint[2].substring(4,6) + ')';
                 }
-                msg['regfin'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
+                msg['suplemento'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
             }
             intrc = regint[3]
             switch (intrc) {
@@ -579,7 +579,7 @@
                 case '3': intrc = '3-Vang.Ocupada'; break;
                 case '4': intrc = '4-Avería';
             }
-            msg['regfin'] += intrc + ']  ';
+            msg['suplemento'] += intrc + ']  ';
 
             // Eliminar interrupción del mensaje
             console.log("Intrr.: " + regint[0]);
@@ -794,8 +794,8 @@
             salida += "<i>Registro:</i>\t " + msg['registro'] + "<br>";
         }
 
-        if (msg['regfin']) {
-            salida += "<i>Interrupción:</i>\t " + msg['regfin'] + "<br>";
+        if (msg['suplemento']) {
+            salida += "<i>Interrupción:</i>\t " + msg['suplemento'] + "<br>";
         }
 
         if (msg['novenales']) {

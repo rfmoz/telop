@@ -131,7 +131,7 @@ def get_arguments(msg, lencript):
     else:
         msg['horadia'] = str(time.strftime("%H%M%d"))
 
-    # Unificar con ceros. 2 o 3 para origen y destino. 2 para registro y codigo
+    # Unificar con ceros. 2 o 3 para origen y destino. 2 para registro y 3 para codigo
     if arg.comandancia:
         msg['origen'] = msg['origen'][:2].zfill(2)
         msg['destino'] = msg['destino'][:2].zfill(2)
@@ -266,27 +266,27 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje']).replace(" ", "")
 
     try:
-        # Extraer interrupciones finales si las hubiera
+        # Extraer interrupciones finales si las hubiera en el suplemento final
         #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
         #  y finaliza con el sufijo del formato de la interrupción
 
         while re.match(r'^(([048](/\d*){5})|([2](/\d*){4})|([16](/\d*){3})|([35](/\d*){2})).+'
                        r'(/(\d{3})/(\d{4,6}/)?([1-4]))+$', ciperm) is not None:
-            # Procesar sufijo interrupción según valores
+            # Procesar suplemento interrupciones según valores
             #  - Torre, díahora o hora, tipo incidencia
             #  - Torre, tipo incidencia
             regint = re.search(r'/(\d{3})/(\d{4,6}/)?([1-4])$', ciperm)
-            msg['regfin'] += '[T-' + regint.group(1) + ' '
+            msg['suplemento'] += '[T-' + regint.group(1) + ' '
             if regint.group(2):
                 if len(regint.group(2)) == 7:
-                    msg['regfin'] += '(' + regint.group(2)[4:6] + ')'
-                msg['regfin'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
+                    msg['suplemento'] += '(' + regint.group(2)[4:6] + ')'
+                msg['suplemento'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
             intrc = regint.group(3)
             intrc = intrc.replace('1', '1-Niebla')
             intrc = intrc.replace('2', '2-Ausencia')
             intrc = intrc.replace('3', '3-Vang.Ocupada')
             intrc = intrc.replace('4', '4-Avería')
-            msg['regfin'] += intrc +']  '
+            msg['suplemento'] += intrc +']  '
 
             # Eliminar interrupción del mensaje
             logging.info('Intrr.:\t %s', str(regint.group(0)))
@@ -471,8 +471,8 @@ def imprimir(arg, msg):
 
         if msg['registro']:
             print(f"Registro:\t {msg['registro']}")
-        if msg['regfin']:
-            print(f"Interrupción:\t {msg['regfin']}")
+        if msg['suplemento']:
+            print(f"Interrupción:\t {msg['suplemento']}")
         if msg['procmsg'] is not None:
             if msg['tipo'] == '0':
                 print(f"Novenales:\t {msg['novenales'][:2]}.{msg['novenales'][2:]}")
@@ -493,7 +493,7 @@ def main():
     lencript = list(string.digits + string.ascii_letters + string.punctuation) + ['Ñ', 'ñ', '¿', '€', '', ' ']
 
     # Diccionario de mensaje. Valores por defecto
-    msg = {'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'regfin': '', 'sufijo': None, 'repetir': None}
+    msg = {'tipo': '0', 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'suplemento': '', 'sufijo': None, 'repetir': None}
 
     arg, msg = get_arguments(msg, lencript)
 
