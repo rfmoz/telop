@@ -195,90 +195,92 @@ Requiere Python 3. Descargar y ejecutar el archivo "telop"
 
 - Cada dígito del mensaje de texto se codifica según la posición que ocupa en el diccionario definido internamente en el programa (telop --diccionario). Se sustituye así el diccionario frasológico del sistema original. Resulta un telegrama de mayor extensión, pero más versátil y fácil de implementar.
 
-- En el siguiente esquema se establece el orden de los valores en la cabecera:
+- En el siguiente esquema se establece el orden de los valores en el mensaje:
 
 ```
-A/___B__/___C____/D
-|    |      |     |
-|    |      |     --- D sufijo particular a cada tipo de mensaje([0-3])
-|    |      --------- C hora(2) + minutos(2) + dia(2) + registro(2)
-|    ---------------- B torre de origen(3) + torre de destino(3)
---------------------- A tipo de servicio y prioridad(1)
+A /  B  /   C   / D / - / A
+|    |      |     |   |   |
+|    |      |     |   |   +-- A tipo de servicio y prioridad (opcional)(1)
+|    |      |     |   +------ - texto (opcional)(*)
+|    |      |     +---------- D sufijo particular a cada tipo de mensaje([0-3])
+|    |      +---------------- C hora(2) + minutos(2) + dia(2) + registro(2)
+|    +----------------------- B torre de origen(3) + torre de destino(3)
++---------------------------- A tipo de servicio y prioridad(1)
 
 
 0/0x10x5/2341040x/013/252730141/1x0/0 -> Mensaje general
-|    |       |    |   \          /  |
-|    |       |    |    \        /   -- A tipo de servicio y prioridad(1)
-|    |       |    |     -------------- - novenales de mensaje
-|    |       |    -------------------- D sufijo nº de novenales completos(2) y nº digitos resto(1)
-|    |       ------------------------- C hora(2) + minutos(2) + dia(2) + registro(2)
-|    --------------------------------- B torre de origen(3) + torre de destino(3)
--------------------------------------- A tipo de servicio y prioridad(1)
+|    |      |     |   \          /  |
+|    |      |     |    \        /   +-- A tipo de servicio y prioridad(1)
+|    |      |     |     +------+------- - novenales de mensaje(*)
+|    |      |     +-------------------- D sufijo nº de novenales completos(2) y nº digitos resto(1)
+|    |      +-------------------------- C hora(2) + minutos(2) + dia(2) + registro(2)
+|    +--------------------------------- B torre de origen(3) + torre de destino(3)
++-------------------------------------- A tipo de servicio y prioridad(1)
 
 2/0x10x5/ 234104 /0x1/2 -> Comunicación interna
-|    |       |     |  |
-|    |       |     |  -- A tipo de servicio y prioridad(1)
-|    |       |     ----- D sufijo código interno
-|    |       ----------- C hora(2) + minutos(2) + dia(2)
-|    ------------------- B torre de origen(3) + torre de destino(3)
------------------------- A tipo de servicio y prioridad(1)
+|    |      |     |   |
+|    |      |     |   +-- A tipo de servicio y prioridad(1)
+|    |      |     +------ D sufijo código interno([2-3])
+|    |      +------------ C hora(2) + minutos(2) + dia(2)
+|    +------------------- B torre de origen(3) + torre de destino(3)
++------------------------ A tipo de servicio y prioridad(1)
 
 3/0x10x5/ 234104 /0x -> Vigilancia
-|    |       |    |
-|    |       |    --- D sufijo estado opcional, sólo en recepción([0-2])
-|    |       -------- C hora(2) + minutos(2) + dia(2)
-|    ---------------- B torre de origen(3) + torre de destino(3)
---------------------- A tipo de servicio y prioridad(1)
+|    |      |     |
+|    |      |     +-- D sufijo estado, sólo en recepción (opcional)([0-2])
+|    |      +-------- C hora(2) + minutos(2) + dia(2)
+|    +--------------- B torre de origen(3) + torre de destino(3)
++-------------------- A tipo de servicio y prioridad(1)
 
 6/0x10x5/2341040x/0x -> Acuse de recibo
-|    |       |    |
-|    |       |    --- D sufijo estado acuse de recibo([1-2])
-|    |       -------- C hora(2) + minutos(2) + dia(2) + registro mensaje recibido(2)
-|    ---------------- B torre de origen(3) + torre de destino(3)
---------------------- A tipo de servicio y prioridad(1)
+|    |      |     |
+|    |      |     +-- D sufijo estado acuse de recibo([1-2])
+|    |      +-------- C hora(2) + minutos(2) + dia(2) + registro mensaje recibido(2)
+|    +--------------- B torre de origen(3) + torre de destino(3)
++-------------------- A tipo de servicio y prioridad(1)
 
 5/  0x1 /   03  -> Continuación
-|    |       |
-|    |       |   D sufijo(0)
-|    |       --- C registro mensaje a continuar(2)
-|    ----------- B torre de origen(3)
----------------- A tipo de servicio y prioridad(1)
+|    |      |
+|    |      |
+|    |      +-- C registro mensaje a continuar(2)
+|    +--------- B torre de origen(3)
++-------------- A tipo de servicio y prioridad(1)
 
 1/0x10x5/   04   /6/2/3/4 -> Rectificación
-|    |       |    | \   /
-|    |       |    |  ----- - novenales a repetir(opcional)
-|    |       |    -------- D sufijo tipo de petición(1)
-|    |       ------------- C registro mensaje rectificado(2)
-|    --------------------- B torre de origen(3) + torre de destino(3)
--------------------------- A tipo de servicio y prioridad(1)
+|    |      |     | \   /
+|    |      |     |  +-+-- - novenales a repetir(opcional)(*)
+|    |      |     +------- D sufijo tipo de petición(1)
+|    |      +------------- C registro mensaje rectificado(2)
+|    +-------------------- B torre de origen(3) + torre de destino(3)
++------------------------- A tipo de servicio y prioridad(1)
 ```
 
-- Cada mensaje puede llevar un sufijo indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
+- Cada mensaje puede llevar un suplemento final indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
   El grupo que comprende la hora, los minutos y día es opcional y puede estar compuesto por todos esos valores o sólo de la hora y los minutos. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
 
 ```
-/_X_/__Y__/Z -> Sufijo interrupción
-  |    |   |
-  |    |   -- Z causa(1)
-  |    ------ Y hora(2) + minutos(2) + dia(2)
-  ----------- X torre(3)
-
-/011/183012/2 -> Sufijo interrupción
+/ X /  Y  / Z -> Suplemento de interrupción
   |    |    |
-  |    |    -- Z causa(1)
-  |    ------- Y hora(2) + minutos(2) + dia(2)
-  ------------ X torre(3)
+  |    |    +-- Z causa(1)
+  |    +------- Y hora(2) + minutos(2) + dia(2)
+  +------------ X torre(3)
 
-/011/1830  /2 -> Sufijo interrupción
+/011/183012/2 -> Suplemento de interrupción
   |    |    |
-  |    |    -- Z causa(1)
-  |    ------- Y hora(2) + minutos(2)
-  ------------ X torre(3)
+  |    |    +-- Z causa(1)
+  |    +------- Y hora(2) + minutos(2) + dia(2)
+  +------------ X torre(3)
 
-/011       /2 -> Sufijo interrupción
+/011/1830  /2 -> Suplemento de interrupción
+  |    |    |
+  |    |    +-- Z causa(1)
+  |    +------- Y hora(2) + minutos(2)
+  +------------ X torre(3)
+
+/011       /2 -> Suplemento de interrupción
   |         |
-  |         -- Z causa(1)
-  ------------ X torre(3)
+  |         +-- Z causa(1)
+  +------------ X torre(3)
 ```
 
 - En la cabecera se puede emplear un formato de fecha y hora reducido con la opción `--breve`, a costa de obtener una precisión de 15 minutos.
