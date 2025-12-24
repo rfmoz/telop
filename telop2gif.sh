@@ -5,7 +5,7 @@
 #
 # Ejecutar:
 #            telop2gif.sh '0/0x1052/1917130x/0x8/172421x0/0'
-#            telop --solo 'test1' | telop2gif.sh
+#            telop --raw 'test1' | telop2gif.sh
 #
 
 D_TMP=$(mktemp -d)

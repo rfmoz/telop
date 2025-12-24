@@ -129,7 +129,7 @@ Es posible generar un mensaje con sólo un número de torre en vez del formato h
 
 ### Opciones del programa:
 ```
-usage: telop [-h] [-t {0,1,2,3,4,5,6,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-s SUFIJO] [--solo] [-v] [--version] [-z {0,1}] [mensaje]
+usage: telop [-h] [-t {0,1,2,3,4,5,6,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-s SUFIJO] [--raw] [-v] [--version] [-z {0,1}] [mensaje]
 
 positional arguments:
   mensaje               texto del mensaje entre ' '
@@ -143,14 +143,14 @@ options:
   -d [nº], --destino [nº]
                         torre de destino
   -b, --breve           formato fecha y hora reducido
-  -c, --comandancia     emplear n. de comandancia en origen / destino
-  --diccionario         mostrar diccionario codificación
-  --pwd PWD             codificar mensaje con contraseña
+  -c, --comandancia     comandancia como origen / destino
+  --diccionario         muestra la tabla de codificación
+  --pwd PWD             cifra el mensaje con la contraseña indicada
   -r [nº], --registro [nº]
                         nº registro despacho
   -s SUFIJO, --sufijo SUFIJO
-                        sufijo aplicable a los mensajes tipo 1, 2, 3 y 6
-  --solo                sólo imprime mensaje resultante
+                        sufijo del mensaje (solo tipos 1, 2, 3 y 6)
+  --raw                 salida sin formato
   -v, --verbose         debug
   --version             show program's version number and exit
   -z {0,1}              proceso a ejecutar -> (auto) | 0-codificar | 1-descodificar
