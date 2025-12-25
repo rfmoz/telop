@@ -535,8 +535,7 @@
         // Mensaje formateado
         var msgfmt = msg['tipo'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
 
-        msgfmt = msgfmt.replace(/\/\/+/g, "/");  // Eliminar duplicados // por campos vacíos
-        msgfmt = msgfmt.replace(/\/$/g, "");  // Eliminar '/' al final
+        msgfmt = msgfmt.replace(/\/\/+/g, "/").replace(/\/$/g, "");  // Eliminar duplicados // y / final
 
         console.log('Mensaje raw: ' + msgfmt);
         console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
@@ -589,8 +588,7 @@
         try {
 
             // Procesar tipo 0
-            if ((/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).test(ciperm)) {
-                search = (/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g).exec(ciperm);
+            if (search = ciperm.match(/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g)) {
 
                 msg['novenales'] = search[4];
 
@@ -617,25 +615,23 @@
                 }
 
             // Procesar tipo 2
-            } else if ((/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/).test(ciperm)) {
-                search = (/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/g).exec(ciperm);
+            } else if (search = ciperm.match(/^(2)\/(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/)) {
                 msg['procmsg'] = codinfo(search[4]);
 
             // Procesar tipo 3
-            } else if ((/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/).test(ciperm)) {
-                search = (/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/g).exec(ciperm);
+            } else if (search = ciperm.match(/^(3)\/(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/)) {
+                // pass
 
             // Procesar tipo 5
-            } else if ((/^(5)\/(\d{2,3})\/(\d{2})()\b/).test(ciperm)) {
-                search = (/^(5)\/(\d{2,3})\/(\d{2})()\b/g).exec(ciperm);
+            } else if (search = ciperm.match(/^(5)\/(\d{2,3})\/(\d{2})()\b/)) {
+                // pass
 
             // Procesar tipo 6
-            } else if ((/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/).test(ciperm)) {
-                search = (/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/g).exec(ciperm);
+            } else if (search = ciperm.match(/^(6)\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/)) {
+                // pass
 
             // Procesar tipo 1
-	    } else if ((/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/).test(ciperm)) {
-		    search = (/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/g).exec(ciperm);
+	    } else if (search = ciperm.match(/^(1)\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/)) {
                 msg['repetir'] = search[5].replace(/^\/+/, '');
 
             } else {

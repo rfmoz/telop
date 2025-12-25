@@ -247,8 +247,7 @@ def zcodif_codificar(arg, msg, lencript):
     # Paquete formateado
     paquet = str(msg['tipo'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
 
-    paquet = re.sub(r'\/\/+', r'/', paquet)  # Eliminar '//' por campos vacíos
-    paquet = re.sub(r'\/$', r'', paquet)  # Eliminar '/' al final
+    paquet = re.sub(r'\/\/+', r'/', paquet).rstrip('/')  # Eliminar '//' y '/' final
 
     logging.info('Mensaje raw:\t %s', paquet)
 
@@ -270,7 +269,10 @@ def zcodif_descodificar(arg, msg, lencript):
         #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
         #  y finaliza con el sufijo del formato de la interrupción
 
-        while re.match(r'^(([048](/\d*){5})|([2](/\d*){4})|([16](/\d*){3})|([35](/\d*){2})).+'
+        while re.match(r'^(([048](/\d*){5})|'
+                           r'([2](/\d*){4})|'
+                          r'([16](/\d*){3})|'
+                          r'([35](/\d*){2})).+'
                        r'(/(\d{3})/(\d{4,6}/)?([1-4]))+$', ciperm) is not None:
             # Procesar suplemento interrupciones según valores
             #  - Torre, díahora o hora, tipo incidencia
@@ -295,8 +297,7 @@ def zcodif_descodificar(arg, msg, lencript):
         # Regex para cabeceras de mensajes (mantener en cada caso los mismos 4 grupos) - https://regex101.com/r/zVgaDT/1
 
         # Procesar tipo 0
-        if re.match(r'^([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm) is not None:
-            search = re.search(r'^([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)
+        if (search := re.match(r'([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)):
 
             msg['novenales'] = search.group(4)
 
@@ -322,25 +323,24 @@ def zcodif_descodificar(arg, msg, lencript):
                     msg['procmsg'] += lencript[int(cipert[i] + cipert[i+1])]
 
         # Procesar tipo 2
-        elif re.match(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm) is not None:
-            search = re.search(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm)
+        elif (search := re.match(r'^(2)/(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm)):
             #msg['procmsg'] = txt_valor_del_código
+            pass
 
         # Procesar tipo 3
-        elif re.match(r'^(3)/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm) is not None:
-            search = re.search(r'^(3)/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)
+        elif (search := re.match(r'^(3)/(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)):
+            pass
 
         # Procesar tipo 5
-        elif re.match(r'^(5)/(\d{2,3})/(\d{2})()\b', ciperm) is not None:
-            search = re.search(r'^(5)/(\d{2,3})/(\d{2})()\b', ciperm)
+        elif (search := re.match(r'^(5)/(\d{2,3})/(\d{2})()\b', ciperm)):
+            pass
 
         # Procesar tipo 6
-        elif re.match(r'^(6)/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm) is not None:
-            search = re.search(r'^(6)/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm)
+        elif (search := re.match(r'^(6)/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm)):
+            pass
 
         # Procesar tipo 1
-        elif re.match(r'^(1)/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm) is not None:
-            search = re.search(r'^(1)/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)
+        elif (search := re.match(r'^(1)/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)):
             # Recoge de manera recursiva '/' seguido de uno o dos números más
             msg['repetir'] = search.group(5).lstrip('/')
 
