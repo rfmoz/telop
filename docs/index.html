@@ -458,8 +458,9 @@
             msg['horadia'] = d.getHours().toString().padStart(2, '0') + d.getMinutes().toString().padStart(2, '0') + d.getDate().toString().padStart(2, '0');
         }
 
+        // Mensaje comienza con [e1], [e2] o [e3]
         if ((/^\[e[123]\]/).test(msg['mensaje'])) {
-            msg['estilo'] = (/^\[e(.)\]/g).exec(msg['mensaje'])[1];  // recoger número estilo
+            msg['estilo'] = (/^\[e(.)\]/).exec(msg['mensaje'])[1];  // recoger número estilo
             msg['mensaje'] = msg['mensaje'].slice(4).trim();  // eliminar bloque de estilo
         } else {
             msg['estilo'] = '0';
@@ -560,10 +561,10 @@
 
         // Extraer interrupciones finales si las hubiera en el suplemento final
         msg['suplemento'] = '';
-        while((/^(([048](\/\d*){5})|([2](\/\d*){4})|([16](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/g).test(ciperm)) {
+        while((/^(([048](\/\d*){5})|([2](\/\d*){4})|([16](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/).test(ciperm)) {
 
             // Procesar suplemento interrupciones según valores
-            regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/g).exec(ciperm);
+            regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/).exec(ciperm);
             msg['suplemento'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
                 if (regint[2].length == 7) {
@@ -797,7 +798,7 @@
         if (msg['novenales']) {
             salida += "<i>Novenales:</i>\t " + msg['novenales'].substring(0,2) + '.' + msg['novenales'].substring(2) + "<br>";
         }
-        if (!(/^ERROR/g).test(msg['procmsg']) && (/^\d\/(.+?)\/(.+?)/).test(msg['procmsg'])) {
+        if (!(/^ERROR/).test(msg['procmsg']) && (/^\d\/(.+?)\/(.+?)/).test(msg['procmsg'])) {
             salida += "<hr><p>";
             salida += "<button id='btn2' onclick='gengif()'>&nbsp;&nbsp;Generar GIF Transmisión&nbsp;&nbsp;</button>";
             salida += "<span id='destgif'><img id='transgif' src='data:,'></span>";
