@@ -535,7 +535,7 @@
         // Mensaje formateado
         var msgfmt = msg['tipo'] + "/" + msg['origen'] + msg['destino'] + "/" + msg['horadia'] + msg['registro'] + sufijo;
 
-        msgfmt = msgfmt.replace(/\/\/+/g, "/").replace(/\/$/g, "");  // Eliminar duplicados // y / final
+        msgfmt = msgfmt.replace(/\/\/+/g, "/").replace(/\/$/, "");  // Eliminar duplicados // y / final
 
         console.log('Mensaje raw: ' + msgfmt);
         console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
@@ -588,7 +588,7 @@
         try {
 
             // Procesar tipo 0
-            if (search = ciperm.match(/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/g)) {
+            if (search = ciperm.match(/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/)) {
 
                 msg['novenales'] = search[4];
 
