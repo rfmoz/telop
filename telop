@@ -474,7 +474,7 @@ def imprimir(arg, msg):
         if msg['suplemento']:
             print(f"Interrupción:\t {msg['suplemento']}")
         if msg['procmsg'] is not None:
-            if msg['tipo'] == '0':
+            if msg['tipo'] in ['0', '4', '8']:
                 print(f"Novenales:\t {msg['novenales'][:2]}.{msg['novenales'][2:]}")
                 if arg.zcodif == 0:  # Sólo en codificación
                     print(f"Mensaje txt:\t \'{msg['mensaje']}\'")
