@@ -439,8 +439,8 @@
 	    msg['sufijo'] = document.getElementById("incd").value;
 	}
         if (msg['mfhora'] == 1) {
-            fchora = parseInt(d.getHours());
-            fcmin = parseInt(d.getMinutes());
+            var fchora = parseInt(d.getHours());
+            var fcmin = parseInt(d.getMinutes());
             switch (true) {
                 case fcmin >= 45:
                     fchora += 75; break;
@@ -451,7 +451,7 @@
             }
 
             fchora = fchora.toString().padStart(2, '0');
-            fcdia = d.getDate().toString().slice(-1);
+            var fcdia = d.getDate().toString().slice(-1);
 
             msg['horadia'] = fchora + fcdia;
         } else {
@@ -493,7 +493,7 @@
                 msg['novenales'] = cociente.toString().padStart(2, '0') + resto.toString();
         
                 // Insertar arriadas en mensaje y borar la última si coincide
-                ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
+                var ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
         
                 var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['tipo'];
                 break;
@@ -557,14 +557,14 @@
         document.getElementById("form1").style.color = "maroon";
 
         // Reconstruir caracteres repetidos
-        ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
+        var ciperm = msg['mensaje'].replace(/(.{1})x/g, "$1$1");
 
         // Extraer interrupciones finales si las hubiera en el suplemento final
         msg['suplemento'] = '';
         while((/^(([048](\/\d*){5})|([2](\/\d*){4})|([16](\/\d*){3})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/).test(ciperm)) {
 
             // Procesar suplemento interrupciones según valores
-            regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/).exec(ciperm);
+            var regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/).exec(ciperm);
             msg['suplemento'] += '[T-' + regint[1] + ' ';
             if (regint[2]) {
                 if (regint[2].length == 7) {
@@ -572,7 +572,7 @@
                 }
                 msg['suplemento'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
             }
-            intrc = regint[3]
+            var intrc = regint[3]
             switch (intrc) {
                 case '1': intrc = '1-Niebla'; break;
                 case '2': intrc = '2-Ausencia'; break;
@@ -587,6 +587,8 @@
         }
 
         try {
+
+            var search, cipert;
 
             // Procesar tipo 0
             if (search = ciperm.match(/^([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/)) {
@@ -750,6 +752,7 @@
                 salida += "<i>Com. destino:</i>\t " + msg['destino'] + "<br>";
             }
         } else {
+            var tsimple;
             if (!msg['destino']) {
                 tsimple =  msg['origen'];
             }
@@ -768,7 +771,7 @@
 
         if (msg['horadia'].length == 3) {  // Reconstruir hora breve
             var d = new Date();
-            fchora = parseInt(msg['horadia'].substring(0,2));
+            var fchora = parseInt(msg['horadia'].substring(0,2));
             salida += "<i>Hora y Día:</i>\t [" + msg['horadia'] + '] ';
             switch (true) {
                 case fchora >= 75:
@@ -826,13 +829,13 @@
         document.getElementById("transgif").scrollIntoView();
 
         // Recoger velocidad
-        velo = document.getElementById("velo").value;
+        var velo = document.getElementById("velo").value;
 
         // Recoger texto mensaje
         var codtxt = document.getElementById("procmsg").innerHTML.toLowerCase();
 
         // Recoger estilo
-        estilo = document.getElementById("estilo").innerHTML;
+        var estilo = document.getElementById("estilo").innerHTML;
         if (estilo != 1 && estilo != 2 && estilo != 3) {
             estilo = ''
         } else {
