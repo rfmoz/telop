@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '2.7'
+__version__ = '2.8'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
