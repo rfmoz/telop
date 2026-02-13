@@ -429,13 +429,13 @@
         msg['destino'] = document.getElementById("mdest").value.toString().substring(0,3).padStart(3, '0');
         msg['registro'] = document.getElementById("mreg").value.toString().substring(0,2).padStart(2, '0');
         msg['mfhora'] = document.getElementById("mfhora").value;
-	if (msg['tipo'] == 1) {
+	if (msg['tipo'] === '1') {
 	    msg['sufijo'] = document.getElementById("rectf").value;
 	}
-	if (msg['tipo'] == 2) {
+	if (msg['tipo'] === '2') {
             msg['sufijo'] = document.getElementById("codg").value;
 	}
-	if (msg['tipo'] == 6 || msg['tipo'] == 3) {
+	if (msg['tipo'] === '6' || msg['tipo'] === '3') {
 	    msg['sufijo'] = document.getElementById("incd").value;
 	}
         if (msg['mfhora'] == 1) {
