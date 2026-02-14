@@ -56,11 +56,11 @@ Mensaje habitual para enviar el texto consignado.
 
 **2 - Servicio interno**
 
-Utilizado sólo para dar indicaciones de servicio.
+Utilizado solo para dar indicaciones de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con código 10:
     > telop -t 2 -d 45 -s 10 
-- Mensaje interno de la torre '045'a la '001' con código 11 y formato de fecha breve:
+- Mensaje interno de la torre '045' a la '001' con código 11 y formato de fecha breve:
     > telop -t 2 -o 45 -d 1 -s 11 -b 
 
 
@@ -70,7 +70,7 @@ Para controlar y mantener la atención sobre la línea. Se envían cada media ho
 
 Su recepción se confirma mediante la devolución de otro mensaje de vigilancia, indicando las torres oportunas.
 
-- Mensaje inicial, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen ímplicito (sin indicar con '0'), formato fecha breve:
+- Mensaje inicial, por ejemplo, con valor '99' a modo de comodín a todos los extremos de línea y ramales, origen implícito (sin indicar con '0'), formato fecha breve:
     > telop -t 3 -o 0 -d 99 -c -b
 - Mensaje de respuesta con recepción correcta '0'. Comandancia de origen '07' y destino '01':
     > telop -t 3 -o 7 -d 1 -c -s 0
@@ -80,7 +80,7 @@ Su recepción se confirma mediante la devolución de otro mensaje de vigilancia,
 
 Aviso para indicar la reanudación de un mensaje general detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación de mayor prioridad.
 
-- Retomar la transmisión del mensaje con torre de origen '009' y refrencia '43':
+- Retomar la transmisión del mensaje con torre de origen '009' y referencia '43':
     > telop -t 5 -o 9 -r 43
 
 
@@ -124,7 +124,7 @@ Empleando el argumento '-c', en cualquier mensaje se puede sustituir el formato 
 
 **Indicar sólo una torre o comandancia**
 
-Es posible generar un mensaje con sólo un número de torre en vez del formato habitual que lleva dos, origen y destino. Con sólo una torre, se deduce el origen o destino según el sentido del mensaje y la posición que ocupa la torre en la línea. Para ello, se pasa el valor '0' a la opción de origen `telop -o 0` o destino `telop -d 0`.
+Es posible generar un mensaje con solo un número de torre en vez del formato habitual que lleva dos, origen y destino. Con solo una torre, se deduce el origen o destino según el sentido del mensaje y la posición que ocupa la torre en la línea. Para ello, se pasa el valor '0' a la opción de origen `telop -o 0` o destino `telop -d 0`.
 
 
 ### Opciones del programa:
@@ -227,7 +227,7 @@ A /  B  /   C   / D / - / A
 
 3/0x10x5/ 234104 /0x -> Vigilancia
 |    |      |     |
-|    |      |     +-- D sufijo estado, sólo en recepción (opcional)([0-2])
+|    |      |     +-- D sufijo estado, solo en recepción (opcional)([0-2])
 |    |      +-------- C hora(2) + minutos(2) + dia(2)
 |    +--------------- B torre de origen(3) + torre de destino(3)
 +-------------------- A tipo de servicio y prioridad(1)
@@ -256,7 +256,7 @@ A /  B  /   C   / D / - / A
 ```
 
 - Cada mensaje puede llevar un suplemento final indicando las interrupciones sufridas durante la transmisión, si así corresponde. Se puede repetir el número de veces necesario.
-  El grupo que comprende la hora, los minutos y día es opcional y puede estar compuesto por todos esos valores o sólo de la hora y los minutos. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
+  El grupo que comprende la hora, los minutos y día es opcional y puede estar compuesto por todos esos valores o solo de la hora y los minutos. La causa corresponde a la misma numeración que se utiliza en el acuse de recibo -> 1-niebla | 2-ausencia | 3-ocupada | 4-avería. El formato es el siguiente:
 
 ```
 / X /  Y  / Z -> Suplemento de interrupción
@@ -285,8 +285,8 @@ A /  B  /   C   / D / - / A
 
 - En la cabecera se puede emplear un formato de fecha y hora reducido con la opción `--breve`, a costa de obtener una precisión de 15 minutos.
   Son dos dígitos los que representan la hora y los minutos, el resultado se obtiene teniendo en cuenta el cuarto de hora en que se encuentran los minutos. Se suma 0, 25, 50 o 75 a la hora (00 a 24) según si es el primer, segundo, tercer o último cuarto de hora. Como ejemplo las 12:05 sería un 12, las 12:20 sería 12+25 = 37, las 12:40 sería 12+50 = 62 y las 12:55 12+75 = 87.
-  El día sólo mantiene el último dígito, es decir, se representa igual el día 1 que el 11 que el 21.
-  Ésta fue la modificación más curiosa de las empleadas y conocidas, por eso su codificación, el resto básicamente conseguían reducir tamaño a base de omitir información fácilmente interpretable por la situación del emisor y receptor.
+  El día solo mantiene el último dígito, es decir, se representa igual el día 1 que el 11 que el 21.
+  Esta fue la modificación más curiosa de las empleadas y conocidas, por eso su codificación, el resto básicamente conseguían reducir tamaño a base de omitir información fácilmente interpretable por la situación del emisor y receptor.
   El grupo de cabecera podría tener cualquiera de los siguientes formatos (aunque no todos se llegan a utilizar):
 ```
 /12150199/ -> hora(2) + minutos(2) + dia(2) + registro(2)
@@ -299,7 +299,7 @@ A /  B  /   C   / D / - / A
 - En la cabecera se puede indicar un número de comandancia en sustitución de la torre con la opción `--comandancia`. Pasando de emplear tres dígitos por torre a dos.
   El grupo de cabecera pasaría del formato `torre de origen(3) + torre de destino(3)` a `comandancia de origen(2) + comandancia de destino(2)`.
 
-- Si se indica alguna torre con valor '0', se suprime la representación de la misma. El mensaje generado sólo lleva registro de una única torre o comandancia.
+- Si se indica alguna torre con valor '0', se suprime la representación de la misma. El mensaje generado solo lleva registro de una única torre o comandancia.
   El grupo de torre/comandancia podría tener cualquiera de los siguientes formatos:
 ```
 /001051/ -> torre de origen(3) + torre de destino(3)
@@ -375,7 +375,7 @@ Fecha de pub.:	1849
 Páginas:	47
 Fuente:		Biblioteca Nacional
 
-Título:		Diccionario y tablas de transmisión para el telégrafo militar de noche y día compuesto de órden del Exmo. señor Marqués del Duero
+Título:		Diccionario y tablas de transmisión para el telégrafo militar de noche y día compuesto de orden del Exmo. señor Marqués del Duero
 Autor:		José Maria Mathé
 Fecha de pub.:	1849
 Páginas:	310
