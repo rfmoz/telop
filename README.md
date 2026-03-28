@@ -69,7 +69,7 @@ options:
                         torre de destino
   -b, --breve           formato fecha y hora reducido
   -c, --comandancia     comandancia como origen / destino
-  --diccionario         muestra la tabla de codificación
+  --diccionario         muestra el diccionario de codificación
   --pwd PWD             cifra el mensaje con la contraseña indicada
   -r [nº], --registro [nº]
                         nº registro despacho
@@ -298,9 +298,9 @@ Cada carácter del mensaje se codifica según la posición que ocupa en el sigui
 
 ```
 $ telop --diccionario
---------
+----------
 Nº - Valor
---------
+----------
 00 - 0       20 - k       40 - E       60 - Y       80 - =
 01 - 1       21 - l       41 - F       61 - Z       81 - >
 02 - 2       22 - m       42 - G       62 - !       82 - ?
