@@ -52,7 +52,7 @@ def get_arguments(msg, lencript):
 
     # Según el tipo de mensaje, comprobar asignaciones de sufijo
     if arg.tipo == '1':
-        if arg.sufijo:
+        if arg.sufijo is not None:
             if arg.sufijo not in [6, 9]:
                 parser.print_help()
                 print('\nSufijos disponibles para el nº de rectificación:')
@@ -62,11 +62,11 @@ def get_arguments(msg, lencript):
         else:
             arg.sufijo = random.choice(['6', '9'])
 
-    if arg.tipo == '2' and not arg.sufijo:
+    if arg.tipo == '2' and arg.sufijo is None:
         arg.sufijo = 0
 
     if arg.tipo in ['6', '3']:
-        if arg.sufijo:
+        if arg.sufijo is not None:
             if arg.sufijo not in [0, 1, 2, 3, 4]:
                 parser.print_help()
                 print('\nSufijos disponibles para el nº de incidencia:')
@@ -76,6 +76,8 @@ def get_arguments(msg, lencript):
                 print('\t\t\t-s 3   vanguardia ocupada')
                 print('\t\t\t-s 4   corte por avería')
                 sys.exit(0)
+        if arg.sufijo == 0 and arg.tipo in ['3', '6']:
+            arg.sufijo = '00'
         if arg.tipo == '3' and arg.sufijo is None:
             arg.sufijo = ''
         if arg.tipo == '6' and arg.sufijo is None:
