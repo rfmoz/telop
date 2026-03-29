@@ -171,10 +171,10 @@
                         <option value="4">4 - General urgente</option>
                         <option value="8">8 - General urgentísimo</option>
                         <option value="1">1 - Rectificación</option>
-                        <option value="2">2 - Serv. Interno</option>
+                        <option value="2">2 - Servicio interno</option>
                         <option value="3">3 - Vigilancia</option>
                         <option value="5">5 - Continuación</option>
-                        <option value="6">6 - Acuse de Recibo</option>
+                        <option value="6">6 - Acuse de recibo</option>
                         </select>
                     </td>
                 </tr>
@@ -242,7 +242,7 @@
         <div>
             <a target="_blank" title="GitHub telop" href="https://github.com/rfmoz/telop">github</a> -
             <a target="_blank" title="Twitter telegrafoptico" href="https://twitter.com/telegrafoptico">twitter</a> -
-            <a target="_blank" title="Foro Histórico de las Comunicaciones C.O.I.T." href="https://forohistorico.coit.es/index.php/wiki-telegrafia-optica">fht</a> -
+            <a target="_blank" title="Foro Histórico de las Comunicaciones C.O.I.T." href="https://forohistorico.coit.es/index.php/wiki-telegrafia-optica/category/desarrollo-del-telegrafo-optico-en-el-mundo-copy">fht</a> -
             <a target="_blank" title="Facebook Telegrafía Óptica" href="https://www.facebook.com/TelegrafiaOptica">facebook</a> -
             <a target="_blank" title="Wikipedia Telégrafo Óptico" href="https://es.wikipedia.org/wiki/Tel%C3%A9grafo_%C3%B3ptico">wikipedia</a>
         </div>
@@ -264,16 +264,16 @@
 		 <ul>\
 		  <li><b>General:</b> &nbsp;&nbsp;Mensaje de comunicación habitual.</li>\
 		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anulación o repetición de un mensaje.</li>\
-		  <li><b>Servicio interno:</b> &nbsp;&nbsp;Indicaciones de servicio entre torres.</li>\
-		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Controlar y mantener la atención sobre la línea.</li>\
+		  <li><b>Servicio interno:</b> &nbsp;&nbsp;Indicaciones de servicio.</li>\
+		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Verificación del estado de la línea.</li>\
 		  <li><b>Continuación:</b> &nbsp;&nbsp;Retomar la transmisión de un mensaje interrumpido en una torre.</li>\
-		  <li><b>Acuse de recibo:</b> &nbsp;&nbsp;Confirmar la recepción de un mensaje junto con el motivo que lo provoca.</li>\
+		  <li><b>Acuse de recibo:</b> &nbsp;&nbsp;Confirmación de recepción de un mensaje, indicando el estado.</li>\
 		</ul>';
 	} else if ( x == 'estado' ) {
 	    document.getElementById("desc").style.display = "inline-block";
 		txt = '\
 		 <ul>\
-		  <li><b>Correcto:</b> &nbsp;&nbsp;El mensaje ha sido recepcionado en destino.</li>\
+		  <li><b>Correcto:</b> &nbsp;&nbsp;El mensaje ha sido recibido  en destino.</li>\
 		  <li><b>Incidencia niebla:</b> &nbsp;&nbsp;Interrupción por niebla a vanguardia.</li>\
 		  <li><b>Incidencia ausencia:</b> &nbsp;&nbsp;La vanguardia no responde a los movimientos.</li>\
 		  <li><b>Incidencia vanguardia ocupada:</b> &nbsp;&nbsp;Torre receptora en funcionamiento.</li>\
@@ -290,8 +290,8 @@
 	    document.getElementById("desc").style.display = "inline-block";
 		txt = '\
 		 <ul>\
-		  <li><b>Normal:</b> &nbsp;&nbsp;Indicación habitual con hora, minutos y día.</li>\
-		  <li><b>Reducido:</b> &nbsp;&nbsp;Fórmula para acortar redondeando los minutos al cuarto de hora.</li>\
+		  <li><b>Normal:</b> &nbsp;&nbsp;Indicación con hora, minutos y día, cada valor en dos dígitos.</li>\
+		  <li><b>Reducido:</b> &nbsp;&nbsp;Se suma 0, 25, 50 o 75 a la hora según el cuarto de hora. El día se reduce a un dígito.</li>\
 		</ul>';
 	} else if ( x == 'registro' ) {
 	    document.getElementById("desc").style.display = "inline-block";
@@ -388,7 +388,7 @@
 			'La torre de retaguardia está amenazada',
 			'Esta torre pide auxilio de fuerza armada',
 			'Se ha alterado la tranquilidad pública en la comarca',
-			'Se ha restablecido la tranquildad pública en la comarca'];
+			'Se ha restablecido la tranquilidad pública en la comarca'];
 
 	// Devolver el texto sólo o rellenar la caja de texto
 	if ( lst_num ) {
