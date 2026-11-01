@@ -18,7 +18,7 @@
 
 import argparse, string, time, re, logging, sys, unicodedata, random
 
-__version__ = '3.0'
+__version__ = '3.1'
 
 # Tamaño máximo de texto a codificar
 MAX_TXT = 250
@@ -39,7 +39,8 @@ def get_arguments(msg, lencript):
     parser.add_argument('--pwd', default=None, action='store', help='cifra el mensaje con la contraseña indicada')
     parser.add_argument('-r', '--registro', default=msg['registro'], action='store', type=int, metavar='[nº]', help='nº registro despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
-    parser.add_argument('-s', '--sufijo', default=msg['sufijo'], action='store', type=int, help='sufijo del mensaje (solo tipos 1, 2, 3 y 6)')
+    parser.add_argument('-i', '--indicacion', '-s', '--sufijo', dest='indic', metavar='INDICACIÓN',
+                        default=msg['indic'], action='store', type=int, help='indicación particular del mensaje (solo tipos 1, 2, 3 y 6)')
     parser.add_argument('--raw', default=False, action='store_true', help='salida sin formato')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='debug')
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
@@ -52,38 +53,38 @@ def get_arguments(msg, lencript):
 
     logging.info('Argumentos raw:\t %s', str(vars(arg)))
 
-    # Según el tipo de mensaje, comprobar asignaciones de sufijo
+    # Según el tipo de mensaje, comprobar asignaciones de indicación
     if arg.tipo == '1':
-        if arg.sufijo is not None:
-            if arg.sufijo not in [6, 9]:
+        if arg.indic is not None:
+            if arg.indic not in [6, 9]:
                 parser.print_help()
-                print('\nSufijos disponibles para el nº de rectificación:')
-                print('\t\t\t-s 6   repetir registro')
-                print('\t\t\t-s 9   anular registro')
+                print('\nIndicaciones disponibles para el nº de rectificación:')
+                print('\t\t\t-i 6   repetir registro')
+                print('\t\t\t-i 9   anular registro')
                 sys.exit(0)
         else:
-            arg.sufijo = random.choice(['6', '9'])
+            arg.indic = random.choice(['6', '9'])
 
-    if arg.tipo == '2' and arg.sufijo is None:
-        arg.sufijo = 0
+    if arg.tipo == '2' and arg.indic is None:
+        arg.indic = 0
 
     if arg.tipo in ['6', '3']:
-        if arg.sufijo is not None:
-            if arg.sufijo not in [0, 1, 2, 3, 4]:
+        if arg.indic is not None:
+            if arg.indic not in [0, 1, 2, 3, 4]:
                 parser.print_help()
-                print('\nSufijos disponibles para el nº de incidencia:')
-                print('\t\t\t-s 0   correcto')
-                print('\t\t\t-s 1   corte por niebla')
-                print('\t\t\t-s 2   corte por ausencia')
-                print('\t\t\t-s 3   vanguardia ocupada')
-                print('\t\t\t-s 4   corte por avería')
+                print('\nIndicaciones disponibles para el nº de incidencia:')
+                print('\t\t\t-i 0   correcto')
+                print('\t\t\t-i 1   corte por niebla')
+                print('\t\t\t-i 2   corte por ausencia')
+                print('\t\t\t-i 3   vanguardia ocupada')
+                print('\t\t\t-i 4   corte por avería')
                 sys.exit(0)
-        if arg.sufijo == 0 and arg.tipo in ['3', '6']:
-            arg.sufijo = '00'
-        if arg.tipo == '3' and arg.sufijo is None:
-            arg.sufijo = ''
-        if arg.tipo == '6' and arg.sufijo is None:
-            arg.sufijo = '00'
+        if arg.indic == 0 and arg.tipo in ['3', '6']:
+            arg.indic = '00'
+        if arg.tipo == '3' and arg.indic is None:
+            arg.indic = ''
+        if arg.tipo == '6' and arg.indic is None:
+            arg.indic = '00'
 
     if arg.diccionario:
         print('-' * 10)
@@ -145,7 +146,7 @@ def get_arguments(msg, lencript):
 
     msg['registro'] = msg['registro'][:2].zfill(2)
     if arg.tipo == '2':
-        msg['sufijo'] = msg['sufijo'][:3].zfill(3)
+        msg['indic'] = msg['indic'][:3].zfill(3)
 
     logging.info('Argumentos txt:\t %s', str(msg))
 
@@ -206,38 +207,38 @@ def zcodif_codificar(arg, msg, lencript):
         resto = int(len(cipert) % 9)
         msg['novenales'] = str(cociente).zfill(2) + str(resto)
 
-        # Insertar arriadas en mensaje y borar la última si coincide
+        # Insertar arriadas en mensaje y borrar la última si coincide
         ciperm = str(re.sub(r'(.{9})', r'\1/', cipert)).rstrip('/')
 
-        sufijo = msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
+        final = msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
         msg['tipo'] = ''
 
     elif msg['tipo'] == '2':  # Servicio interno
         # 2/0x1052/21261x/0x0/2
         msg['registro'] = ''
         msg['prioridad'] = ''
-        sufijo = '/' + msg['sufijo'] + '/' + msg['tipo']
+        final = '/' + msg['indic'] + '/' + msg['tipo']
 
     elif msg['tipo'] == '3':  # Servicio de vigilancia
         # 3/0x1052/191709
         msg['registro'] = ''
         msg['prioridad'] = ''
-        sufijo = '/' + msg['sufijo']
+        final = '/' + msg['indic']
 
     elif msg['tipo'] == '6':  # Servicio acuse de recibo
         # 6/0/0x1052/1917090x/0x
-        sufijo = '/' + msg['sufijo']
+        final = '/' + msg['indic']
 
     elif msg['tipo'] == '5':  # Continuar transmisión
         # 5/0/0x1/0x
         msg['destino'] = '0'
         msg['horadia'] = ''
-        sufijo = ''
+        final = ''
 
     elif msg['tipo'] == '1':  # Rectificación
         # 1/0/0x1052/01/9
         msg['horadia'] = ''
-        sufijo = '/' + msg['sufijo']
+        final = '/' + msg['indic']
 
     else:
         logging.error('Sin tipo de mensaje')
@@ -252,7 +253,7 @@ def zcodif_codificar(arg, msg, lencript):
         msg['destino'] = ''
 
     # Paquete formateado
-    paquet = str(msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo)
+    paquet = str(msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + final)
 
     paquet = re.sub(r'\/\/+', r'/', paquet).strip('/')  # Eliminar '//' y '/' de extremos
 
@@ -272,7 +273,7 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje'].lower()).replace(" ", "")
 
     try:
-        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 4 grupos) - https://regex101.com/r/6Sllkd/1
+        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 5 grupos) - https://regex101.com/r/6Sllkd/1
 
         # Procesar tipo 0 (novenales separados o unidos a la fecha y registro - formato previo y actual)
         if ((search := re.match(r'^()?([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm))
@@ -351,7 +352,7 @@ def zcodif_descodificar(arg, msg, lencript):
         # Asignar valores comunes
         msg['tipo'] = search.group(1)
         msg['prioridad'] = search.group(2)
-        msg['sufijo'] = search.group(5)
+        msg['indic'] = search.group(5)
 
         # Según nº torre o comandancia
         if len(search.group(3)) in (2, 4):
@@ -408,30 +409,30 @@ def imprimir(arg, msg):
         if msg['tipo'] in ['', '0']: print("Tipo:\t\t Despacho")
         if msg['tipo'] == '2':
             print("Tipo:\t\t 2 - Interno")
-            print(f"Código:\t\t {msg['sufijo']}")
+            print(f"Código:\t\t {msg['indic']}")
         if msg['tipo'] in ['3', '6']:
             if msg['tipo'] == '3':
                 print("Tipo:\t\t 3 - Vigilancia")
             if msg['tipo'] == '6':
                 print("Tipo:\t\t 6 - Acuse de recibo")
-            if msg['sufijo'] == '00':
+            if msg['indic'] == '00':
                 print("Estado:\t\t 0x - Correcto")
-            if msg['sufijo'] == '1':
+            if msg['indic'] == '1':
                 print("Estado:\t\t 1 - Incidencia niebla")
-            if msg['sufijo'] == '2':
+            if msg['indic'] == '2':
                 print("Estado:\t\t 2 - Incidencia ausencia")
-            if msg['sufijo'] == '3':
+            if msg['indic'] == '3':
                 print("Estado:\t\t 3 - Incidencia vanguardia ocupada")
-            if msg['sufijo'] == '4':
+            if msg['indic'] == '4':
                 print("Estado:\t\t 4 - Incidencia avería")
         if msg['tipo'] == '5': print("Tipo:\t\t 5 - Continuación")
         if msg['tipo'] == '1':
             print("Tipo:\t\t 1 - Rectificación")
-            if msg['sufijo'] == '6':
+            if msg['indic'] == '6':
                 print("Petición:\t 6 - Repetir registro")
                 if msg['repetir']:
                     print(f"Novenales rep.:\t {msg['repetir']}")
-            if msg['sufijo'] == '9':
+            if msg['indic'] == '9':
                 print("Petición:\t 9 - Anular registro")
 
         if msg['prioridad']:
@@ -495,7 +496,7 @@ def main():
     lencript = list(string.digits + string.ascii_letters + string.punctuation) + ['Ñ', 'ñ', '¿', '€', '', ' ']
 
     # Diccionario de mensaje. Valores por defecto
-    msg = {'tipo': 0, 'prioridad': 0, 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'suplemento': '', 'sufijo': None, 'repetir': None}
+    msg = {'tipo': 0, 'prioridad': 0, 'origen': 1, 'destino': 52, 'horadia': None, 'registro': 0, 'novenales': None, 'mensaje': '...', 'procmsg': None, 'suplemento': '', 'indic': None, 'repetir': None}
 
     arg, msg = get_arguments(msg, lencript)
 

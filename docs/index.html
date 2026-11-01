@@ -454,13 +454,13 @@
         msg['registro'] = document.getElementById("mreg").value.toString().substring(0,2).padStart(2, '0');
         msg['mfhora'] = document.getElementById("mfhora").value;
 	if (msg['tipo'] == '1') {
-	    msg['sufijo'] = document.getElementById("rectf").value;
+	    msg['indic'] = document.getElementById("rectf").value;
 	}
 	if (msg['tipo'] == '2') {
-            msg['sufijo'] = document.getElementById("codg").value;
+            msg['indic'] = document.getElementById("codg").value;
 	}
 	if (msg['tipo'] == '6' || msg['tipo'] == '3') {
-	    msg['sufijo'] = document.getElementById("incd").value;
+	    msg['indic'] = document.getElementById("incd").value;
 	}
         if (msg['mfhora'] == 1) {
             var fchora = parseInt(d.getHours());
@@ -514,38 +514,38 @@
                 var resto = Math.floor(cipert.length % 9);
                 msg['novenales'] = cociente.toString().padStart(2, '0') + resto.toString();
 
-                // Insertar arriadas en mensaje y borar la última si coincide
+                // Insertar arriadas en mensaje y borrar la última si coincide
                 var ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
 
-                var sufijo = msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
+                var final = msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
                 msg['tipo'] = '';
                 break;
 
             case '2':  // Servicio interno
                 msg['registro'] = '';
                 msg['prioridad'] = '';
-                sufijo = '/' + msg['sufijo'] + "/" + msg['tipo'];
+                final = '/' + msg['indic'] + "/" + msg['tipo'];
                 break;
 
             case '3':  // Servicio de vigilancia
                 msg['registro'] = '';
                 msg['prioridad'] = '';
-                sufijo = '/' + msg['sufijo'];
+                final = '/' + msg['indic'];
                 break;
 
             case '6':  // Servicio de acuse de recibo
-                sufijo = '/' + msg['sufijo'];
+                final = '/' + msg['indic'];
                 break;
 
             case '5':  // Continuación
                 msg['destino'] = '0';
                 msg['horadia'] = '';
-                sufijo = '';
+                final = '';
                 break;
 
             case '1':  // Servicio de rectificación
                 msg['horadia'] = '';
-                sufijo = '/' + msg['sufijo'];
+                final = '/' + msg['indic'];
                 break;
         }
 
@@ -559,14 +559,14 @@
         }
 
         // Paquete formateado
-        var msgfmt = msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + sufijo;
+        var msgfmt = msg['tipo'] + '/' + msg['prioridad'] + '/' + msg['origen'] + msg['destino'] + '/' + msg['horadia'] + msg['registro'] + final;
 
         msgfmt = msgfmt.replace(/\/\/+/g, "/").replace(/^\/|\/$/g, "");  // Eliminar duplicados // y / de extremos
 
         console.log('Mensaje raw: ' + msgfmt);
         console.log('Mensaje txt: "' + msg['mensaje'] + '\"');
 
-        // Salida final. Sustituir caracteres reptidos por x
+        // Salida final. Sustituir caracteres repetidos por x
         msg['procmsg'] = msgfmt.replace(/(\w{1})\1/g, "$1x");
 
         imprimir(msg);
@@ -672,7 +672,7 @@
             // Asignar valores comunes
             msg['tipo'] = search[1] ?? '';
             msg['prioridad'] = search[2];
-            msg['sufijo'] = search[5];
+            msg['indic'] = search[5];
 
             // Según nº torre o comandancia
             if ([2, 4].indexOf(search[3].length) > -1) {
@@ -715,7 +715,7 @@
             msg['procmsg'] = excp;
             msg['origen'] = msg['destino'] = msg['novenales'] = '000';
             msg['horadia'] = '000000';
-            msg['registro'] = msg['sufijo'] = '00';
+            msg['registro'] = msg['indic'] = '00';
         }
         imprimir(msg);
     }
@@ -734,7 +734,7 @@
             case '': case '0': salida += "<i>Tipo:</i>\t\t Despacho<br>"; break;
             case '2':
                 salida += "<i>Tipo:</i>\t\t 2 - Interno<br>";
-                salida += "<i>Código:</i>\t " + msg['sufijo'] + "<br>"; break;
+                salida += "<i>Código:</i>\t " + msg['indic'] + "<br>"; break;
             case '3':
             case '6':
                 switch (msg['tipo']) {
@@ -743,7 +743,7 @@
                     case '6':
                         salida += "<i>Tipo:</i>\t\t 6 - Acuse de recibo<br>"; break;
 		}
-                switch (msg['sufijo']) {
+                switch (msg['indic']) {
                     case '00':
                         salida += "<i>Estado:</i>\t 0x - Correcto<br>"; break;
                     case '1':
@@ -757,7 +757,7 @@
                }; break;
             case '5': salida += "<i>Tipo:</i>\t\t 5 - Continuación<br>"; break;
             case '1': salida += "<i>Tipo:</i>\t\t 1 - Rectificación<br>";
-                switch (msg['sufijo']) {
+                switch (msg['indic']) {
                     case '6':
                         salida += "<i>Petición:</i>\t 6 - Repetir registro<br>";
 		        if (msg['repetir']) {
@@ -913,7 +913,7 @@
 
     function procesar() {
 
-        const version = 3.0;
+        const version = 3.1;
 
         var msg = {}; // Diccionario de mensaje
         msg['mensaje'] = document.getElementById('form1').value;  // Asignar entrada
