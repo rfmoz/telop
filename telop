@@ -165,12 +165,12 @@ def encffx(arg, ciphert, tipo=False):
     if arg.pwd == 'ask':
         arg.pwd = input("Password?: ")
 
-    effx = pyffx.Integer(arg.pwd.encode('utf_8'), length=len(ciphert))
+    effx = pyffx.String(arg.pwd.encode('utf_8'), string.digits, length=len(ciphert))
 
     if tipo == 'cifra':
-        return str(effx.encrypt(ciphert))
+        return effx.encrypt(ciphert)
     elif tipo == 'descifra':
-        return str(effx.decrypt(ciphert))
+        return effx.decrypt(ciphert)
     else:
         return ciphert
 
