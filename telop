@@ -272,35 +272,6 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje'].lower()).replace(" ", "")
 
     try:
-        # Extraer interrupciones finales si las hubiera en el suplemento final
-        #  Busca el nº del tipo de mensaje junto con el valor mínimo de repeticiones de '/' que le corresponde
-        #  y finaliza con el sufijo del formato de la interrupción
-
-        while re.match(r'^(([048](/\d*){5})|'
-                           r'([2](/\d*){4})|'
-                          r'([16](/\d*){4})|'
-                          r'([35](/\d*){2})).+'
-                       r'(/(\d{3})/(\d{4,6}/)?([1-4]))+$', ciperm) is not None:
-            # Procesar suplemento interrupciones según valores
-            #  - Torre, díahora o hora, tipo incidencia
-            #  - Torre, tipo incidencia
-            regint = re.search(r'/(\d{3})/(\d{4,6}/)?([1-4])$', ciperm)
-            msg['suplemento'] += '[T-' + regint.group(1) + ' '
-            if regint.group(2):
-                if len(regint.group(2)) == 7:
-                    msg['suplemento'] += '(' + regint.group(2)[4:6] + ')'
-                msg['suplemento'] += regint.group(2)[:2] + ':' + regint.group(2)[2:4] + 'h '
-            intrc = regint.group(3)
-            intrc = intrc.replace('1', '1-Niebla')
-            intrc = intrc.replace('2', '2-Ausencia')
-            intrc = intrc.replace('3', '3-Vang.Ocupada')
-            intrc = intrc.replace('4', '4-Avería')
-            msg['suplemento'] += intrc +']  '
-
-            # Eliminar interrupción del mensaje
-            logging.info('Intrr.:\t %s', str(regint.group(0)))
-            ciperm = ciperm[:-len(regint.group(0))]
-
         # Regex para cabeceras de mensajes (mantener en cada caso los mismos 4 grupos) - https://regex101.com/r/zVgaDT/1
 
         # Procesar tipo 0
@@ -311,10 +282,14 @@ def zcodif_descodificar(arg, msg, lencript):
             # Calcular tamaño del texto en base a los novenales
             long_nov = (int(msg['novenales'][:2]) * 9) + (int(msg['novenales'][2:]))
 
-            # Eliminar la cabecera del preámbulo del telegrama, quitar '/' y extraer longitud del texto
-            cipert = ciperm.replace(search.group(0), '').replace('/', '')[:long_nov]
+            # Texto (periodos): long_nov dígitos, seguido del cierre /[048]
+            texto = re.match(r'((/?\d){%d})/[048]' % long_nov, ciperm[search.end():])
+            if texto is None:
+                raise Exception('Extension mensaje incorrecta')
 
+            cipert = texto.group(1).replace('/', '')
             logging.info("Texto raw:\t\t %s", cipert)
+            fin = search.end() + texto.end()
 
             if arg.pwd:
                 cipert = encffx(arg, cipert, 'descifra')
@@ -330,29 +305,47 @@ def zcodif_descodificar(arg, msg, lencript):
                     msg['procmsg'] += lencript[int(cipert[i] + cipert[i+1])]
 
         # Procesar tipo 2
-        elif (search := re.match(r'^(2)/()?(\d{2,6})/(\d{3,6})/(\d{2,3})\b', ciperm)):
+        elif (search := re.match(r'^(2)/()?(\d{2,6})/(\d{3,6})/(\d{2,3})(?:/2)?\b', ciperm)):
             #msg['procmsg'] = txt_valor_del_código
-            pass
+            fin = search.end()
 
         # Procesar tipo 3
         elif (search := re.match(r'^(3)/()?(\d{2,6})/(\d{3,6})(?:/(\d{1,2}))?\b', ciperm)):
-            pass
+            fin = search.end()
 
         # Procesar tipo 5
         elif (search := re.match(r'^(5)/([048])/(\d{2,3})/(\d{2})()\b', ciperm)):
-            pass
+            fin = search.end()
 
         # Procesar tipo 6
         elif (search := re.match(r'^(6)/([048])/(\d{2,6})/(\d{2,8})/(\d{1,2})\b', ciperm)):
-            pass
+            fin = search.end()
 
         # Procesar tipo 1
         elif (search := re.match(r'^(1)/([048])/(\d{2,6})/(\d{2})/([69])((?:/\d{1,2}){0,9})\b', ciperm)):
             # Recoge de manera recursiva '/' seguido de uno o dos números más
             msg['repetir'] = search.group(6).lstrip('/')
+            fin = search.end()
 
         else:
             raise Exception('Formato de mensaje inválido')
+
+        # Suplementos de interrupción tras el cuerpo
+        suplementos = re.finditer(r'/(\d{3})(?:/(\d{4,6}))?/([1-4])', ciperm[fin:])
+
+        # Procesar suplemento interrupciones según valores
+        #  - Torre, díahora o hora, tipo incidencia
+        #  - Torre, tipo incidencia
+        causas = {'1': '1-Niebla', '2': '2-Ausencia', '3': '3-Vang.Ocupada', '4': '4-Avería'}
+        for sup in suplementos:
+            torre, hora, causa = sup.groups()
+            logging.info('Intrr.:\t %s', sup.group(0))
+            msg['suplemento'] += f'[T-{torre} '
+            if hora:
+                if len(hora) == 6:
+                    msg['suplemento'] += f'({hora[4:6]})'
+                msg['suplemento'] += f'{hora[:2]}:{hora[2:4]}h '
+            msg['suplemento'] += f'{causas[causa]}]  '
 
         # Asignar valores comunes
         msg['tipo'] = search.group(1)

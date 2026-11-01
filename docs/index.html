@@ -584,36 +584,11 @@
         // Reconstruir caracteres repetidos
         var ciperm = msg['mensaje'].toLowerCase().replace(/(.{1})x/g, "$1$1").replace(/ /g, "");
 
-        // Extraer interrupciones finales si las hubiera en el suplemento final
         msg['suplemento'] = '';
-        while((/^(([048](\/\d*){5})|([2](\/\d*){4})|([16](\/\d*){4})|([35](\/\d*){2})).+(\/(\d{3})\/(\d{4,6}\/)?([1-4]))+$/).test(ciperm)) {
-
-            // Procesar suplemento interrupciones según valores
-            var regint = (/\/(\d{3})\/(\d{4,6}\/)?([1-4])$/).exec(ciperm);
-            msg['suplemento'] += '[T-' + regint[1] + ' ';
-            if (regint[2]) {
-                if (regint[2].length == 7) {
-                    msg['suplemento'] += '(' + regint[2].substring(4,6) + ')';
-                }
-                msg['suplemento'] += regint[2].substring(0,2) + ':' + regint[2].substring(2,4) + 'h ';
-            }
-            var intrc = regint[3]
-            switch (intrc) {
-                case '1': intrc = '1-Niebla'; break;
-                case '2': intrc = '2-Ausencia'; break;
-                case '3': intrc = '3-Vang.Ocupada'; break;
-                case '4': intrc = '4-Avería';
-            }
-            msg['suplemento'] += intrc + ']  ';
-
-            // Eliminar interrupción del mensaje
-            console.log("Intrr.: " + regint[0]);
-            ciperm = ciperm.slice(0, -regint[0].length);
-        }
 
         try {
 
-            var search, cipert;
+            var search, cipert, texto, fin;
 
             // Procesar tipo 0
             if (search = ciperm.match(/^()?([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/)) {
@@ -623,47 +598,74 @@
                 // Calcular tamaño del texto en base a los novenales
                 let long_nov = (parseInt(msg['novenales'].substring(0,2)) * 9) + (parseInt(msg['novenales'].substring(2)));
 
-                // Eliminar la cabecera del preámbulo del telegrama y extraer longitud del texto
-                cipert = ciperm.replace(search[0], '').replace(/\//g, '').substring(0, long_nov);
+                // Texto (periodos): long_nov dígitos, seguido del cierre /[048]
+                texto = ciperm.slice(search[0].length).match(new RegExp('^((/?\\d){' + long_nov + '})/[048]'));
+                if (!texto) {
+                    throw "ERROR - Extensión mensaje incorrecta";
+                }
 
-                console.log("Mensaje raw: " + cipert);
+                cipert = texto[1].replace(/\//g, '');
+                console.log("Texto raw: " + cipert);
 
                 // Comprobar integridad
                 if (long_nov != cipert.length) {
-                    msg['procmsg'] = 'ERROR - Extensión mensaje incorrecta'
-
-                } else {
-                    // Recorrer a pares el texto y extraer la posición del carácter en la lista de códigos
-                    msg['procmsg'] = '';
-                    for (let i=0; i < long_nov - 1; i+=2) {
-                        let posicion = (cipert[i] + cipert[(i + 1)]);
-                        msg['procmsg'] += lencript[parseInt(posicion)];
-                    }
-
+                    throw "ERROR - Extensión mensaje incorrecta";
                 }
 
+                // Recorrer a pares el texto y extraer la posición del carácter en la lista de códigos
+                msg['procmsg'] = '';
+                for (let i=0; i < long_nov - 1; i+=2) {
+                    let posicion = (cipert[i] + cipert[(i + 1)]);
+                    msg['procmsg'] += lencript[parseInt(posicion)];
+                }
+
+                fin = search[0].length + texto[0].length;
+
             // Procesar tipo 2
-            } else if (search = ciperm.match(/^(2)\/()?(\d{2,6})\/(\d{3,6})\/(\d{2,3})\b/)) {
+            } else if (search = ciperm.match(/^(2)\/()?(\d{2,6})\/(\d{3,6})\/(\d{2,3})(?:\/2)?\b/)) {
                 msg['procmsg'] = codinfo(search[5]);
+                fin = search[0].length;
 
             // Procesar tipo 3
             } else if (search = ciperm.match(/^(3)\/()?(\d{2,6})\/(\d{3,6})(?:\/(\d{1,2}))?\b/)) {
-                // pass
+                fin = search[0].length;
 
             // Procesar tipo 5
             } else if (search = ciperm.match(/^(5)\/([048])\/(\d{2,3})\/(\d{2})()\b/)) {
-                // pass
+                fin = search[0].length;
 
             // Procesar tipo 6
             } else if (search = ciperm.match(/^(6)\/([048])\/(\d{2,6})\/(\d{2,8})\/(\d{1,2})\b/)) {
-                // pass
+                fin = search[0].length;
 
             // Procesar tipo 1
-	    } else if (search = ciperm.match(/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/)) {
+            } else if (search = ciperm.match(/^(1)\/([048])\/(\d{2,6})\/(\d{2})\/([69])((?:\/\d{1,2}){0,9})\b/)) {
                 msg['repetir'] = search[6].replace(/^\/+/, '');
+                fin = search[0].length;
 
             } else {
                 throw "ERROR - Formato de mensaje inválido";
+            }
+
+            // Suplementos de interrupción tras el cuerpo
+            for (const sup of ciperm.slice(fin).matchAll(/\/(\d{3})(?:\/(\d{4,6}))?\/([1-4])/g)) {
+                const torre = sup[1], hora = sup[2];
+                let causa = sup[3];
+                console.log("Intrr.: " + sup[0]);
+                msg['suplemento'] += '[T-' + torre + ' ';
+                if (hora) {
+                    if (hora.length == 6) {
+                        msg['suplemento'] += '(' + hora.substring(4,6) + ')';
+                    }
+                    msg['suplemento'] += hora.substring(0,2) + ':' + hora.substring(2,4) + 'h ';
+                }
+                switch (causa) {
+                    case '1': causa = '1-Niebla'; break;
+                    case '2': causa = '2-Ausencia'; break;
+                    case '3': causa = '3-Vang.Ocupada'; break;
+                    case '4': causa = '4-Avería';
+                }
+                msg['suplemento'] += causa + ']  ';
             }
 
             // Asignar valores comunes
