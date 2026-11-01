@@ -31,14 +31,14 @@ Novenales:	 04.2
 Mensaje txt:	 'Telegrama de prueba'
 --------------------------------------------------------------------------------
 
-Mensaje:	 0/0x1052/2310x80x/042/5x1421x41/627102x10/9x13149x2/52730141x/10/0
+Mensaje:	 0/0x1052/2310x80x042/5x1421x41/627102x10/9x13149x2/52730141x/10/0
 
 --------------------------------------------------------------------------------
 ```
 
 **Descodificar mensaje:**
 ```
-$ telop '0/0x1052/2310x80x/042/5x1421x41/627102x10/9x13149x2/52730141x/10/0'
+$ telop '0/0x1052/2310x80x042/5x1421x41/627102x10/9x13149x2/52730141x/10/0'
 --------------------------------------------------------------------------------
 Tipo:	 	 Despacho
 Prioridad:	 0 - General
@@ -180,68 +180,61 @@ Nota: Telop permite cifrar el contenido del mensaje con una contraseña (`telop 
 En el siguiente esquema se establece el orden de los valores en el mensaje:
 
 ```
- A/B/   C  /    D   / E / - /
- | |    |       |     |   |
- | |    |       |     |   +-- - texto(*)
- | |    |       |     +------ E sufijo particular a cada tipo de mensaje([0-3])
- | |    |       +------------ D hora(2) + minutos(2) + día(2) + registro(2)
- | |    +-------------------- C torre de origen(3) + torre de destino(3)
- | +------------------------- B prioridad(1)
- +--------------------------- A tipo(1)
+ A/B/   C  /     D     / E / - /
+ | |    |        |       |   |
+ | |    |        |       |   +-- - texto(*)
+ | |    |        |       +------ E indicación particular a cada tipo de mensaje([0-3])
+ | |    |        +-------------- D hora(2) + minutos(2) + día(2) + registro(2) + extensión(3)
+ | |    +----------------------- C torre de origen(3) + torre de destino(3)
+ | +---------------------------- B prioridad(1)
+ +------------------------------ A servicio(1)
 
+   0/0x10x5/2341040x013/252730141/1x0/0 -> Mensaje general
+   |    |        |       \         /  |
+   |    |        |        \       /   +-- B prioridad(1)
+   |    |        |         +-----+------- - novenales de mensaje(*)
+   |    |        +----------------------- D hora(2) + minutos(2) + día(2) + registro(2) + ext.(3)
+   |    +-------------------------------- C torre de origen(3) + torre de destino(3)
+   +------------------------------------- B prioridad(1)
 
-   0/0x10x5/2341040x/013/252730141/1x0/0 -> Mensaje general
-   |    |       |     |   \         /  |
-   |    |       |     |    \       /   +-- B prioridad(1)
-   |    |       |     |     +-----+------- - novenales de mensaje(*)
-   |    |       |     +------------------- E sufijo nº de novenales completos(2) y dígitos resto(1)
-   |    |       +------------------------- D hora(2) + minutos(2) + día(2) + registro(2)
-   |    +--------------------------------- C torre de origen(3) + torre de destino(3)
-   +-------------------------------------- B prioridad(1)
+ 2  /0x10x5/234104     /0x1    /2 -> Comunicación interna
+ |      |        |       |      |
+ |      |        |       |      +-- A servicio(1)
+ |      |        |       +--------- E indicación código interno([2-3])
+ |      |        +----------------- D hora(2) + minutos(2) + día(2)
+ |      +-------------------------- C torre de origen(3) + torre de destino(3)
+ +--------------------------------- A servicio(1)
 
+ 3  /0x10x5/234104     /0x -> Vigilancia
+ |      |        |       |
+ |      |        |       +-- E indicación estado, solo en recepción (opcional)([0-2])
+ |      |        +---------- D hora(2) + minutos(2) + día(2)
+ |      +------------------- C torre de origen(3) + torre de destino(3)
+ +-------------------------- A servicio(1)
 
- 2  /0x10x5/234104  /0x1    /2 -> Comunicación interna
- |      |       |     |      |
- |      |       |     |      +-- A tipo(1)
- |      |       |     +--------- E sufijo código interno([2-3])
- |      |       +--------------- D hora(2) + minutos(2) + día(2)
- |      +----------------------- C torre de origen(3) + torre de destino(3)
- +------------------------------ A tipo(1)
+ 6/0/0x10x5/2341040x   /0x -> Acuse de recibo
+ | |    |        |       |
+ | |    |        |       +-- E indicación estado acuse de recibo([1-2])
+ | |    |        +---------- D hora(2) + minutos(2) + día(2) + registro mensaje recibido(2)
+ | |    +------------------- C torre de origen(3) + torre de destino(3)
+ | +------------------------ B prioridad(1)
+ +-------------------------- A servicio(1)
 
+ 5/0/  0x1 /    03 -> Continuación
+ | |    |        |
+ | |    |        +-- D registro mensaje a continuar(2)
+ | |    +----------- C torre de origen(3)
+ | +---------------- B prioridad(1)
+ +------------------ A servicio(1)
 
- 3  /0x10x5/234104  /0x -> Vigilancia
- |      |       |     |
- |      |       |     +-- E sufijo estado, solo en recepción (opcional)([0-2])
- |      |       +-------- D hora(2) + minutos(2) + día(2)
- |      +---------------- C torre de origen(3) + torre de destino(3)
- +----------------------- A tipo(1)
-
-
- 6/0/0x10x5/2341040x/0x -> Acuse de recibo
- | |    |       |     |
- | |    |       |     +-- E sufijo estado acuse de recibo([1-2])
- | |    |       +-------- D hora(2) + minutos(2) + día(2) + registro mensaje recibido(2)
- | |    +---------------- C torre de origen(3) + torre de destino(3)
- | +--------------------- B prioridad(1)
- +----------------------- A tipo(1)
-
-
- 5/0/  0x1 /  03 -> Continuación
- | |    |      |
- | |    |      +-- D registro mensaje a continuar(2)
- | |    +--------- C torre de origen(3)
- | +-------------- B prioridad(1)
- +---------------- A tipo(1)
-
-
- 1/0/0x10x5/   04   /6/2/3/4 -> Rectificación
- | |    |      |     | \   /
- | |    |      |     |  +-+-- - novenales a repetir(opcional)(*)
- | |    |      |     +------- E sufijo tipo de petición(1)
- | |    |      +------------- D registro mensaje rectificado(2)
- | |    +-------------------- C torre de origen(3) + torre de destino(3)
- | +------------------------- B prioridad(1)
- +--------------------------- A tipo(1)
+ 1/0/0x10x5/    04     / 6/2/3/4 -> Rectificación
+ | |    |        |       | \   /
+ | |    |        |       |  +-+-- - novenales a repetir(opcional)(*)
+ | |    |        |       +------- E indicación tipo de petición(1)
+ | |    |        +--------------- D registro mensaje rectificado(2)
+ | |    +------------------------ C torre de origen(3) + torre de destino(3)
+ | +----------------------------- B prioridad(1)
+ +------------------------------- A servicio(1)
 ```
 
 Cada mensaje puede llevar un suplemento final indicando las interrupciones sufridas durante la transmisión. Se puede repetir el número de veces necesario.

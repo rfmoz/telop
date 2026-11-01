@@ -209,7 +209,7 @@ def zcodif_codificar(arg, msg, lencript):
         # Insertar arriadas en mensaje y borar la última si coincide
         ciperm = str(re.sub(r'(.{9})', r'\1/', cipert)).rstrip('/')
 
-        sufijo = '/' + msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
+        sufijo = msg['novenales'] + '/' + ciperm + '/' + msg['prioridad']
         msg['tipo'] = ''
 
     elif msg['tipo'] == '2':  # Servicio interno
@@ -272,10 +272,11 @@ def zcodif_descodificar(arg, msg, lencript):
     ciperm = re.sub(r'(.{1})x', r'\1\1', msg['mensaje'].lower()).replace(" ", "")
 
     try:
-        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 4 grupos) - https://regex101.com/r/zVgaDT/1
+        # Regex para cabeceras de mensajes (mantener en cada caso los mismos 4 grupos) - https://regex101.com/r/6Sllkd/1
 
-        # Procesar tipo 0
-        if (search := re.match(r'^()?([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm)):
+        # Procesar tipo 0 (novenales separados o unidos a la fecha y registro - formato previo y actual)
+        if ((search := re.match(r'^()?([048])/(\d{2,6})/(\d{2,8})/(\d{3})\b', ciperm))
+                or (search := re.match(r'^()?([048])/(\d{2,6})/(\d{2,8})(\d{3})\b', ciperm))):
 
             msg['novenales'] = search.group(5)
 

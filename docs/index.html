@@ -517,7 +517,7 @@
                 // Insertar arriadas en mensaje y borar la última si coincide
                 var ciperm = cipert.replace(/(.{9})/g, "$1/").replace(/\/$/, '');
 
-                var sufijo = '/' + msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
+                var sufijo = msg['novenales'] + "/" + ciperm + "/" + msg['prioridad'];
                 msg['tipo'] = '';
                 break;
 
@@ -590,8 +590,9 @@
 
             var search, cipert, texto, fin;
 
-            // Procesar tipo 0
-            if (search = ciperm.match(/^()?([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/)) {
+            // Procesar tipo 0 (eee separado o unido a la fecha y registro)
+            if ((search = ciperm.match(/^()?([048])\/(\d{2,6})\/(\d{2,8})\/(\d{3})\b/)) ||
+                (search = ciperm.match(/^()?([048])\/(\d{2,6})\/(\d{2,8})(\d{3})\b/))) {
 
                 msg['novenales'] = search[5];
 
