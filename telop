@@ -31,16 +31,15 @@ def get_arguments(msg, lencript):
                         help='servicio/tipo de mensaje -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
     parser.add_argument('-p', '--prioridad', default=msg['prioridad'], action='store', type=str, choices=['0', '4', '8'],
                         help='prioridad -> 0-general | 4-urgente | 8-urgentísimo')
-    parser.add_argument('-o', '--origen', default=msg['origen'], action='store', type=int, metavar='[nº]', help='torre de origen')
-    parser.add_argument('-d', '--destino', default=msg['destino'], action='store', type=int, metavar='[nº]', help='torre de destino')
+    parser.add_argument('-t', '--torres', default=None, action='store', type=str, metavar='ORIGEN:DESTINO',
+                        help='torres origen:destino (001:051) o torre única (051) o comandancias (01:05) o comandancia única (05)')
     parser.add_argument('-b', '--breve', default=False, action='store_true', help='formato fecha y hora reducido')
-    parser.add_argument('-c', '--comandancia', default=False, action='store_true', help='comandancia como origen / destino')
     parser.add_argument('--diccionario', default=None, action='store_true', help='muestra el diccionario de codificación')
     parser.add_argument('--pwd', default=None, action='store', help='cifra el mensaje con la contraseña indicada')
     parser.add_argument('-r', '--registro', default=msg['registro'], action='store', type=int, metavar='[nº]', help='nº registro despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
-    parser.add_argument('-i', '--indicacion', dest='indic', metavar='INDICACIÓN',
-                        default=msg['indic'], action='store', type=int, help='indicación particular del mensaje (solo tipos 1, 2, 3 y 6)')
+    parser.add_argument('-i', '--indicación', dest='indic', metavar='[nº]',
+                        default=msg['indic'], action='store', type=int, help='indicación particular del mensaje (solo en servicios 1, 2, 3 y 6)')
     parser.add_argument('--raw', default=False, action='store_true', help='salida sin formato')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='debug')
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
@@ -53,7 +52,7 @@ def get_arguments(msg, lencript):
 
     logging.info('Argumentos raw:\t %s', str(vars(arg)))
 
-    # Según el tipo de mensaje, comprobar asignaciones de indicación
+    # Según el servicio, comprobar asignaciones de indicación
     if arg.tipo == '1':
         if arg.indic is not None:
             if arg.indic not in [6, 9]:
@@ -103,11 +102,6 @@ def get_arguments(msg, lencript):
             arg.zcodif = 1
             logging.info('Auto descodificar = 1')
 
-    # Comprobar asignación torre
-    if not ((0 <= arg.origen <= 999) and (0 <= arg.destino <= 999)):
-        logging.error('Torre de origen o destino inválida: [0-999]')
-        sys.exit(1)
-
     # En codificacion, comprobar requisitos y eliminar new line siempre
     if arg.zcodif == 0:
         if arg.mensaje and len(arg.mensaje) > MAX_TXT:
@@ -136,13 +130,17 @@ def get_arguments(msg, lencript):
     else:
         msg['horadia'] = str(time.strftime("%H%M%d"))
 
-    # Unificar con ceros. 2 o 3 para origen y destino. 2 para registro y 3 para codigo
-    if arg.comandancia:
-        msg['origen'] = msg['origen'][:2].zfill(2)
-        msg['destino'] = msg['destino'][:2].zfill(2)
-    else:
-        msg['origen'] = msg['origen'][:3].zfill(3)
-        msg['destino'] = msg['destino'][:3].zfill(3)
+    # Torres: origen:destino; 2/3 dígitos (sola), 2:2 o 3:3 (par)
+    torres = arg.torres or '001:052'
+    if not (re.fullmatch(r'\d{2,3}', torres)
+            or re.fullmatch(r'\d{2}:\d{2}', torres)
+            or re.fullmatch(r'\d{3}:\d{3}', torres)):
+        logging.error('Torres inválidas: use 2/3 dígitos, 2:2 o 3:3')
+        sys.exit(1)
+    partes = torres.split(':')
+    if len(partes) == 1:
+        partes.append('0')
+    msg['origen'], msg['destino'] = partes
 
     msg['registro'] = msg['registro'][:2].zfill(2)
     if arg.tipo == '2':
@@ -241,7 +239,7 @@ def zcodif_codificar(arg, msg, lencript):
         final = '/' + msg['indic']
 
     else:
-        logging.error('Sin tipo de mensaje')
+        logging.error('Sin servicio')
         sys.exit(1)
 
     # Torre '0' sin valor. Indicación única de torre
@@ -406,15 +404,15 @@ def imprimir(arg, msg):
 
     else:
         print('-' * 80)
-        if msg['tipo'] in ['', '0']: print("Tipo:\t\t Despacho")
+        if msg['tipo'] in ['', '0']: print("Servicio:\t Despacho")
         if msg['tipo'] == '2':
-            print("Tipo:\t\t 2 - Interno")
+            print("Servicio:\t 2 - Interno")
             print(f"Código:\t\t {msg['indic']}")
         if msg['tipo'] in ['3', '6']:
             if msg['tipo'] == '3':
-                print("Tipo:\t\t 3 - Vigilancia")
+                print("Servicio:\t 3 - Vigilancia")
             if msg['tipo'] == '6':
-                print("Tipo:\t\t 6 - Acuse de recibo")
+                print("Servicio:\t 6 - Acuse de recibo")
             if msg['indic'] == '00':
                 print("Estado:\t\t 0x - Correcto")
             if msg['indic'] == '1':
@@ -425,9 +423,9 @@ def imprimir(arg, msg):
                 print("Estado:\t\t 3 - Incidencia vanguardia ocupada")
             if msg['indic'] == '4':
                 print("Estado:\t\t 4 - Incidencia avería")
-        if msg['tipo'] == '5': print("Tipo:\t\t 5 - Continuación")
+        if msg['tipo'] == '5': print("Servicio:\t 5 - Continuación")
         if msg['tipo'] == '1':
-            print("Tipo:\t\t 1 - Rectificación")
+            print("Servicio:\t 1 - Rectificación")
             if msg['indic'] == '6':
                 print("Petición:\t 6 - Repetir registro")
                 if msg['repetir']:

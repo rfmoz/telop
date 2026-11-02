@@ -21,7 +21,7 @@ $ python3 telop
 ```
 $ telop 'Telegrama de prueba'
 --------------------------------------------------------------------------------
-Tipo:	 	 Despacho
+Servicio:	 Despacho
 Prioridad:	 0 - General
 T. Origen:	 001
 T. Destino:	 052
@@ -40,7 +40,7 @@ Mensaje:	 0/0x1052/2310x80x042/5x1421x41/627102x10/9x13149x2/52730141x/10/0
 ```
 $ telop '0/0x1052/2310x80x042/5x1421x41/627102x10/9x13149x2/52730141x/10/0'
 --------------------------------------------------------------------------------
-Tipo:	 	 Despacho
+Servicio:	 Despacho
 Prioridad:	 0 - General
 T. Origen:	 001
 T. Destino:	 052
@@ -57,7 +57,7 @@ Mensaje:	 Telegrama de prueba
 
 ### Opciones del programa
 ```
-usage: telop [-h] [-s {0,1,2,3,5,6}] [-p {0,4,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-i INDICACIÓN] [--raw] [-v] [--version] [-z {0,1}] [mensaje]
+usage: telop [-h] [-s {0,1,2,3,5,6}] [-p {0,4,8}] [-t ORIGEN:DESTINO] [-b] [--diccionario] [--pwd PWD] [-r [nº]] [-i [nº]] [--raw] [-v] [--version] [-z {0,1}] [mensaje]
 
 positional arguments:
   mensaje               texto del mensaje entre ' '
@@ -68,18 +68,15 @@ options:
                         servicio/tipo de mensaje -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo
   -p {0,4,8}, --prioridad {0,4,8}
                         prioridad -> 0-general | 4-urgente | 8-urgentísimo
-  -o [nº], --origen [nº]
-                        torre de origen
-  -d [nº], --destino [nº]
-                        torre de destino
+  -t ORIGEN:DESTINO, --torres ORIGEN:DESTINO
+                        torres origen:destino (001:051) o torre única (051) o comandancias (01:05) o comandancia única (05)
   -b, --breve           formato fecha y hora reducido
-  -c, --comandancia               comandancia como origen / destino
   --diccionario                muestra el diccionario de codificación
   --pwd PWD             cifra el mensaje con la contraseña indicada
   -r [nº], --registro [nº]
                         nº registro despacho
-  -i INDICACIÓN, --indicacion INDICACIÓN
-                        indicación particular del mensaje (solo tipos 1, 2, 3 y 6)
+  -i [nº], --indicación [nº]
+                        indicación particular del mensaje (solo en servicios 1, 2, 3 y 6)
   --raw                 salida sin formato
   -v, --verbose         debug
   --version             show program's version number and exit
@@ -94,9 +91,9 @@ options:
 Mensaje para transmitir texto de uso general con diferentes prioridades.
 
 - Codificar texto de forma básica de la torre '001' (por defecto) a la '041':
-    > telop -d 41 'Texto ejemplo'
+    > telop -t 001:041 'Texto ejemplo'
 - Mensaje urgentísimo con registro '12', origen '010' y destino '050':
-    > telop -p 8 -r 12 -o 10 -d 50 'Texto'
+    > telop -p 8 -r 12 -t 010:050 'Texto'
 
 
 **Tipo 2 — Servicio interno**
@@ -104,9 +101,9 @@ Mensaje para transmitir texto de uso general con diferentes prioridades.
 Para indicaciones internas de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con código 10:
-    > telop -s 2 -d 45 -i 10
+    > telop -s 2 -t 001:045 -i 10
 - Mensaje interno de la torre '045' a la '001' con código 11 y formato de fecha breve:
-    > telop -s 2 -o 45 -d 1 -i 11 -b
+    > telop -s 2 -t 045:001 -i 11 -b
 
 
 **Tipo 3 — Vigilancia**
@@ -116,9 +113,9 @@ Para verificar el estado de la línea. Se envían cada media hora, desde la cabe
 Su recepción se confirma mediante la devolución de otro mensaje de vigilancia, indicando las torres oportunas.
 
 - Mensaje inicial con valor '99' como comodín para todos los extremos de línea y ramales. Origen implícito ('0'), formato fecha breve:
-    > telop -s 3 -o 0 -d 99 -c -b
+    > telop -s 3 -t 00:99 -b
 - Mensaje de respuesta con recepción correcta '0'. Comandancia de origen '07' y destino '01':
-    > telop -s 3 -o 7 -d 1 -c -i 0
+    > telop -s 3 -t 07:01 -i 0
 
 
 **Tipo 5 — Continuación**
@@ -126,7 +123,7 @@ Su recepción se confirma mediante la devolución de otro mensaje de vigilancia,
 Indica la reanudación de un despacho detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación de mayor prioridad.
 
 - Retomar la transmisión del mensaje con torre de origen '009' y referencia '43':
-    > telop -s 5 -o 9 -r 43
+    > telop -s 5 -t 009 -r 43
 
 
 **Tipo 6 — Acuse de recibo**
@@ -134,9 +131,9 @@ Indica la reanudación de un despacho detenido en cualquier torre, habitualmente
 Confirmación de recepción de un despacho, indicando el estado.
 
 - Recepción correcta de despacho con registro '12' desde la torre '040' a la torre '001':
-    > telop -s 6 -o 40 -d 1 -r 12
+    > telop -s 6 -t 040:001 -r 12
 - Recepción por niebla '1' de mensaje con registro '17' desde la torre '030' a la torre '001':
-    > telop -s 6 -o 30 -d 1 -r 17 -i 1
+    > telop -s 6 -t 030:001 -r 17 -i 1
 
 
 **Tipo 1 — Rectificación**
@@ -144,9 +141,9 @@ Confirmación de recepción de un despacho, indicando el estado.
 Solicitud de anulación o retransmisión de un despacho, según su número de registro.
 
 - Repetir '6' mensaje con registro '23' desde la torre '021' a la '001':
-    > telop -s 1 -o 21 -d 1 -i 6 -r 23
+    > telop -s 1 -t 021:001 -i 6 -r 23
 - Anular '9' mensaje con registro '12' desde la torre '021' a la '001':
-    > telop -s 1 -o 21 -d 1 -i 9 -r 12
+    > telop -s 1 -t 021:001 -i 9 -r 12
 
 
 ### Modificaciones del formato en cabecera
@@ -156,20 +153,25 @@ Solicitud de anulación o retransmisión de un despacho, según su número de re
 En cualquier mensaje con fecha se puede pasar el argumento '-b' para utilizar el formato reducido:
 
 - Mensaje con origen '010', destino '021' y formato de fecha breve:
-    > telop -o 10 -d 21 -b 'Texto'
+    > telop -t 010:021 -b 'Texto'
 
 
 **Sustituir indicación de torre por comandancia**
 
-Con el argumento `-c`, en cualquier mensaje se puede sustituir el formato de torre, de tres cifras, por el de comandancia, de dos cifras.
-
-- Mensaje con origen '01', destino '07' y opción de comandancia:
-    > telop -o 1 -d 7 -c 'Texto'
+Con `-t` se indica el par origen:destino. Ambos números deben tener 3 dígitos (torre) o ambos 2 (comandancia).
+El grupo de cabecera puede tener el formato `torre de origen(3) + torre de destino(3)` o `comandancia de origen(2) + comandancia de destino(2)`.
 
 
-**Indicar solo una torre o comandancia**
+- Mensaje con comandancia de origen '01' y destino '07':
+    > telop -t 01:07 'Texto'
+- Mensaje con torre origen '001' y destino '012':
+    > telop -t 001:012 'Texto'
+- Mensaje con una sola torre '052':
+    > telop -t 052 'Texto'
+- Mensaje con una sola comandancia '02':
+    > telop -t 02 'Texto'
 
-Es posible generar un mensaje con solo un número de torre en vez del formato habitual que lleva dos, origen y destino. Con solo una torre, se deduce el origen o destino según el sentido del mensaje y la posición que ocupa la torre en la línea. Para ello, se pasa el valor '0' a la opción de origen `telop -o 0` o destino `telop -d 0`.
+
 
 
 Nota: Telop permite cifrar el contenido del mensaje con una contraseña (`telop --pwd '123'`), preservando la cabecera en claro. Se utiliza cifrado FFX (Format-preserving, Feistel-based encryption), que produce una cadena numérica de apariencia aleatoria para quien intente descodificar el mensaje sin la contraseña.
@@ -282,10 +284,6 @@ El grupo de cabecera podría tener cualquiera de los siguientes formatos (aunque
 /99/       -> registro(2)
 ```
 
-Se puede indicar un número de comandancia en sustitución de la torre con la opción `-c`, pasando de tres dígitos por torre a dos.
-El grupo de cabecera pasaría del formato `torre de origen(3) + torre de destino(3)` a `comandancia de origen(2) + comandancia de destino(2)`.
-
-Si se indica alguna torre con valor '0', se suprime su representación. El mensaje generado solo lleva registro de una única torre o comandancia.
 El grupo de torre/comandancia podría tener cualquiera de los siguientes formatos:
 ```
 /001051/ -> torre de origen(3) + torre de destino(3)

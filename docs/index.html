@@ -165,7 +165,7 @@
         <div id="codops">
             <table>
                 <tr>
-                    <td>Tipo:</td>
+                    <td>Servicio:</td>
                     <td onmouseover="desc('tipo')" onmouseout="desc()"><select id="mtipo" onchange="set_ops_view()">
                         <option value="0">0 - Despacho</option>
                         <option value="1">1 - Rectificación</option>
@@ -271,7 +271,7 @@
 		 <ul>\
 		  <li><b>Despacho:</b> &nbsp;&nbsp;Comunicación principal.</li>\
 		  <li><b>Rectificación:</b> &nbsp;&nbsp;Anular o repetir un mensaje.</li>\
-		  <li><b>Interno:</b> &nbsp;&nbsp;Indicaciones de tipo.</li>\
+		  <li><b>Interno:</b> &nbsp;&nbsp;Indicaciones de servicio.</li>\
 		  <li><b>Vigilancia:</b> &nbsp;&nbsp;Verificar el estado de la línea.</li>\
 		  <li><b>Continuación:</b> &nbsp;&nbsp;Reanudar la transmisión de un mensaje interrumpido.</li>\
 		  <li><b>Acuse de recibo:</b> &nbsp;&nbsp;Confirmar la recepción de un mensaje.</li>\
@@ -731,17 +731,17 @@
         }
 
         switch (msg['tipo']) {
-            case '': case '0': salida += "<i>Tipo:</i>\t\t Despacho<br>"; break;
+            case '': case '0': salida += "<i>Servicio:</i>\t Despacho<br>"; break;
             case '2':
-                salida += "<i>Tipo:</i>\t\t 2 - Interno<br>";
+                salida += "<i>Servicio:</i>\t 2 - Interno<br>";
                 salida += "<i>Código:</i>\t " + msg['indic'] + "<br>"; break;
             case '3':
             case '6':
                 switch (msg['tipo']) {
                     case '3':
-                        salida += "<i>Tipo:</i>\t\t 3 - Vigilancia<br>"; break;
+                        salida += "<i>Servicio:</i>\t 3 - Vigilancia<br>"; break;
                     case '6':
-                        salida += "<i>Tipo:</i>\t\t 6 - Acuse de recibo<br>"; break;
+                        salida += "<i>Servicio:</i>\t 6 - Acuse de recibo<br>"; break;
 		}
                 switch (msg['indic']) {
                     case '00':
@@ -755,8 +755,8 @@
                     case '4':
                         salida += "<i>Estado:</i>\t 4 - Incidencia avería<br>"; 
                }; break;
-            case '5': salida += "<i>Tipo:</i>\t\t 5 - Continuación<br>"; break;
-            case '1': salida += "<i>Tipo:</i>\t\t 1 - Rectificación<br>";
+            case '5': salida += "<i>Servicio:</i>\t 5 - Continuación<br>"; break;
+            case '1': salida += "<i>Servicio:</i>\t 1 - Rectificación<br>";
                 switch (msg['indic']) {
                     case '6':
                         salida += "<i>Petición:</i>\t 6 - Repetir registro<br>";
