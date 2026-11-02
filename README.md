@@ -57,15 +57,15 @@ Mensaje:	 Telegrama de prueba
 
 ### Opciones del programa
 ```
-usage: telop [-h] [-t {0,1,2,3,5,6}] [-p {0,4,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-i INDICACIÓN] [--raw] [-v] [--version] [-z {0,1}] [mensaje]
+usage: telop [-h] [-s {0,1,2,3,5,6}] [-p {0,4,8}] [-o [nº]] [-d [nº]] [-b] [-c] [--diccionario] [--pwd PWD] [-r [nº]] [-i INDICACIÓN] [--raw] [-v] [--version] [-z {0,1}] [mensaje]
 
 positional arguments:
   mensaje               texto del mensaje entre ' '
 
 options:
   -h, --help            show this help message and exit
-  -t {0,1,2,3,5,6}, --tipo {0,1,2,3,5,6}
-                        tipo de servicio -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo
+  -s {0,1,2,3,5,6}, --servicio {0,1,2,3,5,6}
+                        servicio/tipo de mensaje -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo
   -p {0,4,8}, --prioridad {0,4,8}
                         prioridad -> 0-general | 4-urgente | 8-urgentísimo
   -o [nº], --origen [nº]
@@ -104,9 +104,9 @@ Mensaje para transmitir texto de uso general con diferentes prioridades.
 Para indicaciones internas de servicio.
 
 - Mensaje interno de la torre '001' (por defecto) a la '045' con código 10:
-    > telop -t 2 -d 45 -i 10
+    > telop -s 2 -d 45 -i 10
 - Mensaje interno de la torre '045' a la '001' con código 11 y formato de fecha breve:
-    > telop -t 2 -o 45 -d 1 -i 11 -b
+    > telop -s 2 -o 45 -d 1 -i 11 -b
 
 
 **Tipo 3 — Vigilancia**
@@ -116,9 +116,9 @@ Para verificar el estado de la línea. Se envían cada media hora, desde la cabe
 Su recepción se confirma mediante la devolución de otro mensaje de vigilancia, indicando las torres oportunas.
 
 - Mensaje inicial con valor '99' como comodín para todos los extremos de línea y ramales. Origen implícito ('0'), formato fecha breve:
-    > telop -t 3 -o 0 -d 99 -c -b
+    > telop -s 3 -o 0 -d 99 -c -b
 - Mensaje de respuesta con recepción correcta '0'. Comandancia de origen '07' y destino '01':
-    > telop -t 3 -o 7 -d 1 -c -i 0
+    > telop -s 3 -o 7 -d 1 -c -i 0
 
 
 **Tipo 5 — Continuación**
@@ -126,7 +126,7 @@ Su recepción se confirma mediante la devolución de otro mensaje de vigilancia,
 Indica la reanudación de un despacho detenido en cualquier torre, habitualmente por causas meteorológicas o cruce con otra comunicación de mayor prioridad.
 
 - Retomar la transmisión del mensaje con torre de origen '009' y referencia '43':
-    > telop -t 5 -o 9 -r 43
+    > telop -s 5 -o 9 -r 43
 
 
 **Tipo 6 — Acuse de recibo**
@@ -134,9 +134,9 @@ Indica la reanudación de un despacho detenido en cualquier torre, habitualmente
 Confirmación de recepción de un despacho, indicando el estado.
 
 - Recepción correcta de despacho con registro '12' desde la torre '040' a la torre '001':
-    > telop -t 6 -o 40 -d 1 -r 12
+    > telop -s 6 -o 40 -d 1 -r 12
 - Recepción por niebla '1' de mensaje con registro '17' desde la torre '030' a la torre '001':
-    > telop -t 6 -o 30 -d 1 -r 17 -i 1
+    > telop -s 6 -o 30 -d 1 -r 17 -i 1
 
 
 **Tipo 1 — Rectificación**
@@ -144,9 +144,9 @@ Confirmación de recepción de un despacho, indicando el estado.
 Solicitud de anulación o retransmisión de un despacho, según su número de registro.
 
 - Repetir '6' mensaje con registro '23' desde la torre '021' a la '001':
-    > telop -t 1 -o 21 -d 1 -i 6 -r 23
+    > telop -s 1 -o 21 -d 1 -i 6 -r 23
 - Anular '9' mensaje con registro '12' desde la torre '021' a la '001':
-    > telop -t 1 -o 21 -d 1 -i 9 -r 12
+    > telop -s 1 -o 21 -d 1 -i 9 -r 12
 
 
 ### Modificaciones del formato en cabecera

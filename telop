@@ -27,8 +27,8 @@ def get_arguments(msg, lencript):
     '''obtener argumentos'''
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--tipo', default=msg['tipo'], action='store', type=str, choices=['0', '1', '2', '3', '5', '6'],
-                        help='tipo de servicio -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
+    parser.add_argument('-s', '--servicio', dest='tipo', default=msg['tipo'], action='store', type=str, choices=['0', '1', '2', '3', '5', '6'],
+                        help='servicio/tipo de mensaje -> 0-despacho | 1-rectificación | 2-interno | 3-vigilancia | 5-continuación | 6-acuse recibo')
     parser.add_argument('-p', '--prioridad', default=msg['prioridad'], action='store', type=str, choices=['0', '4', '8'],
                         help='prioridad -> 0-general | 4-urgente | 8-urgentísimo')
     parser.add_argument('-o', '--origen', default=msg['origen'], action='store', type=int, metavar='[nº]', help='torre de origen')
@@ -39,7 +39,7 @@ def get_arguments(msg, lencript):
     parser.add_argument('--pwd', default=None, action='store', help='cifra el mensaje con la contraseña indicada')
     parser.add_argument('-r', '--registro', default=msg['registro'], action='store', type=int, metavar='[nº]', help='nº registro despacho')
     parser.add_argument('mensaje', default=msg['mensaje'], nargs='?', action='store', type=str, help='texto del mensaje entre \' \'')
-    parser.add_argument('-i', '--indicacion', '-s', '--sufijo', dest='indic', metavar='INDICACIÓN',
+    parser.add_argument('-i', '--indicacion', dest='indic', metavar='INDICACIÓN',
                         default=msg['indic'], action='store', type=int, help='indicación particular del mensaje (solo tipos 1, 2, 3 y 6)')
     parser.add_argument('--raw', default=False, action='store_true', help='salida sin formato')
     parser.add_argument('-v', '--verbose', default=False, action='store_true', help='debug')
